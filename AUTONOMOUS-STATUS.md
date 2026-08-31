@@ -144,3 +144,27 @@ e-posta gönderimi, eşzamanlılık ve sunucu tarafı yetki uygulaması yoktur.
 harici sistem, çelişen iki bağlayıcı business rule, geri alınamaz işlem) oluşmadı.
 K-04, K-05 ve K-06'daki gerilimler canonical mock'lar arası tutarsızlıktı; bağlayıcı
 business rule çatışması değildi ve spec'e sadık kalınarak çözüldü.
+
+---
+
+## 7. Final doğrulama (sıfırdan)
+
+Sunum ZIP'i geçici bir dizine açıldı ve **temiz kurulumdan** itibaren doğrulandı:
+
+| # | Kontrol | Sonuç |
+|---|---|---|
+| 1 | `npm install` (temiz, `node_modules` yokken) | ✅ |
+| 2 | `npm run build` | ✅ `tsc -b` + `vite build` hatasız |
+| 3 | `npm test` | ✅ 42/42 |
+| 4 | `node emails/build.mjs` | ✅ 16 şablon üretildi |
+| 5 | `npm run dev` | ✅ http://localhost:5180 |
+| 6 | Canonical demo akışı (24 adım) | ✅ tamamı geçti |
+| 7 | Mobil 375 / 390 / 430 px | ✅ yatay taşma yok |
+| 8 | 06 Talepler (dc-import'suz) | ✅ master–detail, self-approval durumu, onay/red |
+| 9 | Takvim paylaşımı | ✅ ekleme, kaldırma, görünürlük, alıcı tarafı |
+| 10 | Konsol hatası / React uyarısı / başarısız istek | ✅ 0 |
+| 11 | Harici ağ isteği (GATE G) | ✅ 0 — Poppins yerelden yüklendi |
+| 12 | ZIP bütünlüğü | ✅ 513 dosya · `node_modules` yok |
+
+Doğrulama betikleri: `scripts/demo-flow.mjs` (akış + konsol) ve `scripts/gates.mjs`
+(offline + responsive + konsol). İkisi de `puppeteer-core` ile sistemdeki Chrome'u kullanır.
