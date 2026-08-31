@@ -1,0 +1,86 @@
+/* Narbulut Calendar — design tokens
+   Kaynak: "Narbulut Calendar - Final Screens.dc.html" (canonical)
+   Bu dosya canonical ekranlardan çıkarılan değerlerin tek kaynağıdır. */
+:root{
+  /* Typography */
+  --font: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Surface */
+  --bg-app: #E8E8E6;
+  --bg-surface: #ffffff;
+  --bg-sidebar: #F7F9FB;
+  --bg-subtle: #F7F9FB;
+  --bg-weekend: #FAFBFC;
+  --bg-offhours: #FBFBFA;
+  --bg-today-col: rgba(0,88,184,.03);
+  --bg-week-strip: #EFF3F8;
+
+  /* Text */
+  --text-primary: #16191D;
+  --text-secondary: #525C6B;
+  --text-tertiary: #7C8697;
+  --text-muted: #9AA0A6;
+  --text-faint: #B7BDC6;
+  --text-disabled: #C2C7CF;
+  --text-off: #C7CCD4;
+  --text-time: #8A929E;
+  --text-weekend: #80868B;
+
+  /* Hairlines — 3 ayrı rol */
+  --line-frame: #DCDCD8;
+  --line-divider: #EDEFF2;
+  --line-panel: #E6EAEE;
+
+  /* Control borders — 3 ayrı rol (bkz. consistency pass) */
+  --border-input: #DDE1E6;
+  --border-btn-secondary: #DADCE0;
+  --border-btn-disabled: #E1E4E8;
+
+  /* Brand */
+  --brand: #0058B8;
+  --brand-hover: #00458F;
+  --brand-grad-a: #0F63C4;
+  --brand-grad-b: #0052AB;
+  --brand-grad-c: #004596;
+
+  /* Semantic */
+  --error: #9C3227;
+  --warning: #7A5300;
+  --success: #2F6B4F;
+  --info-surface: #F5F9FE;
+
+  /* Calendar colors */
+  --cal-kisisel: #6259C9;
+  --cal-proje: #177066;
+  --cal-ekip: #A83E69;
+  --cal-toplanti: #E8A33D;
+  --cal-urun: #2F6B4F;
+  --cal-pazarlama: #B4531F;
+
+  /* Radius */
+  --r-card: 12px;
+  --r-panel: 14px;
+  --r-row: 8px;
+  --r-control: 9px;
+  --r-event: 10px;
+  --r-chip: 7px;
+  --r-check: 5px;
+
+  /* Layout */
+  --sidebar-w: 280px;
+  --topbar-h: 64px;
+  --dayhead-h: 58px;
+  --gutter-w: 52px;
+  --hour-h: 56px;
+  --drawer-w: 520px;
+
+  /* Elevation */
+  --sh-card: 0 1px 2px rgba(22,25,29,.07);
+  --sh-seg: 0 1px 2px rgba(22,25,29,.08);
+  --sh-event: 0 1px 3px rgba(22,25,29,.1);
+  --sh-drawer: -22px 0 64px rgba(22,25,29,.13);
+  --sh-popover: 0 8px 28px rgba(22,25,29,.14);
+  --sh-sheet: 0 -8px 32px rgba(22,25,29,.16);
+  --scrim: rgba(22,25,29,.10);
+  --scrim-mobile: rgba(22,25,29,.28);
+}

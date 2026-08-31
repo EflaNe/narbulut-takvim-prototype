@@ -1,0 +1,108 @@
+/* ── Butonlar ───────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+  border-radius:var(--r-control);border:none;white-space:nowrap;transition:background .12s ease-out,color .12s ease-out}
+.btn--primary{padding:0 18px;background:var(--brand);color:#fff;font:500 13px/1 var(--font)}
+.btn--primary:hover:not(:disabled){background:var(--brand-hover)}
+.btn--primary:disabled{background:#EAECEF;color:#A3A9B3}
+.btn--secondary{padding:0 14px;background:transparent;color:var(--text-secondary);font:400 13px/1 var(--font)}
+.btn--secondary:hover:not(:disabled){background:#F5F7F9}
+.btn--outline{padding:0 14px;background:#fff;border:1px solid var(--border-btn-secondary);
+  color:var(--text-primary);font:400 13px/1 var(--font)}
+.btn--outline:hover:not(:disabled){background:#F7F9FB}
+.btn--outline:disabled{border-color:var(--border-btn-disabled);color:#A3A9B3;background:#fff}
+.btn--danger{padding:0 18px;background:var(--error);color:#fff;font:500 13px/1 var(--font)}
+.btn--danger:hover:not(:disabled){background:#83291F}
+.btn--quiet{padding:0 10px;height:32px;background:transparent;color:var(--brand);font:500 12.5px/1 var(--font)}
+.btn--quiet:hover:not(:disabled){background:#F1F6FC}
+.btn--sm{height:32px;padding:0 12px;font-size:12.5px}
+
+.iconbtn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:50%;border:none;background:transparent;color:var(--text-secondary);transition:background .12s}
+.iconbtn:hover:not(:disabled){background:#F1F3F6}
+.iconbtn:disabled{color:var(--text-disabled)}
+.iconbtn--sm{width:26px;height:26px}
+.iconbtn--onbrand{background:rgba(255,255,255,.14);color:#fff;width:28px;height:28px}
+.iconbtn--onbrand:hover{background:rgba(255,255,255,.24)}
+
+/* ── Alanlar ────────────────────────────────────────────── */
+.qinput{border:none;outline:none;background:transparent;border-radius:var(--r-control);
+  color:var(--text-primary);transition:background .12s ease-out,box-shadow .12s ease-out}
+.qinput:hover{background:#F5F7F9}
+.qinput--title{width:calc(100% + 18px);height:42px;margin-left:-9px;padding:0 9px;
+  font:500 24px/1.2 var(--font);letter-spacing:-.015em}
+.qinput--title:focus{background:#fff;box-shadow:inset 0 -2px 0 var(--brand)}
+.qinput--field{height:36px;padding:0 9px;font:500 16px/1 var(--font);
+  font-variant-numeric:tabular-nums;box-shadow:inset 0 -1px 0 #E1E5EA}
+.qinput--field:hover{background:#F5F7F9;box-shadow:inset 0 -1px 0 #D5DAE0}
+.qinput--field:focus{background:#fff;box-shadow:inset 0 0 0 1.5px var(--brand)}
+.qinput--field.is-invalid{box-shadow:inset 0 0 0 1.5px var(--error)}
+
+.searchfield{height:40px;border-radius:10px;background:#F5F7F9;display:flex;align-items:center;
+  gap:10px;padding:0 13px;font:400 13px/1 var(--font);color:var(--text-primary)}
+.searchfield input{flex:1;min-width:0;border:none;outline:none;background:transparent;
+  font:400 13px/1 var(--font);color:var(--text-primary)}
+.searchfield input::placeholder{color:var(--text-muted)}
+
+.textinput{width:100%;height:36px;border:1px solid var(--border-input);border-radius:var(--r-control);
+  padding:0 11px;font:400 13px/1 var(--font);color:var(--text-primary);outline:none;background:#fff}
+.textinput:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,88,184,.10)}
+.textinput.is-invalid{border-color:var(--error)}
+textarea.textinput{height:auto;padding:9px 11px;line-height:1.5;resize:vertical}
+
+.selectchip{display:flex;align-items:center;gap:7px;height:26px;margin-left:-7px;padding:0 7px;
+  border:none;background:transparent;border-radius:var(--r-chip);cursor:pointer;
+  font:400 12.5px/1 var(--font);color:var(--text-secondary);transition:background .12s ease-out}
+.selectchip:hover{background:#F5F7F9}
+.selectchip:focus-visible{background:#fff;box-shadow:inset 0 0 0 1.5px var(--brand);outline:none}
+
+/* ── Etiketler & rozetler ───────────────────────────────── */
+.sectionlabel{font:500 11px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.badge{display:inline-flex;align-items:center;gap:6px;font:400 12.5px/1 var(--font)}
+.badge--pending{color:var(--warning)}
+.badge--reserved{color:var(--success)}
+.badge--error{color:var(--error)}
+.badge--muted{color:var(--text-tertiary)}
+.pill{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:11px;
+  font:500 11px/1 var(--font)}
+.pill--pending{background:#FBF3E2;color:var(--warning)}
+.pill--approved{background:#E9F2ED;color:var(--success)}
+.pill--rejected{background:#F7EAE8;color:var(--error)}
+.pill--cancelled{background:#F1F3F6;color:var(--text-tertiary)}
+
+.avatar{width:28px;height:28px;border-radius:50%;background:#EEF2F6;display:flex;align-items:center;
+  justify-content:center;flex:none;font:500 11px/1 var(--font);color:var(--text-secondary)}
+.avatar--sm{width:24px;height:24px;font-size:10px}
+
+.card{background:var(--bg-surface);border:1px solid var(--line-panel);border-radius:var(--r-card)}
+
+/* ── Bildirim şeridi ────────────────────────────────────── */
+.banner{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:10px;
+  font:400 12.5px/1.45 var(--font)}
+.banner--info{background:var(--info-surface);color:var(--text-secondary)}
+.banner--warning{background:#FBF6EA;color:var(--warning)}
+.banner--error{background:#FAEEEC;color:var(--error)}
+
+.inlinemsg{display:flex;align-items:center;gap:8px;font:400 12.5px/1.4 var(--font);
+  font-variant-numeric:tabular-nums}
+.inlinemsg--error{color:var(--error)}
+.inlinemsg--warning{color:var(--warning)}
+.inlinemsg--info{color:var(--text-tertiary)}
+
+/* ── Toast ──────────────────────────────────────────────── */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:80;
+  display:flex;align-items:center;gap:10px;max-width:520px;padding:12px 18px;border-radius:10px;
+  background:#16191D;color:#fff;font:400 13px/1.4 var(--font);box-shadow:0 8px 28px rgba(22,25,29,.28)}
+.toast--error{background:#7E2A21}
+.toast--success{background:#255742}
+
+/* ── Menü ───────────────────────────────────────────────── */
+.menu{position:absolute;z-index:60;min-width:190px;padding:6px;background:#fff;
+  border:1px solid var(--line-panel);border-radius:10px;box-shadow:var(--sh-popover)}
+.menu button{display:flex;align-items:center;gap:9px;width:100%;height:34px;padding:0 10px;
+  border:none;background:transparent;border-radius:7px;text-align:left;
+  font:400 13px/1 var(--font);color:var(--text-primary)}
+.menu button:hover:not(:disabled){background:#F5F7F9}
+.menu button:disabled{color:var(--text-disabled)}
+.menu button.is-destructive{color:var(--error)}
+.menu .menu__hint{padding:4px 10px 7px;font:400 11.5px/1.4 var(--font);color:var(--text-muted)}
+.menu__sep{height:1px;margin:5px 6px;background:var(--line-divider)}

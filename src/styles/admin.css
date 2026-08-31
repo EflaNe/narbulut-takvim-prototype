@@ -1,0 +1,122 @@
+.admin{flex:1;min-width:0;display:flex;flex-direction:column}
+.admin__head{flex:none;min-height:var(--topbar-h);display:flex;align-items:center;gap:12px;
+  padding:0 24px;border-bottom:1px solid var(--line-panel)}
+.admin__title{font:500 16px/1 var(--font)}
+.admin__sub{font:400 12.5px/1.5 var(--font);color:var(--text-tertiary);max-width:640px}
+.admin__body{flex:1;min-height:0;display:flex}
+
+/* ── 04 Oda yönetimi ────────────────────────────────────── */
+.roomlist{background:#fff;border:1px solid var(--line-panel);border-radius:var(--r-card);overflow:hidden}
+.roomlist__head{display:flex;align-items:center;padding:11px 14px 10px;border-bottom:1px solid var(--line-divider)}
+.roomcard{display:block;width:100%;text-align:left;border:none;background:transparent;
+  padding:13px 14px 14px;border-bottom:1px solid var(--line-divider);cursor:pointer}
+.roomcard:last-child{border-bottom:none}
+.roomcard:hover{background:#F7F9FB}
+.roomcard.is-active{background:var(--info-surface);box-shadow:inset 3px 0 0 var(--brand)}
+.roomcard__top{display:flex;align-items:center;gap:9px}
+.roomcard__loc,.roomcard__feat{display:block}
+.roomcard__name{font:500 13.5px/1 var(--font)}
+.roomcard__cap{font:400 12px/1 var(--font);color:var(--text-tertiary);margin-left:auto}
+.roomcard__loc{margin-top:6px;font:400 12px/1.4 var(--font);color:var(--text-secondary)}
+.roomcard__feat{margin-top:4px;font:400 11.5px/1.4 var(--font);color:var(--text-muted)}
+.statuscard{border:1px solid var(--line-panel);border-radius:var(--r-card);background:#fff;
+  padding:13px 14px;margin-top:12px}
+.statuscard__title{font:500 12.5px/1 var(--font);color:var(--text-primary);margin-bottom:9px}
+.statuscard__row{display:flex;align-items:center;gap:9px;width:100%;border:none;background:transparent;
+  padding:6px 0;font:400 12.5px/1 var(--font);color:var(--text-secondary);text-align:left}
+.statuscard__row.is-link{color:var(--brand);cursor:pointer}
+.statuscard__row.is-link:hover{text-decoration:underline}
+
+.roomedit{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.roomedit__head{flex:none;display:flex;align-items:center;gap:12px;height:var(--topbar-h);
+  padding:0 28px;border-bottom:1px solid var(--line-panel)}
+.roomedit__title{font:500 16px/1 var(--font)}
+.roomedit__eyebrow{font:400 12.5px/1 var(--font);color:var(--text-tertiary)}
+.roomedit__body{flex:1;min-height:0;overflow-y:auto;padding:26px 28px 24px;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 40px;align-content:start}
+.formblock__title{font:500 13.5px/1.3 var(--font);color:var(--text-primary)}
+.formblock__sub{margin-top:4px;font:400 12px/1.5 var(--font);color:var(--text-tertiary)}
+.formblock__content{margin-top:14px}
+.formrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.formrow + .formrow{margin-top:12px}
+.formfield{display:flex;flex-direction:column;gap:6px;min-width:0}
+.formfield label{font:400 11.5px/1 var(--font);color:var(--text-muted)}
+.formsep{grid-column:1/-1;height:1px;background:var(--line-divider)}
+.switch{display:inline-flex;align-items:center;gap:9px;border:none;background:transparent;padding:0;
+  font:400 13px/1 var(--font);color:var(--text-primary)}
+.switch__track{width:36px;height:20px;border-radius:10px;background:#DDE1E6;position:relative;
+  transition:background .12s}
+.switch__track.is-on{background:var(--brand)}
+.switch__knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform .12s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch__track.is-on .switch__knob{transform:translateX(16px)}
+.checkline{display:inline-flex;align-items:center;gap:9px;border:none;background:transparent;padding:0;
+  font:400 13px/1 var(--font);color:var(--text-primary)}
+.checkbox{width:17px;height:17px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--text-off);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.checkbox.is-on{background:var(--brand);box-shadow:none}
+.featchip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:9px;
+  border:1px solid var(--border-input);background:#fff;font:400 13px/1 var(--font);
+  color:var(--text-secondary);margin:0 8px 8px 0}
+.featchip.is-on{border-color:#B9D3EE;background:#F2F7FD;color:var(--brand);font-weight:500}
+.approversugg{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--line-divider)}
+.approversugg:last-child{border-bottom:none}
+.approversugg b{font:400 13px/1 var(--font);color:var(--text-primary);font-weight:400}
+.approversugg span{font:400 12px/1 var(--font);color:var(--text-tertiary)}
+.tokenlist{display:flex;flex-wrap:wrap;gap:7px}
+.token{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 6px 0 10px;
+  border-radius:8px;background:#F1F4F7;font:400 12px/1 var(--font);color:var(--text-secondary)}
+.token button{border:none;background:transparent;display:flex;padding:3px;border-radius:5px;
+  color:var(--text-faint)}
+.token button:hover{background:#E3E7EC;color:var(--text-secondary)}
+.adminfoot{flex:none;display:flex;align-items:center;gap:14px;padding:14px 28px 16px;
+  border-top:1px solid var(--line-divider);background:#fff}
+.adminfoot__info{font:400 12.5px/1 var(--font);color:var(--text-tertiary)}
+
+/* ── 05 İzinler ─────────────────────────────────────────── */
+.permwrap{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.permhead{flex:none;display:flex;align-items:flex-start;gap:20px;padding:18px 24px 14px}
+.permhead__text{min-width:0}
+.permhead__title{font:500 16px/1 var(--font)}
+.permhead__sub{margin-top:8px;font:400 12.5px/1.5 var(--font);color:var(--text-tertiary);max-width:620px}
+.permtools{flex:none;display:flex;align-items:center;gap:12px;margin-left:auto}
+.permtable{flex:none;overflow-y:auto;margin:0 24px;border:1px solid var(--line-panel);
+  border-radius:var(--r-card)}
+.permtable__head,.permtable__row{display:grid;grid-template-columns:230px 1fr 1fr 40px;gap:16px;
+  padding:11px 18px}
+.permtable__head{background:var(--bg-subtle);border-bottom:1px solid var(--line-panel);
+  font:400 12px/1 var(--font);color:var(--text-secondary);position:sticky;top:0;z-index:1}
+.permtable__row{align-items:center;padding:14px 18px;border-bottom:1px solid var(--line-divider);
+  background:#fff}
+.permtable__row.is-active{background:#F9FBFE}
+.permtable__row:last-child{border-bottom:none}
+.permroom{display:flex;flex-direction:column;gap:4px}
+.permroom b{font:500 13.5px/1 var(--font)}
+.permroom span{font:400 12px/1 var(--font);color:var(--text-tertiary)}
+.permcell{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border:none;background:transparent;
+  padding:4px;border-radius:8px;text-align:left;width:100%;cursor:pointer}
+.permcell:hover{background:#F2F5F9}
+.permtoken{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;
+  background:#fff;box-shadow:inset 0 0 0 1px var(--border-input);
+  font:400 12px/1 var(--font);color:var(--text-secondary)}
+.permtoken--all{background:#EAF3EE;box-shadow:none;color:#2D6349}
+.permlower{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
+  gap:20px;margin:16px 24px 0;align-items:start;overflow-y:auto}
+.permpanel{border:1px solid var(--line-panel);border-radius:var(--r-card);padding:14px 16px 4px;
+  background:#fff}
+.permpanel__head{display:flex;align-items:center;gap:10px}
+.permpanel__title{font:500 13px/1 var(--font)}
+.permpanel__count{font:400 11.5px/1 var(--font);color:var(--text-muted)}
+.permentry{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-divider)}
+.permentry:last-child{border-bottom:none}
+.permentry__name{font:400 13px/1 var(--font)}
+.permentry__meta{margin-top:4px;font:400 12px/1 var(--font);color:var(--text-tertiary)}
+.permexplain{border:1px solid var(--line-panel);border-radius:var(--r-card);padding:16px 18px;
+  background:#fff;font:400 12.5px/1.65 var(--font);color:var(--text-secondary)}
+.permexplain h4{margin:0 0 10px;font:500 13px/1 var(--font);color:var(--text-primary)}
+.permexplain p{margin:0 0 10px}
+.permexplain p:last-child{margin-bottom:0}
+.permexplain b{color:var(--text-primary);font-weight:500}
+.permfoot{flex:none;display:flex;align-items:center;gap:14px;padding:14px 24px 16px;
+  border-top:1px solid var(--line-divider);margin-top:16px}
