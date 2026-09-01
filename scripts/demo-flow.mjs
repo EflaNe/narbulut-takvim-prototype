@@ -231,6 +231,26 @@ try {
   await clickAria('Ürün görünürlüğü');
   await shot('14-gorunurluk');
 
+  /* Hover önizleme kartı */
+  {
+    const h = await page.evaluateHandle(() => [...document.querySelectorAll('.event')]
+      .find((e) => (e.getAttribute('aria-label') || '').includes('Ürün Demo, 10:00')) || null);
+    const el = h.asElement();
+    if (!el) throw new Error('hover için etkinlik bulunamadı');
+    await el.hover();
+    await sleep(700);
+    const card = await page.evaluate(() => {
+      const c = document.querySelector('.ehc');
+      return c ? c.innerText.replace(/\s+/g, ' ') : null;
+    });
+    if (card && norm(card).includes('kimler var') && norm(card).includes('topkapı')) {
+      ok('Hover önizleme kartı açıldı (kimler var · oda · durum)');
+    } else fail('Hover önizleme kartı doğrulanamadı');
+    await shot('15-hover-onizleme');
+    await page.mouse.move(5, 5);
+    await sleep(250);
+  }
+
 } catch (e) {
   fail(`Akış hata ile durdu: ${e.message}`);
 }
@@ -239,14 +259,16 @@ try {
   await page.setViewport({ width: 390, height: 844 });
   await page.reload({ waitUntil: 'networkidle0' });
   await sleep(400);
+  const noCard = await page.evaluate(() => !document.querySelector('.ehc'));
+  if (!noCard) fail('Mobilde hover kartı render edildi');
   if (await has('Takvimler')) ok('Mobil agenda görünümü açıldı (390px)');
   else fail('Mobil görünüm açılmadı');
-  await shot('15-mobil');
+  await shot('16-mobil');
   await clickText('Takvimler', { exact: true });
   if (await has('BENİMLE PAYLAŞILANLAR') || await has('Benimle paylaşılanlar')) {
     ok('Mobil Takvimler sheet’i açıldı');
   } else fail('Mobil sheet açılmadı');
-  await shot('16-mobil-takvimler');
+  await shot('17-mobil-takvimler');
 } catch (e) {
   fail(`Mobil kontrol hatası: ${e.message}`);
 }

@@ -18,6 +18,7 @@ Oturum sahibi: **Deniz Aydın · Ürün Yöneticisi**.
 | 2 | Üstteki **›** okuna bas | Hafta ileri gider, başlık "31 Ağustos – 6 Eylül 2026" olur. *Eski üründe hafta gezinme kontrolleri yoktu.* |
 | 3 | Sol karttaki **Bugün** | Bugünkü haftaya döner. |
 | 4 | Sol raildeki **Proje** onay kutusunu kapat, tekrar aç | Yeşil etkinlikler ızgaradan düşer ve geri gelir. Takvim görünürlüğü gerçekten çalışır. |
+| 4b | **Salı 10:00 "Ürün Demo"** bloğunun üzerine gel ve **yarım saniye bekle** | Önizleme kartı açılır: takvim · saat ve süre · oda · **Onay bekliyor** · **"Kimler var · 22 kişi"** ve her katılımcının müsait/meşgul durumu. *Etkinliği açmadan "kim var, oda uygun mu" sorusunu cevaplıyoruz.* Kart salt okunur; aynı bilgi tıklayınca açılan drawer'da da var — dokunmatik ve klavye kullanıcısı bilgiden mahrum kalmıyor. |
 
 ### Bölüm 2 · Etkinlik ve paylaşım okunabilirliği (≈45 sn)
 
@@ -87,6 +88,7 @@ Tarayıcı penceresini **390px** genişliğe daralt (veya cihaz emülasyonu).
 - **Takvimler** → sheet: *Takvimlerim* / *Benimle paylaşılanlar* ayrımı, sahibin adı ikincil.
 - Paylaşılan satırın **⋯** → **Takvimi kaldır** action sheet'i. Mobilde sahip tarafı paylaşım
   yönetimi yoktur.
+- **Hover önizleme kartı mobilde hiç çıkmaz** — bilgiye tek yol dokunup açmaktır (`14` BR-SHELL-43).
 
 ---
 

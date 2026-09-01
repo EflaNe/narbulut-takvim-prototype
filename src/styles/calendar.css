@@ -101,3 +101,38 @@
 .resblock--reserved{background:#E9F2ED;color:#245640;box-shadow:inset 3px 0 0 var(--success)}
 .resblock--pending{background:#FBF3E2;color:#6A4900;box-shadow:inset 3px 0 0 var(--warning)}
 .resblock strong{display:block;font:500 12px/1.3 var(--font)}
+
+/* ── Etkinlik hover önizleme kartı ──────────────────────
+   Yalnız gerçek imleci olan cihazlarda. Bilgiyi hover'a hapsetmez:
+   aynı içerik bloğa tıklanınca açılan drawer'da da vardır (ST-DIS-03). */
+.ehc{position:fixed;z-index:70;width:292px;background:#fff;border:1px solid var(--line-panel);
+  border-radius:var(--r-card);box-shadow:var(--sh-popover);overflow:hidden;pointer-events:none;
+  animation:ehc-in .12s ease-out}
+@keyframes ehc-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.ehc__strip{height:4px}
+.ehc__body{padding:13px 15px 14px}
+.ehc__cal{display:flex;align-items:center;gap:7px;font:400 11.5px/1 var(--font);
+  color:var(--text-tertiary)}
+.ehc__caldot{width:8px;height:8px;border-radius:50%;flex:none}
+.ehc__title{margin-top:8px;font:500 14px/1.35 var(--font);color:var(--text-primary)}
+.ehc__time{margin-top:5px;font:400 12.5px/1 var(--font);color:var(--text-secondary);
+  font-variant-numeric:tabular-nums}
+.ehc__row{margin-top:10px;display:flex;align-items:center;gap:8px;
+  font:400 12.5px/1.4 var(--font);color:var(--text-secondary)}
+.ehc__row .ehc__muted{color:var(--text-muted)}
+.ehc__sep{height:1px;margin:12px 0 0;background:var(--line-divider)}
+.ehc__people{margin-top:11px}
+.ehc__peoplehead{font:500 10.5px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-muted)}
+.ehc__person{margin-top:9px;display:flex;align-items:center;gap:9px}
+.ehc__pname{font:400 12.5px/1 var(--font);color:var(--text-primary);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ehc__pstate{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none;
+  font:400 11.5px/1 var(--font)}
+.ehc__pstate--busy{color:var(--error)}
+.ehc__pstate--free{color:#3A6B4E}
+.ehc__pstate--unknown{color:var(--text-tertiary)}
+.ehc__pdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.ehc__more{margin-top:9px;font:400 11.5px/1 var(--font);color:var(--text-tertiary)}
+.ehc__owner{margin-top:12px;padding-top:11px;border-top:1px solid var(--line-divider);
+  display:flex;align-items:center;gap:7px;font:400 11.5px/1.4 var(--font);color:var(--text-tertiary)}

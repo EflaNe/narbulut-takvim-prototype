@@ -168,3 +168,31 @@ Sunum ZIP'i geçici bir dizine açıldı ve **temiz kurulumdan** itibaren doğru
 
 Doğrulama betikleri: `scripts/demo-flow.mjs` (akış + konsol) ve `scripts/gates.mjs`
 (offline + responsive + konsol). İkisi de `puppeteer-core` ile sistemdeki Chrome'u kullanır.
+
+---
+
+## 8. Rapor sonrası değişiklik — 1 Eylül 2026
+
+**Etkinlik hover önizleme kartı kapsama alındı.**
+
+Ürün sahibi prototipi gördükten sonra ızgarada hover önizlemesinin neden olmadığını sordu.
+Kanıt zinciri: `U-05 hover önizleme` FAZ 1'de **unvalidated candidate**, FAZ 2B'de PC-02'de
+**aday**, `04-scope-closure.md` PC-02'de ise açıkça **kapsam dışı** ("spec seviyesinde
+önerilecek") idi. Canonical tasarımda da karşılığı yoktu — dosyadaki 6 hover state'in tamamı
+02 Etkinlik drawer'ındaki alanlara ait.
+
+⚠️ **Tespit edilen boşluk:** kapsam kapanışının söz verdiği "spec seviyesinde önerilecek"
+notu FAZ 4'te `14-calendar-shell-spec.md`'ye **hiç taşınmamıştı.** Bu FAZ 4 eksiğidir.
+
+**Yapılanlar**
+
+| | |
+|---|---|
+| Spec | `14` BR-SHELL-41…45 + SR-SHELL-07 yazıldı |
+| Kapsam | `04-scope-closure.md` PC-02 güncellendi; kapsam değişikliği tarih ve gerekçeyle not edildi |
+| Prototip | `calendar/EventHoverCard.tsx` + `EventBlock` içinde 400 ms gecikmeli hover/focus durumu |
+| Kısıt | Dokunmatik cihazda hiç render edilmez; kart salt okunur; free/busy yalnız müsait/meşgul |
+| Doğrulama | Demo akışı **25 adıma** çıktı, tamamı geçti; konsol hatası 0; tüm kapılar geçti |
+
+Bu bir **ürün kapsamı kararıdır**, otonom modda kendiliğinden kapatılmadı — ürün sahibine
+soruldu ve onayıyla eklendi.

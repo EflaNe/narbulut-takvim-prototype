@@ -23,6 +23,7 @@ Her canonical ekranın React karşılığı ve bilinçli sapmalar aşağıdadır
 | Etkinlik bloğu (20px şerit + gövde, kompakt varyant) | `calendar/EventBlock.tsx` |
 | Çalışma saatleri dışı bantlar, bugün sütunu, hafta sonu sütunu, şimdi çizgisi | `calendar/WeekGrid.tsx` |
 | Tüm takvimler kapalı boş durumu | `calendar/EmptyGridState.tsx` |
+| Etkinlik hover önizleme kartı *(canonical'da çizili değil — `14` BR-SHELL-41…45)* | `calendar/EventHoverCard.tsx` |
 
 ### 02 · Etkinlik oluştur / düzenle  *(quiet editable event editor — kilitli)*
 
@@ -145,6 +146,7 @@ Her madde gerekçelidir; hiçbiri yeni tasarım yönü değildir.
 | D-08 | Topkapı `onay gerekli` | Canonical 01/02'deki "Onay bekliyor" durumunun tutarlı olması için (K-05) |
 | D-09 | 05 İzinler'de sol railde "Benimle paylaşılanlar" da var | Canonical 05 paylaşım eklenmeden önce üretilmiş; rail tek bileşendir |
 | D-10 | Shift+D demo paneli | Sunum arayüzünde **görünmez**; yalnız persona ve sıfırlama için |
+| D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45 olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
 
 ---
 
@@ -159,6 +161,7 @@ Canonical HTML hiçbir yerde kopyalanmadı. Tekrar eden her yapı bileşen oldu:
 | `Button` / `IconButton` | tüm ekranlar; 5 varyant, canonical'daki dört ayrı primary stili tek kaynağa indirildi |
 | `Menu` | takvim ⋯ · paylaşılan takvim ⋯ · takvim seçici · tekrar seçici |
 | `ParticipantRow` | etkinlik drawer'ı (container query ile dar drawer'da yığılır) |
+| `EventHoverCard` | hafta ve gün ızgarası; `createPortal` ile gövdeye render edilir |
 | `EventBlock` | hafta ve gün ızgarası |
 | `NavRail` | takvim rail'i ve oda yönetimi rail'i |
 | `factTable` / `notice` / `button` (e-posta) | 16 e-posta şablonu |
