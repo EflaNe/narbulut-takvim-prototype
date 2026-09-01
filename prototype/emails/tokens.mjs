@@ -35,6 +35,14 @@ export const T = {
   width: 600,
 };
 
+/** Bir rengi beyazla karıştırır — e-posta istemcileri color-mix desteklemez. */
+export function tint(hex, ratio) {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c) => Math.round(c + (255 - c) * ratio);
+  return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255]
+    .map((c) => mix(c).toString(16).padStart(2, '0')).join('')}`;
+}
+
 /** Takvim renkleri — etkinlik e-postalarında renk şeridi için. */
 export const CAL_COLORS = {
   kisisel: '#6259C9',

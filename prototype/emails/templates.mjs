@@ -2,9 +2,12 @@
  * 19-notifications-spec.md'de TANIMLI olayların e-posta şablonları.
  * ⚠️ Yeni bildirim olayı icat edilmez. Her şablon spec'in "Taşımak zorunda"
  * sütunundaki alanları eksiksiz taşır.
+ *
+ * Görsel dil ürünün kendi diliyle aynı: takvim yaprağı tarih bloğu ve
+ * ızgaradaki etkinlik chip'inin e-posta karşılığı olan renk şeritli kart.
  */
 import { T, CAL_COLORS } from './tokens.mjs';
-import { button, factTable, notice, renderEmail } from './layout.mjs';
+import { button, eventCard, factTable, notice, renderEmail } from './layout.mjs';
 
 /* Örnek veri — prototype/src/lib/state/demoData.ts ile hizalı. */
 const D = {
@@ -22,7 +25,14 @@ const D = {
   guest: 'guest@partner.com',
 };
 
+const SAL = { dow: 'SAL', day: '25', month: 'AĞUSTOS' };
+const PER = { dow: 'PER', day: '27', month: 'AĞUSTOS' };
+const PZT = { dow: 'PZT', day: '31', month: 'AĞUSTOS' };
+const PAZ = { dow: 'PAZ', day: '07', month: 'EYLÜL' };
+
 const strong = (s) => `<strong style="font-weight:500;color:${T.textPrimary}">${s}</strong>`;
+const muted = (s) => `<span style="color:${T.textTertiary}">${s}</span>`;
+const strike = (s) => `<span style="color:${T.textMuted};text-decoration:line-through">${s}</span>`;
 
 /* ─────────────────────────── Etkinlik olayları ─────────────────────────── */
 
@@ -36,17 +46,19 @@ const N_EVT_01 = {
   render: () => renderEmail({
     subject: `Davet: ${D.event} · ${D.date}`,
     preview: `${D.date}, ${D.time} · ${D.room}`,
-    stripColor: CAL_COLORS.ekip,
+    accent: CAL_COLORS.ekip,
+    date: SAL,
     eyebrow: 'Etkinlik daveti',
     heading: D.event,
     lead: `${strong(D.organizer)} sizi bu etkinliğe davet etti.`,
-    body: factTable([
-      ['Ne zaman', `${D.date}<br />${D.time}`],
-      ['Nerede', `${D.room}<br /><span style="color:${T.textTertiary}">${D.roomMeta}</span>`],
-      ['Takvim', D.calendar],
-      ['Organizatör', D.organizer],
-      ['Katılımınız', `${strong('Zorunlu')}`],
-    ]),
+    body: `${eventCard({
+      accent: CAL_COLORS.ekip, time: D.time, right: D.room,
+      lines: [
+        `${muted(D.roomMeta)}`,
+        `${D.calendar} takvimi ${muted('·')} Organizatör ${D.organizer}`,
+        `Katılımınız ${strong('zorunlu')} olarak işaretlendi`,
+      ],
+    })}`,
     actions: button('Etkinliği aç'),
     footNote: 'Katılım durumunuzu etkinlik sayfasından bildirebilirsiniz.',
   }),
@@ -62,16 +74,18 @@ const N_EVT_02 = {
   render: () => renderEmail({
     subject: `Güncellendi: ${D.event} · yeni saat ${D.time}`,
     preview: `Saat değişti — ${D.date}, ${D.time}`,
-    stripColor: CAL_COLORS.ekip,
-    eyebrow: 'Etkinlik güncellendi',
+    accent: CAL_COLORS.ekip,
+    date: SAL,
+    eyebrow: 'Saat değişti',
     heading: D.event,
     lead: 'Bu etkinlikte sizi ilgilendiren bir değişiklik oldu.',
-    body: `${factTable([
-      ['Değişen', 'Saat'],
-      ['Önceki', `<span style="color:${T.textTertiary};text-decoration:line-through">Salı, 25 Ağustos 2026 · 09:00 – 10:30</span>`],
-      ['Yeni', `${strong(`${D.date} · ${D.time}`)}`],
-      ['Nerede', `${D.room} <span style="color:${T.textTertiary}">(değişmedi)</span>`],
-    ])}${notice('Diğer alanlar değişmedi. Bu bildirimi, değişiklik sizi etkilediği için aldınız.')}`,
+    body: `${eventCard({
+      accent: CAL_COLORS.ekip, time: D.time, right: D.room,
+      lines: [
+        `Önceki saat ${strike('09:00 – 10:30')}`,
+        `${muted(`Oda değişmedi · ${D.roomMeta}`)}`,
+      ],
+    })}${notice('Diğer alanlar değişmedi. Bu bildirimi, değişiklik sizi etkilediği için aldınız.')}`,
     actions: button('Etkinliği aç'),
   }),
 };
@@ -86,16 +100,23 @@ const N_EVT_03 = {
   render: () => renderEmail({
     subject: `İptal edildi: ${D.event} · ${D.date}`,
     preview: `${D.date}, ${D.time} artık takviminizde değil`,
-    stripColor: T.error,
+    accent: T.error,
+    date: SAL,
     eyebrow: 'Etkinlik iptal edildi',
     heading: D.event,
     lead: `${strong(D.organizer)} bu etkinliği iptal etti. Takviminizden kaldırıldı.`,
-    body: `${factTable([
-      ['İptal edilen', `${D.date}<br />${D.time}`],
-      ['Nerede', D.room],
-    ])}${notice(`${D.room} rezervasyonu da serbest bırakıldı.`, 'info')}`,
+    body: `${eventCard({
+      accent: T.error, time: strikePlain(D.time), right: D.room,
+      lines: [
+        `${muted(D.date)}`,
+        `${D.room} rezervasyonu da serbest bırakıldı`,
+      ],
+    })}`,
   }),
 };
+
+/** eventCard şerit metni HTML kaçırmadığı için düz metin varyantı. */
+function strikePlain(s) { return `${s}  ·  iptal`; }
 
 const N_EVT_04 = {
   code: 'N-EVT-04',
@@ -107,16 +128,19 @@ const N_EVT_04 = {
   render: () => renderEmail({
     subject: `Davet: ${D.event} · ${D.date}`,
     preview: `${D.organizer} sizi etkinliğe ekledi`,
-    stripColor: CAL_COLORS.ekip,
+    accent: CAL_COLORS.ekip,
+    date: SAL,
     eyebrow: 'Etkinliğe eklendiniz',
     heading: D.event,
     lead: `${strong(D.organizer)} sizi bu etkinliğe ekledi.`,
-    body: factTable([
-      ['Ne zaman', `${D.date}<br />${D.time}`],
-      ['Nerede', `${D.room}<br /><span style="color:${T.textTertiary}">${D.roomMeta}</span>`],
-      ['Organizatör', D.organizer],
-      ['Katılımınız', strong('Opsiyonel')],
-    ]),
+    body: `${eventCard({
+      accent: CAL_COLORS.ekip, time: D.time, right: D.room,
+      lines: [
+        `${muted(D.roomMeta)}`,
+        `Organizatör ${D.organizer}`,
+        `Katılımınız ${strong('opsiyonel')} olarak işaretlendi`,
+      ],
+    })}`,
     actions: button('Etkinliği aç'),
   }),
 };
@@ -131,15 +155,15 @@ const N_EVT_05 = {
   render: () => renderEmail({
     subject: `Davetiniz kaldırıldı: ${D.event}`,
     preview: `${D.event} artık takviminizde görünmüyor`,
-    stripColor: T.textTertiary,
+    accent: T.textTertiary,
+    date: SAL,
     eyebrow: 'Davet kaldırıldı',
     heading: D.event,
     lead: 'Bu etkinliğin katılımcıları arasından çıkarıldınız; etkinlik artık takviminizde görünmüyor.',
     body: factTable([
-      ['Etkinlik', D.event],
-      ['Ne zaman', `${D.date} · ${D.time}`],
+      ['Ne zaman', `${D.date}<br />${muted(D.time)}`],
+      ['Durum', 'Etkinlik iptal edilmedi; yalnızca sizin davetiniz kaldırıldı'],
     ]),
-    footNote: 'Etkinlik iptal edilmedi; yalnızca sizin davetiniz kaldırıldı.',
   }),
 };
 
@@ -153,16 +177,18 @@ const N_EVT_06 = {
   render: () => renderEmail({
     subject: `${D.guest} yanıtladı: ${D.event}`,
     preview: `Katılamıyor · ${D.event}`,
-    stripColor: CAL_COLORS.ekip,
+    accent: CAL_COLORS.ekip,
+    date: SAL,
     eyebrow: 'Katılım yanıtı',
-    heading: D.event,
-    lead: 'Bir katılımcı davetinizi yanıtladı.',
-    body: factTable([
-      ['Kim', D.guest],
-      ['Yanıt', `${strong('Katılamıyor')}`],
-      ['Katılım türü', 'Opsiyonel'],
-      ['Ne zaman', `${D.date} · ${D.time}`],
-    ]),
+    heading: `${D.guest} katılamıyor`,
+    lead: `${strong(D.event)} etkinliğiniz için bir yanıt geldi.`,
+    body: `${eventCard({
+      accent: CAL_COLORS.ekip, time: D.time, right: D.room,
+      lines: [
+        `Yanıt ${strong('Katılamıyor')} ${muted('· opsiyonel katılımcı')}`,
+        `${muted(D.date)}`,
+      ],
+    })}`,
     actions: button('Katılımcıları gör', '#', 'secondary'),
   }),
 };
@@ -175,20 +201,25 @@ const N_SER_01 = {
   name: 'Seri güncellendi',
   recipient: 'Etkilenen katılımcılar',
   emailRequired: 'Harici varsa zorunlu',
-  subject: `Seri güncellendi: Sprint Planlama · 6 tarih etkilendi`,
+  subject: 'Seri güncellendi: Sprint Planlama · 6 tarih etkilendi',
   render: () => renderEmail({
     subject: 'Seri güncellendi: Sprint Planlama · 6 tarih etkilendi',
     preview: 'Bu ve sonraki tarihler · saat değişti',
-    stripColor: CAL_COLORS.proje,
+    accent: CAL_COLORS.proje,
+    date: PZT,
     eyebrow: 'Tekrarlayan seri güncellendi',
     heading: 'Sprint Planlama',
     lead: `${strong(D.organizer)} tekrarlayan bu etkinlikte değişiklik yaptı.`,
-    body: `${factTable([
+    body: `${eventCard({
+      accent: CAL_COLORS.proje, time: '10:00 – 11:30', right: 'Her hafta · Pazartesi',
+      lines: [
+        `Önceki saat ${strike('09:30 – 11:00')}`,
+        `İlk etkilenen tarih ${strong('31 Ağustos 2026')} ${muted('· 6 tekrar')}`,
+      ],
+    })}${factTable([
       ['Uygulanan kapsam', strong('Bu ve sonraki tarihler')],
-      ['Etkilenen tarih sayısı', '6 tekrar'],
-      ['Değişen', 'Saat: 09:30 – 11:00 → 10:00 – 11:30'],
-      ['İlk etkilenen', '31 Ağustos 2026'],
-    ])}${notice('Geçmiş tarihler bu değişiklikten etkilenmedi.')}`,
+      ['Geçmiş tarihler', 'Bu değişiklikten etkilenmedi'],
+    ])}`,
     actions: button('Seriyi aç'),
   }),
 };
@@ -203,16 +234,16 @@ const N_SER_02 = {
   render: () => renderEmail({
     subject: 'Seri iptal edildi: Sprint Planlama · 6 tarih',
     preview: '31 Ağustos – 5 Ekim 2026 arası tekrarlar kaldırıldı',
-    stripColor: T.error,
+    accent: T.error,
+    date: PZT,
     eyebrow: 'Seri iptal edildi',
     heading: 'Sprint Planlama',
     lead: `${strong(D.organizer)} bu tekrarlayan etkinliği iptal etti.`,
     body: factTable([
       ['Uygulanan kapsam', strong('Bu ve sonraki tarihler')],
-      ['İptal edilen', '6 tekrar'],
-      ['Tarih aralığı', '31 Ağustos 2026 – 5 Ekim 2026'],
+      ['İptal edilen', `6 tekrar ${muted('· 31 Ağustos 2026 – 5 Ekim 2026')}`],
+      ['Önceki tarihler', 'Yerinde kaldı'],
     ]),
-    footNote: 'Bu aralıktaki tekrarlar takviminizden kaldırıldı; önceki tarihler yerinde kaldı.',
   }),
 };
 
@@ -226,15 +257,18 @@ const N_SER_03 = {
   render: () => renderEmail({
     subject: 'Tek tarih değişti: Sprint Planlama · 7 Eylül 2026',
     preview: 'Yalnızca 7 Eylül tarihi etkilendi',
-    stripColor: CAL_COLORS.proje,
+    accent: CAL_COLORS.proje,
+    date: PAZ,
     eyebrow: 'Seriden ayrılan tarih',
     heading: 'Sprint Planlama',
     lead: 'Tekrarlayan bu etkinliğin tek bir tarihi seriden ayrıldı.',
-    body: `${factTable([
-      ['Etkilenen tarih', strong('7 Eylül 2026')],
-      ['Yeni saat', '14:00 – 15:30'],
-      ['Seri', 'Her hafta · Pazartesi'],
-    ])}${notice('Serinin diğer tarihleri değişmedi.')}`,
+    body: `${eventCard({
+      accent: CAL_COLORS.proje, time: '14:00 – 15:30', right: '7 Eylül 2026',
+      lines: [
+        `Serinin kalan tarihleri ${muted('değişmedi')}`,
+        `${muted('Seri: her hafta · Pazartesi')}`,
+      ],
+    })}`,
     actions: button('Bu tarihi aç'),
   }),
 };
@@ -251,18 +285,19 @@ const N_CAL_01 = {
   render: () => renderEmail({
     subject: `${D.owner} “${D.sharedCalendar}” takvimini sizinle paylaştı`,
     preview: 'Etkinlik detaylarını görebilirsiniz · salt okunur',
-    stripColor: CAL_COLORS.urun,
+    accent: CAL_COLORS.urun,
     eyebrow: 'Takvim paylaşımı',
     heading: `${D.sharedCalendar} takvimi sizinle paylaşıldı`,
-    lead: `${strong(D.owner)} bu takvimi sizinle paylaştı. Takvim sol menünüzdeki
+    lead: `${strong(D.owner)} bu takvimi sizinle paylaştı. Sol menünüzdeki
       “Benimle paylaşılanlar” bölümünde görünür.`,
-    body: `${factTable([
-      ['Takvim', D.sharedCalendar],
-      ['Sahibi', D.owner],
-      ['Erişiminiz', strong('Etkinlik detaylarını görebilir')],
-      ['Düzenleme', `<span style="color:${T.textTertiary}">Yok — salt okunur</span>`],
-    ])}${notice(`Bu takvimdeki ${strong('mevcut ve gelecekteki')} etkinliklerin detaylarını görebilirsiniz.
-      Etkinlik oluşturamaz, düzenleyemez veya silemezsiniz.`)}`,
+    body: `${eventCard({
+      accent: CAL_COLORS.urun, time: D.sharedCalendar, right: `Sahibi ${D.owner}`,
+      lines: [
+        `Erişiminiz ${strong('etkinlik detaylarını görebilir')}`,
+        `${muted('Düzenleme yok — salt okunur')}`,
+      ],
+    })}${notice(`Bu takvimdeki ${strong('mevcut ve gelecekteki')} etkinliklerin detaylarını
+      görebilirsiniz. Etkinlik oluşturamaz, düzenleyemez veya silemezsiniz.`)}`,
     actions: button('Takvimi aç'),
     footNote: 'Bu takvimi kendi tarafınızdan kaldırabilirsiniz; paylaşımı kabul etmek zorunda değilsiniz.',
   }),
@@ -278,14 +313,13 @@ const N_CAL_02 = {
   render: () => renderEmail({
     subject: `“${D.sharedCalendar}” takvimine erişiminiz sona erdi`,
     preview: `${D.owner} paylaşımı kaldırdı`,
-    stripColor: T.textTertiary,
+    accent: T.textTertiary,
     eyebrow: 'Takvim paylaşımı kaldırıldı',
     heading: `${D.sharedCalendar} takvimi artık sizinle paylaşılmıyor`,
     lead: `${strong(D.owner)} bu takvimin paylaşımını kaldırdı. Takvim sol menünüzden çıkarıldı.`,
     body: factTable([
-      ['Takvim', D.sharedCalendar],
-      ['Sahibi', D.owner],
-      ['Erişim durumu', `<span style="color:${T.textTertiary}">Sona erdi</span>`],
+      ['Takvim', `${D.sharedCalendar} ${muted(`· sahibi ${D.owner}`)}`],
+      ['Erişim durumu', muted('Sona erdi')],
     ]),
     footNote: 'Bu takvime yeniden erişmeniz gerekirse takvim sahibiyle iletişime geçebilirsiniz.',
   }),
@@ -303,17 +337,20 @@ const N_RES_01 = {
   render: () => renderEmail({
     subject: `Onayınız bekleniyor: ${D.room} · 27 Ağustos, 14:00 – 15:00`,
     preview: `${D.requester} ${D.room} için rezervasyon talep etti`,
-    stripColor: T.warning,
+    accent: T.warning,
+    date: PER,
     eyebrow: 'Rezervasyon talebi',
     heading: `${D.room} için onayınız bekleniyor`,
     lead: `${strong(D.requester)} onaylayıcısı olduğunuz bir oda için rezervasyon talep etti.`,
-    body: `${factTable([
-      ['Oda', `${D.room}<br /><span style="color:${T.textTertiary}">${D.roomMeta}</span>`],
-      ['Ne zaman', 'Perşembe, 27 Ağustos 2026<br />14:00 – 15:00'],
-      ['Talep eden', D.requester],
-      ['Etkinlik', 'Ürün Roadmap'],
-      ['Tekrar', 'Tek seferlik'],
-    ])}${notice('Karar verilene kadar bu saat aralığı diğer kullanıcılara “Onay bekliyor” görünür ve seçilemez.', 'warning')}`,
+    body: `${eventCard({
+      accent: T.warning, time: '14:00 – 15:00', right: D.room,
+      title: 'Ürün Roadmap',
+      lines: [
+        `${muted(D.roomMeta)}`,
+        `Talep eden ${D.requester} ${muted('· tek seferlik')}`,
+      ],
+    })}${notice(`Karar verilene kadar bu saat aralığı diğer kullanıcılara
+      ${strong('“Onay bekliyor”')} görünür ve seçilemez.`, 'warning')}`,
     actions: `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
       <td style="padding-right:10px">${button('Onayla')}</td>
       <td>${button('Reddet', '#', 'secondary')}</td>
@@ -332,16 +369,19 @@ const N_RES_02 = {
   render: () => renderEmail({
     subject: `Onaylandı: ${D.room} · 27 Ağustos, 14:00 – 15:00`,
     preview: `${D.approver} rezervasyonunuzu onayladı`,
-    stripColor: T.success,
+    accent: T.success,
+    date: PER,
     eyebrow: 'Rezervasyon onaylandı',
     heading: `${D.room} rezervasyonunuz onaylandı`,
     lead: 'Oda bu saat aralığı için kesinleşti; etkinliğinizde artık rezerve olarak görünüyor.',
-    body: factTable([
-      ['Oda', `${D.room}<br /><span style="color:${T.textTertiary}">${D.roomMeta}</span>`],
-      ['Ne zaman', 'Perşembe, 27 Ağustos 2026<br />14:00 – 15:00'],
-      ['Kararı veren', D.approver],
-      ['Etkinlik', 'Ürün Roadmap'],
-    ]),
+    body: `${eventCard({
+      accent: T.success, time: '14:00 – 15:00', right: D.room,
+      title: 'Ürün Roadmap',
+      lines: [
+        `${muted(D.roomMeta)}`,
+        `Kararı veren ${D.approver}`,
+      ],
+    })}`,
     actions: button('Etkinliği aç'),
   }),
 };
@@ -356,17 +396,20 @@ const N_RES_03 = {
   render: () => renderEmail({
     subject: `Reddedildi: ${D.room} · 27 Ağustos, 14:00 – 15:00`,
     preview: `${D.approver} talebi reddetti · etkinlik odasız kaldı`,
-    stripColor: T.error,
+    accent: T.error,
+    date: PER,
     eyebrow: 'Rezervasyon reddedildi',
     heading: `${D.room} talebiniz reddedildi`,
-    lead: 'Etkinliğiniz silinmedi; yalnızca odasız kaldı. Başka bir oda seçebilirsiniz.',
-    body: `${factTable([
-      ['Oda', D.room],
-      ['Ne zaman', 'Perşembe, 27 Ağustos 2026<br />14:00 – 15:00'],
-      ['Kararı veren', D.approver],
-      ['Gerekçe', `<span style="color:${T.textPrimary}">Aynı saatte planlı bakım var.</span>`],
-    ])}${notice(`Bu saat aralığı serbest bırakıldı — ${D.room} takvimde tekrar müsait görünüyor.
-      Etkinliğiniz odasız durumda; aynı odayı yeniden talep edebilir veya başka bir oda seçebilirsiniz.`)}`,
+    lead: 'Etkinliğiniz silinmedi; yalnızca odasız kaldı.',
+    body: `${eventCard({
+      accent: T.error, time: '14:00 – 15:00', right: D.room,
+      title: 'Ürün Roadmap',
+      lines: [
+        `Kararı veren ${D.approver}`,
+        `Gerekçe ${muted('·')} ${strong('Aynı saatte planlı bakım var.')}`,
+      ],
+    })}${notice(`Bu saat aralığı serbest bırakıldı — ${D.room} takvimde tekrar müsait görünüyor.
+      Aynı odayı yeniden talep edebilir veya başka bir oda seçebilirsiniz.`)}`,
     actions: button('Başka oda seç'),
   }),
 };
@@ -381,13 +424,13 @@ const N_RES_04 = {
   render: () => renderEmail({
     subject: `Talep geri çekildi: ${D.room} · 27 Ağustos, 14:00 – 15:00`,
     preview: 'Karar vermenize gerek kalmadı',
-    stripColor: T.textTertiary,
+    accent: T.textTertiary,
+    date: PER,
     eyebrow: 'Rezervasyon iptal edildi',
     heading: `${D.room} talebi artık beklemede değil`,
     lead: 'Bu talep için karar vermeniz gerekmiyor; saat aralığı serbest bırakıldı.',
     body: factTable([
-      ['Oda', D.room],
-      ['Ne zaman', 'Perşembe, 27 Ağustos 2026<br />14:00 – 15:00'],
+      ['Oda', `${D.room} ${muted(`· 14:00 – 15:00`)}`],
       ['Talep eden', D.requester],
       ['İptal sebebi', strong('Talep eden geri çekti')],
     ]),
@@ -405,16 +448,19 @@ const N_RES_05 = {
   render: () => renderEmail({
     subject: `Saat değişti: ${D.room} talebi · yeni saat 15:30 – 16:30`,
     preview: 'Bekleyen talep yeni saat aralığını bloke ediyor',
-    stripColor: T.warning,
+    accent: T.warning,
+    date: PER,
     eyebrow: 'Bekleyen talep güncellendi',
     heading: `${D.room} talebinin saati değişti`,
     lead: `${strong(D.requester)} etkinliğin saatini değiştirdi. Talep hâlâ onayınızı bekliyor.`,
-    body: `${factTable([
-      ['Oda', D.room],
-      ['Önceki saat', `<span style="color:${T.textTertiary};text-decoration:line-through">27 Ağustos · 14:00 – 15:00</span>`],
-      ['Yeni saat', strong('27 Ağustos · 15:30 – 16:30')],
-      ['Talep eden', D.requester],
-    ])}${notice('Yeni aralık için çakışma kontrolü yeniden çalıştı ve aralık bloke edildi.', 'warning')}`,
+    body: `${eventCard({
+      accent: T.warning, time: '15:30 – 16:30', right: D.room,
+      title: 'Ürün Roadmap',
+      lines: [
+        `Önceki saat ${strike('14:00 – 15:00')}`,
+        `Talep eden ${D.requester}`,
+      ],
+    })}${notice('Yeni aralık için çakışma kontrolü yeniden çalıştı ve aralık bloke edildi.', 'warning')}`,
     actions: `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
       <td style="padding-right:10px">${button('Onayla')}</td>
       <td>${button('Reddet', '#', 'secondary')}</td>

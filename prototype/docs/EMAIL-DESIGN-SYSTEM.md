@@ -17,7 +17,7 @@ open emails/dist/index.html      # tüm şablonlar tek sayfada
 | Dosya | Rol |
 |---|---|
 | `emails/tokens.mjs` | `src/styles/tokens.css`'in e-posta güvenli alt kümesi |
-| `emails/layout.mjs` | Gövde iskeleti + `button` · `factTable` · `notice` yardımcıları |
+| `emails/layout.mjs` | Gövde iskeleti + `dateBlock` · `eventCard` · `factTable` · `notice` · `button` |
 | `emails/templates.mjs` | 16 olayın içeriği |
 | `emails/build.mjs` | HTML üretimi + önizleme dizini |
 
@@ -39,8 +39,12 @@ E-posta istemcileri modern CSS'i güvenilir biçimde desteklemez. Uygulanan kura
 | Gelen kutusu ön izlemesi | Gizli preheader + görünmez dolgu |
 
 ### Responsive
-600px sabit genişlik; `max-width: 620px` altında `.wrap` %100'e, yatay dolgu 20px'e,
-başlık 21px'e düşer. Tek kolon olduğu için yığılma gerekmez.
+600px sabit genişlik; `max-width: 620px` altında `.wrap` %100'e, yatay dolgu 22px'e,
+başlık 22px'e düşer ve **tarih bloğu başlığın üstüne yığılır** (`.datecol`).
+
+⚠️ **Kart dışındaki hiçbir öğe sabit piksel genişlik taşımamalıdır.** Tablo düzeninde sabit
+genişlikli bir kardeş, hücrenin min-content genişliğini kilitler ve media query'yi etkisiz
+bırakır — 1 Eylül 2026'da 16 şablonun tamamında mobilde 249px yatay taşmaya bu neden olmuştu.
 
 ---
 
@@ -67,18 +71,58 @@ Uygulama arayüzüyle aynı token'lar:
 | `#7C8697` | Nötr sonlanma (erişim sona erdi, talep geri çekildi) |
 
 ### Anatomi
+
 ```
-4px renk şeridi
-Narbulut ····························· Takvim
-GÖZ ÜSTÜ ETİKET
-Başlık (600 · 23px)
-Kurşun cümle — ne oldu, kim yaptı
-Bilgi tablosu (etiket / değer, ince ayırıcılar)
+3px aksan şeridi
+Narbulut ································· TAKVİM
+──────────────────────────────────────────────
+┌──────┐   GÖZ ÜSTÜ ETİKET
+│ SAL  │   Başlık (600 · 24px)
+│  25  │   Kurşun cümle — ne oldu, kim yaptı
+│AĞUSTOS│
+└──────┘
+┌────────────────────────────────────────────┐
+│ 10:00 – 11:30                    Topkapı   │  ← renk şeridi
+├────────────────────────────────────────────┤
+│ 20 kişilik · Ana Bina, Zemin               │
+│ Ekip takvimi · Organizatör Deniz Aydın     │
+└────────────────────────────────────────────┘
 Durum şeridi (opsiyonel, sol renkli çubuk)
-Aksiyon butonu / butonları
-──────────
+[ Aksiyon ]
+──────────────────────────────────────────────
 Alt not + otomatik gönderim açıklaması
 ```
+
+### İki imza öğesi
+
+Bunlar e-postayı **jenerik bir transactional şablon** olmaktan çıkarıp ürünün kendi
+yüzeyi hâline getirir; ikisi de uygulamadaki karşılıklarından türetilmiştir.
+
+| Öğe | Nereden geliyor | Nasıl çalışıyor |
+|---|---|---|
+| **Tarih bloğu** (`dateBlock`) | Uygulamanın sol rail'indeki mavi tarih kartı | Takvim yaprağı mantığı: üstte gün adı (aksan zemin, beyaz metin), ortada 30px gün numarası, altta ay. Zemin, aksan renginin %92 beyazla karışımı (`tint()`) |
+| **Etkinlik kartı** (`eventCard`) | Izgaradaki M3.1 etkinlik chip'i | Üstte renk şeridinde **saat + oda**, altta beyaz gövdede detay satırları. Takvim paylaşımı e-postalarında şerit **takvim adı + sahibi** taşır |
+
+⚠️ E-posta istemcileri `color-mix` desteklemediği için tint **üretim sırasında** hesaplanıp
+satır içi yazılır (`emails/tokens.mjs › tint`).
+
+### Aksan rengi ne anlatır
+
+Aksan; üst şeridi, tarih bloğunu ve etkinlik kartının şeridini birlikte boyar — e-posta
+açılır açılmaz türü belli olur.
+
+| Aksan | Kullanım |
+|---|---|
+| Takvim rengi | Etkinlik ve seri olayları — etkinliğin ait olduğu takvimin rengi |
+| `#7A5300` | Karar veya dikkat bekleyen rezervasyon |
+| `#2F6B4F` | Onaylandı |
+| `#9C3227` | İptal / red |
+| `#7C8697` | Nötr sonlanma (erişim sona erdi, talep geri çekildi) |
+
+### Tarih bloğu olmayan şablonlar
+
+`N-CAL-01` ve `N-CAL-02` bir tarihe bağlı değildir; bunlarda tarih bloğu **render edilmez**
+ve başlık tam genişliği kullanır. `N-CAL-01`'de etkinlik kartı bir **takvim çipine** dönüşür.
 
 ---
 

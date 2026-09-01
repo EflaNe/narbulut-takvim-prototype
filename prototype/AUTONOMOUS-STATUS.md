@@ -299,3 +299,25 @@ ne olduğunu ve sırada ne olduğunu söyler.
 | Render/konsol hatası | ✅ 0 |
 | Konu satırı + preheader | ✅ hepsinde |
 | Spec kodu eşleşmesi | ✅ 16 şablon = `19-notifications-spec.md`'deki 16 domain event |
+
+### 10.1 · Görsel dil yenilendi *(aynı gün)*
+
+Ürün sahibi şablonların **"AI üretimi gibi jenerik"** durduğunu söyledi. Teşhis:
+
+- 16 şablon **birebir aynı iskeleti** kullanıyordu — davet ile red aynı görünüyordu
+- Tek tasarım öğesi 4px'lik üst şeritti; gerisi etiket/değer tablosuydu
+- ⚠️ **Ürünün kendi görsel dilinden hiçbir şey yoktu:** uygulamadaki gradient tarih kartı,
+  renk şeritli etkinlik chip'i, takvim rengi — hiçbiri e-postada karşılık bulmuyordu
+
+Çözüm: uygulamanın imza öğeleri e-postaya taşındı.
+
+| Yeni öğe | Karşılığı |
+|---|---|
+| **Tarih bloğu** — takvim yaprağı: gün adı / 30px gün numarası / ay | Sol rail'deki tarih kartı |
+| **Etkinlik kartı** — renk şeritli saat+oda başlığı, altında detay | Izgaradaki M3.1 etkinlik chip'i |
+| **Aksan rengi** üst şerit + tarih bloğu + kart şeridini birlikte boyar | Takvim renkleri ve semantik palet |
+
+Etiket/değer tablosu yalnızca **tarih bloğu ve kartın anlamlı olmadığı** şablonlarda kaldı
+(`N-EVT-05`, `N-SER-02`, `N-CAL-02`, `N-RES-04`).
+
+Doğrulama: 16/16 · mobil taşma 0 · harici istek 0 · konsol hatası 0 · HTML kaçış hatası yok.
