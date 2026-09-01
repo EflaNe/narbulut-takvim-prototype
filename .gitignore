@@ -1,27 +1,17 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# Editör yedekleri (docs/takvim altındaki .rev/.v1 yedekleri dahil)
+*.bak
+*~
+*.swp
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
-# üretilen çıktılar
-emails/dist/
+# Bağımlılıklar ve üretilen çıktılar
+# (prototype/.gitignore alt ağaç için ayrıca node_modules, dist, emails/dist kapsar)
+node_modules/
