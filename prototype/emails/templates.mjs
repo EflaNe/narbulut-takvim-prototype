@@ -71,7 +71,7 @@ const N_EVT_02 = {
       ['Önceki', `<span style="color:${T.textTertiary};text-decoration:line-through">Salı, 25 Ağustos 2026 · 09:00 – 10:30</span>`],
       ['Yeni', `${strong(`${D.date} · ${D.time}`)}`],
       ['Nerede', `${D.room} <span style="color:${T.textTertiary}">(değişmedi)</span>`],
-    ])}${notice('Diğer alanlar değişmedi. Yalnızca değişiklikten etkilenen katılımcılara gönderildi.')}`,
+    ])}${notice('Diğer alanlar değişmedi. Bu bildirimi, değişiklik sizi etkilediği için aldınız.')}`,
     actions: button('Etkinliği aç'),
   }),
 };
@@ -94,7 +94,6 @@ const N_EVT_03 = {
       ['İptal edilen', `${D.date}<br />${D.time}`],
       ['Nerede', D.room],
     ])}${notice(`${D.room} rezervasyonu da serbest bırakıldı.`, 'info')}`,
-    footNote: 'Bu tarih için başka bir davetiniz varsa takviminizde görünmeye devam eder.',
   }),
 };
 
@@ -186,7 +185,7 @@ const N_SER_01 = {
     lead: `${strong(D.organizer)} tekrarlayan bu etkinlikte değişiklik yaptı.`,
     body: `${factTable([
       ['Uygulanan kapsam', strong('Bu ve sonraki tarihler')],
-      ['Etkilenen tarih', '6 tekrar'],
+      ['Etkilenen tarih sayısı', '6 tekrar'],
       ['Değişen', 'Saat: 09:30 – 11:00 → 10:00 – 11:30'],
       ['İlk etkilenen', '31 Ağustos 2026'],
     ])}${notice('Geçmiş tarihler bu değişiklikten etkilenmedi.')}`,
@@ -288,7 +287,7 @@ const N_CAL_02 = {
       ['Sahibi', D.owner],
       ['Erişim durumu', `<span style="color:${T.textTertiary}">Sona erdi</span>`],
     ]),
-    footNote: 'Takvim sessizce kaybolmadı; bu bildirim erişim değişikliğini açıkça belirtmek içindir.',
+    footNote: 'Bu takvime yeniden erişmeniz gerekirse takvim sahibiyle iletişime geçebilirsiniz.',
   }),
 };
 
@@ -366,7 +365,8 @@ const N_RES_03 = {
       ['Ne zaman', 'Perşembe, 27 Ağustos 2026<br />14:00 – 15:00'],
       ['Kararı veren', D.approver],
       ['Gerekçe', `<span style="color:${T.textPrimary}">Aynı saatte planlı bakım var.</span>`],
-    ])}${notice(`${D.room} bu saat için tekrar müsait durumda değil; başka bir oda seçmeniz gerekiyor.`, 'error')}`,
+    ])}${notice(`Bu saat aralığı serbest bırakıldı — ${D.room} takvimde tekrar müsait görünüyor.
+      Etkinliğiniz odasız durumda; aynı odayı yeniden talep edebilir veya başka bir oda seçebilirsiniz.`)}`,
     actions: button('Başka oda seç'),
   }),
 };

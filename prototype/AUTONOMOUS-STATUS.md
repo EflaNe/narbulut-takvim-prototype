@@ -260,3 +260,42 @@ karar alınmamış bir özelliği ürüne sokmak olurdu.
   durumu değişmez; odasız etkinlikler etkilenmez.
 - `BR-SHELL-32`'nin "kaç öğe gizli" gereği oda ekseninde karşılandı.
 - Test sayısı 42 → **45**; demo akışı 27 adım, tamamı geçiyor.
+
+---
+
+## 10. E-posta şablonları denetimi — 1 Eylül 2026
+
+FAZ 8'de 16 şablon üretilmişti ama **yalnız biri gözle kontrol edilmişti.** Hepsi tek tek
+denetlendi (render, ölçü, responsive, harici istek, konsol, kopya).
+
+### Düzeltilen teknik hata
+
+⚠️ **16 şablonun tamamında mobilde 249px yatay taşma vardı.** Media query eşleşiyor ve
+`.wrap{width:100%!important}` uygulanıyordu, ama kartın **dışındaki** alt satır
+`width:600px; max-width:100%` taşıdığı için tablo hücresinin min-content genişliğini 600px'e
+kilitliyordu; media query'nin etkisi boşa çıkıyordu. `width:100%; max-width:600px` olarak
+düzeltildi, `.wrap`'e `min-width:0` eklendi. **Telefonda okunan her e-posta yatay kayıyordu.**
+
+### Düzeltilen kopya sorunları
+
+| Şablon | Sorun |
+|---|---|
+| **N-RES-03** | ⚠️ **Gerçek hata:** *"Topkapı bu saat için tekrar müsait durumda değil"* — `BR-APR-19` red sonrası slotun **serbest kaldığını ve odanın tekrar müsait olduğunu** söylüyor. Metin kuralın tersini iddia ediyordu |
+| **N-EVT-02** | *"Yalnızca değişiklikten etkilenen katılımcılara gönderildi"* — iç dağıtım kuralı (`BR-NOT-07`) alıcıya sızıyordu. Alıcı odaklı dile çevrildi |
+| **N-CAL-02** | *"Takvim sessizce kaybolmadı; bu bildirim erişim değişikliğini açıkça belirtmek içindir"* — kendi tasarım ilkemizi (`ST-CORE-01`) kullanıcıya anlatıyordu. Yararlı bir sonraki adımla değiştirildi |
+| **N-EVT-03** | Gereksiz dipnot kaldırıldı |
+| **N-SER-01** | Etiket/değer uyuşmazlığı: *"Etkilenen tarih: 6 tekrar"* → *"Etkilenen tarih sayısı"* |
+
+**Örüntü:** spec gerekçelerini kullanıcıya dönük metne yazmışım. E-posta kuralı açıklamaz,
+ne olduğunu ve sırada ne olduğunu söyler.
+
+### Doğrulama sonucu (16/16)
+
+| Kontrol | Sonuç |
+|---|---|
+| Kart genişliği 600px, masaüstünde taşma yok | ✅ |
+| 375px'te yatay taşma | ✅ 0 |
+| Harici ağ isteği (görsel, font, CDN) | ✅ 0 — hiç `<img>` yok |
+| Render/konsol hatası | ✅ 0 |
+| Konu satırı + preheader | ✅ hepsinde |
+| Spec kodu eşleşmesi | ✅ 16 şablon = `19-notifications-spec.md`'deki 16 domain event |

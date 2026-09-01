@@ -70,7 +70,7 @@ export function renderEmail({
 <!--[if mso]><style>body,table,td,a{font-family:Arial,Helvetica,sans-serif !important}</style><![endif]-->
 <style>
   @media only screen and (max-width:620px){
-    .wrap{width:100% !important}
+    .wrap{width:100% !important;min-width:0 !important}
     .pad{padding-left:20px !important;padding-right:20px !important}
     .h1{font-size:21px !important}
     .stack{display:block !important;width:100% !important}
@@ -122,7 +122,7 @@ ${preheader(preview)}
       </td></tr>
     </table>
 
-    <div style="width:${T.width}px;max-width:100%;margin-top:14px;
+    <div style="width:100%;max-width:${T.width}px;margin-top:14px;
       font:400 11.5px/1.6 ${T.font};color:${T.textMuted};text-align:center">
       Narbulut · Takvim ve Toplantı Odaları
     </div>
