@@ -178,3 +178,28 @@ describe('gezinme', () => {
     expect(s.ui.draft?.start).toBe(660);
   });
 });
+
+describe('oda ekseni — sol rail filtresi', () => {
+  it('oda kapatılınca o odadaki etkinlikler ızgaradan düşer', () => {
+    const before = visibleEvents(base).filter((e) => e.roomId === 'room_topkapi').length;
+    expect(before).toBeGreaterThan(0);
+    const s = reducer(base, { type: 'toggleRoomFilter', roomId: 'room_topkapi' });
+    expect(visibleEvents(s).some((e) => e.roomId === 'room_topkapi')).toBe(false);
+  });
+
+  it('odasız etkinlikler oda ekseninden etkilenmez', () => {
+    const s = run(base,
+      { type: 'setAllRoomFilters', on: false });
+    const roomless = visibleEvents(s).filter((e) => e.roomId === null);
+    expect(roomless.length).toBeGreaterThan(0);
+    expect(visibleEvents(s).every((e) => e.roomId === null)).toBe(true);
+  });
+
+  it('“Tümünü göster” tüm odaları geri açar', () => {
+    const s = run(base,
+      { type: 'toggleRoomFilter', roomId: 'room_topkapi' },
+      { type: 'toggleRoomFilter', roomId: 'room_istanbul' },
+      { type: 'setAllRoomFilters', on: true });
+    expect(s.ui.hiddenRoomIds).toHaveLength(0);
+  });
+});

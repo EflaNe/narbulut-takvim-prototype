@@ -36,6 +36,7 @@ export function createInitialState(): AppState {
       anchorDate: demo.DEMO_TODAY,
       viewMode: 'week',
       hiddenCalendarIds: [],
+      hiddenRoomIds: [],
       showRejected: false,
       searchQuery: '',
       searchOpen: false,
@@ -143,6 +144,19 @@ export function reducer(state: AppState, action: AppAction): AppState {
         : [...state.ui.hiddenCalendarIds, action.calendarId];
       return ui(state, { hiddenCalendarIds: hidden });
     }
+
+    /** Oda ekseni — odası kapatılan etkinlikler ızgaradan düşer (BR-SHELL-31c). */
+    case 'toggleRoomFilter': {
+      const hidden = state.ui.hiddenRoomIds.includes(action.roomId)
+        ? state.ui.hiddenRoomIds.filter((r) => r !== action.roomId)
+        : [...state.ui.hiddenRoomIds, action.roomId];
+      return ui(state, { hiddenRoomIds: hidden });
+    }
+
+    case 'setAllRoomFilters':
+      return ui(state, {
+        hiddenRoomIds: action.on ? [] : state.rooms.map((r) => r.id),
+      });
 
     case 'toggleRejected':
       return ui(state, { showRejected: !state.ui.showRejected });
@@ -543,7 +557,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
     case 'setPersona':
       return ui({ ...state, currentUserId: action.userId }, {
         draft: null, readOnlyEventId: null, roomPickerOpen: false, shareCalendarId: null,
-        selectedRequestId: null, hiddenCalendarIds: [],
+        selectedRequestId: null, hiddenCalendarIds: [], hiddenRoomIds: [],
         toast: {
           message: `Persona: ${state.users.find((u) => u.id === action.userId)?.name ?? ''}`,
           tone: 'info',

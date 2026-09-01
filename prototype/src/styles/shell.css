@@ -93,6 +93,9 @@
 .segmented button{padding:8px 13px;border:none;border-radius:var(--r-row);background:transparent;
   font:inherit;color:inherit}
 .segmented button.is-active{background:#fff;color:var(--text-primary);font-weight:500;box-shadow:var(--sh-seg)}
+/* Zaman ekseni ile kaynak ekseni görsel olarak ayrılır (BR-SHELL-30). */
+.segmented__group{display:flex;gap:2px}
+.segmented__divider{width:1px;align-self:stretch;margin:4px 5px;background:#DCE1E7;flex:none}
 .topsearch{position:relative;width:170px;height:36px;border-radius:var(--r-control);background:var(--bg-subtle);
   display:flex;align-items:center;gap:9px;padding:0 12px;color:var(--text-secondary);
   font:400 12.5px/1 var(--font)}
@@ -127,3 +130,9 @@
   color:#fff;font:500 12px/1 var(--font)}
 .demopanel button:hover{background:rgba(255,255,255,.24)}
 .demopanel p{margin:10px 0 0;color:rgba(255,255,255,.55);font-size:11px}
+
+/* ── Oda ekseni (KEEP-03 · BR-SHELL-31) ─────────────────── */
+.callist__collapsed{padding:2px 8px 6px;font:400 11.5px/1.5 var(--font);color:var(--text-muted)}
+.callist__reset{margin:4px 0 2px;padding:0 8px;height:26px;border:none;background:transparent;
+  font:400 12px/1 var(--font);color:var(--brand);border-radius:var(--r-chip)}
+.callist__reset:hover{background:#F1F6FC}

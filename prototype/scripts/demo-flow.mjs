@@ -90,6 +90,20 @@ try {
   if (await has('24 – 30 Ağustos 2026')) ok('Bugün’e dönüldü');
   else fail('Bugün çalışmadı');
 
+  /* 3b — Oda ekseni (BR-SHELL-31c) */
+  {
+    const before = await page.evaluate(() => document.querySelectorAll('.event').length);
+    await clickAria('Topkapı odası görünürlüğü');
+    const after = await page.evaluate(() => document.querySelectorAll('.event').length);
+    if (after < before) ok(`Oda ekseni ızgarayı daralttı (${before} → ${after})`);
+    else fail('Oda ekseni ızgarayı etkilemedi');
+    const roomless = await page.evaluate(() => [...document.querySelectorAll('.event')]
+      .some((e) => (e.getAttribute('aria-label') || '').includes('oda yok')));
+    if (roomless) ok('Odasız etkinlikler oda ekseninden etkilenmiyor');
+    else fail('Odasız etkinlikler de düştü');
+    await clickAria('Topkapı odası görünürlüğü');
+  }
+
   /* 4 — Mevcut etkinliğe tıkla */
   await clickAria('Kick-off, 09:30 – 10:30, Boğaziçi, onay bekliyor');
   if (await has('Etkinliği düzenle') && await has('Onay bekliyor')) ok('Etkinlik detayı açıldı (düzenlenebilir)');

@@ -2,7 +2,7 @@ import { NavRail } from './NavRail';
 import { DateHero } from './DateHero';
 import { MiniMonth } from './MiniMonth';
 import { OwnedCalendarList, SharedCalendarList } from './CalendarList';
-import { FiltersCard } from './FiltersCard';
+import { RoomsFilterCard } from './RoomsFilterCard';
 
 export function Sidebar() {
   return (
@@ -12,7 +12,7 @@ export function Sidebar() {
       <MiniMonth />
       <OwnedCalendarList />
       <SharedCalendarList />
-      <FiltersCard />
+      <RoomsFilterCard />
     </div>
   );
 }

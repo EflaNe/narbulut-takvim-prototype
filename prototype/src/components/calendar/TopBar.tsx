@@ -6,10 +6,14 @@ import { IconButton } from '../primitives/IconButton';
 import { Button } from '../primitives/Button';
 import type { CalendarViewMode } from '../../lib/domain/types';
 
-const modes: { id: CalendarViewMode; label: string }[] = [
+/** Zaman ekseni. */
+const timeModes: { id: CalendarViewMode; label: string }[] = [
   { id: 'day', label: 'Gün' },
   { id: 'week', label: 'Hafta' },
   { id: 'month', label: 'Ay' },
+];
+/** Kaynak ekseni — zaman ekseniyle aynı listede sunulmaz (BR-SHELL-30, `UX-11`). */
+const resourceModes: { id: CalendarViewMode; label: string }[] = [
   { id: 'byRoom', label: 'Odalara göre' },
 ];
 
@@ -30,13 +34,25 @@ export function TopBar() {
       <span className="spacer" />
 
       <div className="segmented" role="tablist" aria-label="Görünüm">
-        {modes.map((m) => (
-          <button key={m.id} role="tab" aria-selected={state.ui.viewMode === m.id}
-            className={state.ui.viewMode === m.id ? 'is-active' : undefined}
-            onClick={() => dispatch({ type: 'setViewMode', mode: m.id })}>
-            {m.label}
-          </button>
-        ))}
+        <span className="segmented__group" role="none" aria-label="Zaman ekseni">
+          {timeModes.map((m) => (
+            <button key={m.id} role="tab" aria-selected={state.ui.viewMode === m.id}
+              className={state.ui.viewMode === m.id ? 'is-active' : undefined}
+              onClick={() => dispatch({ type: 'setViewMode', mode: m.id })}>
+              {m.label}
+            </button>
+          ))}
+        </span>
+        <span className="segmented__divider" aria-hidden="true" />
+        <span className="segmented__group" role="none" aria-label="Kaynak ekseni">
+          {resourceModes.map((m) => (
+            <button key={m.id} role="tab" aria-selected={state.ui.viewMode === m.id}
+              className={state.ui.viewMode === m.id ? 'is-active' : undefined}
+              onClick={() => dispatch({ type: 'setViewMode', mode: m.id })}>
+              {m.label}
+            </button>
+          ))}
+        </span>
       </div>
 
       <div className="topsearch">

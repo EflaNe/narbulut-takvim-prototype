@@ -17,7 +17,7 @@ Her canonical ekranın React karşılığı ve bilinçli sapmalar aşağıdadır
 | Mini ay ızgarası | `shell/MiniMonth.tsx` |
 | Takvimlerim + Reddedilenler | `shell/CalendarList.tsx › OwnedCalendarList` |
 | Benimle paylaşılanlar | `shell/CalendarList.tsx › SharedCalendarList` |
-| Filtreler kartı | `shell/FiltersCard.tsx` |
+| Odalar filtre ekseni *(canonical'daki “Filtreler” kartının yerine — `14` BR-SHELL-31c)* | `shell/RoomsFilterCard.tsx` |
 | Üst çubuk: aralık, oklar, segment, arama, Yeni etkinlik | `calendar/TopBar.tsx` |
 | Gün başlıkları + saat cetveli + ızgara | `calendar/WeekGrid.tsx` |
 | Etkinlik bloğu (20px şerit + gövde, kompakt varyant) | `calendar/EventBlock.tsx` |
@@ -148,6 +148,8 @@ Her madde gerekçelidir; hiçbiri yeni tasarım yönü değildir.
 | D-10 | Shift+D demo paneli | Sunum arayüzünde **görünmez**; yalnız persona ve sıfırlama için |
 | D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45c olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
 | D-12 | Kartta **Sil** aksiyonu | Ürün sahibi istedi (1 Eylül 2026). Yıkıcı işlem olduğu için üç kısıtla: yalnız düzenlenebilir etkinlikte, açık onay diyaloğundan geçerek, etiketli ayrı satırda — `14` BR-SHELL-45a/b/c |
+| D-13 | ⚠️ **“Filtreler” kartı kaldırıldı, yerine Odalar ekseni kondu** | Canonical'ın kartı **“Etkinlik türü”** satırını taşıyordu; `BR-SHELL-34` (D-037) bu ekseni açıkça kaldırmıştı — tasarım `UX-18`'i geri getiriyordu. Yanındaki **“Katılımcı”** satırının hiçbir kararda karşılığı yoktu. Buna karşılık `KEEP-03`'ün korunmasını istediği **oda ekseni** tasarımdan düşmüştü. 1 Eylül 2026'da ürün sahibi kararıyla düzeltildi — `14` SR-SHELL-09 |
+| D-14 | **Görünüm seçicide ayırıcı** | Canonical `Gün · Hafta · Ay · Odalara göre`yi tek düz sıra olarak çiziyordu; `BR-SHELL-30` zaman ekseni ile kaynak ekseninin görsel olarak ayrılmasını şart koşuyor (`UX-11`). Ayırıcı eklendi — `14` SR-SHELL-09 |
 
 ---
 

@@ -24,7 +24,7 @@ Tek işlevi şu sorunun **tek referansı** olmaktır: *Narbulut Takvim redesign 
 
 ### PC-01 · Takvim Kabuğu ve Yön Bulma
 **Final scope:** Kabuğun temel navigasyon ve yön bulma kontrolleri kurulur; mesai saatleri veri olarak tanımlanır ve kabukta kullanılır.
-**In scope:** Bugüne dönüş · görünen aralık etiketi · ana alanda ileri/geri · görünüm modları (Günlük · Haftalık · Aylık · **Odalara Göre**) · sol rail (tarih navigatörü + filtreler + odalar + takvimler) · **organizasyon mesai saatlerine otomatik scroll** ve mesai dışının görsel bastırılması · hafta başlangıcının Pazartesi'ye alınması · bugün göstergesinin güçlendirilmesi · mini takvimde etkinlik yoğunluğu · tek timezone gösterimi · responsive desktop-first (mobilde agenda/day/list alternatifi serbest).
+**In scope:** Bugüne dönüş · görünen aralık etiketi · ana alanda ileri/geri · görünüm modları (Günlük · Haftalık · Aylık · **Odalara Göre**) · sol rail (tarih navigatörü + takvimler + odalar — üç eksen, `14` BR-SHELL-31) · **organizasyon mesai saatlerine otomatik scroll** ve mesai dışının görsel bastırılması · hafta başlangıcının Pazartesi'ye alınması · bugün göstergesinin güçlendirilmesi · mini takvimde etkinlik yoğunluğu · tek timezone gösterimi · responsive desktop-first (mobilde agenda/day/list alternatifi serbest).
 **Out of scope:** Kullanıcı bazlı timezone (D-046) · resmî tatil takvimi (D-045) · ICS içe/dışa aktarma ve harici takvim aboneliği *(U-09 — audit karşılığı yok, D-013)*.
 **Bağımlı kararlar:** D-045, D-046, D-047, KEEP-02, KEEP-03
 **FAZ 4 spec:** Calendar Shell *(mesai saatleri veri modeli burada tanımlanır, Scheduling referans verir)*

@@ -3,7 +3,7 @@ import type { AppState } from '../state/types';
 import type {
   Calendar, CalendarEvent, CalendarId, EventId, IsoDate, Reservation, Room, RoomId, User, UserId,
 } from './types';
-import { canDecideRequest, eligibleApprovers, sharedWithMe, visibleRequests } from './rules';
+import { canDecideRequest, canViewRoom, eligibleApprovers, sharedWithMe, visibleRequests } from './rules';
 import { weekDates } from './time';
 
 export function userById(s: AppState, id: UserId): User | undefined {
@@ -44,9 +44,23 @@ export function readableCalendarIds(s: AppState): CalendarId[] {
   ];
 }
 
+/** Sol rail'in oda ekseni: kapatılan odada rezerve edilmiş etkinlik ızgaradan düşer.
+ *  Odasız etkinlikler bu eksenden etkilenmez (BR-SHELL-31c). */
+export function isRoomVisible(s: AppState, roomId: string | null): boolean {
+  if (!roomId) return true;
+  return !s.ui.hiddenRoomIds.includes(roomId as never);
+}
+
+/** Kullanıcının oda ekseninde görebildiği odalar (BR-PRM-09). */
+export function filterableRooms(s: AppState): Room[] {
+  return s.rooms.filter((r) => canViewRoom(r, s.currentUserId, s.groups));
+}
+
 export function visibleEvents(s: AppState): CalendarEvent[] {
   const readable = new Set(readableCalendarIds(s));
-  return s.events.filter((e) => readable.has(e.calendarId) && isCalendarVisible(s, e.calendarId));
+  return s.events.filter((e) => readable.has(e.calendarId)
+    && isCalendarVisible(s, e.calendarId)
+    && isRoomVisible(s, e.roomId));
 }
 
 export function eventsForDate(s: AppState, date: IsoDate): CalendarEvent[] {

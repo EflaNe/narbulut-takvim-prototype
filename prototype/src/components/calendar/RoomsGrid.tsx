@@ -9,7 +9,10 @@ import {
 export function RoomsGrid() {
   const state = useAppState();
   const date = state.ui.anchorDate;
-  const rooms = state.rooms.filter((r) => canViewRoom(r, state.currentUserId, state.groups));
+  // Oda ekseni bu görünümde de geçerlidir (BR-SHELL-31c).
+  const rooms = state.rooms
+    .filter((r) => canViewRoom(r, state.currentUserId, state.groups))
+    .filter((r) => !state.ui.hiddenRoomIds.includes(r.id));
 
   return (
     <div className="roomsgrid">

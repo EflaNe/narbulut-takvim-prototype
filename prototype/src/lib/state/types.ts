@@ -44,6 +44,8 @@ export interface UiState {
   viewMode: CalendarViewMode;
   /** Kapatılan owned takvimler (BR-CAL-18) */
   hiddenCalendarIds: CalendarId[];
+  /** Kapatılan odalar — sol rail'in oda ekseni (BR-SHELL-31, KEEP-03) */
+  hiddenRoomIds: RoomId[];
   showRejected: boolean;
   searchQuery: string;
   searchOpen: boolean;
@@ -91,6 +93,8 @@ export type AppAction =
   | { type: 'goToday' }
   | { type: 'setViewMode'; mode: CalendarViewMode }
   | { type: 'toggleCalendar'; calendarId: CalendarId }
+  | { type: 'toggleRoomFilter'; roomId: RoomId }
+  | { type: 'setAllRoomFilters'; on: boolean }
   | { type: 'toggleRejected' }
   | { type: 'toggleSharedVisibility'; calendarId: CalendarId }
   | { type: 'removeSharedCalendar'; calendarId: CalendarId }

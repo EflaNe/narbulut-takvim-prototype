@@ -217,3 +217,46 @@ gecikmesi eklendi; kart bu sürede kendini açık tutar.
 
 Doğrulama: demo akışı **27 adıma** çıktı (kartta silme var · paylaşılanda yok),
 tamamı geçti, konsol hatası 0, tüm kapılar geçti.
+
+---
+
+## 9. Tasarım–spec hizalama turu — 1 Eylül 2026
+
+Prototip gözden geçirildi ve **canonical tasarım ile bağlayıcı kuralların çeliştiği üç nokta**
+tespit edilip ürün sahibinin kararıyla kapatıldı. Üçü de aynı kökten geliyordu.
+
+### Kök neden
+
+`KEEP-03` (audit) bugünkü ürünün sol rail'inde **dört** filtre ekseni sayıyordu:
+*tarih · **tip** · oda · takvim*. Sonra `D-037` **tip eksenini tamamen kaldırdı**.
+
+| Katman | Ne oldu |
+|---|---|
+| FAZ 4 · spec | `KEEP-03`'ü mekanik taşıdım; kaldırılan tip ekseninin yerine **"diğer filtreler"** adlı, arkasında hiçbir karar olmayan bir yer tutucu yazdım |
+| FAZ 6 · tasarım | Filtreler kartına **"Etkinlik türü"** — yani D-037'nin sildiği ekseni — geri koydu; yanına dayanaksız bir **"Katılımcı"** satırı ekledi; `KEEP-03`'ün koru dediği **oda ekseni** düştü |
+| FAZ 7 · prototip | Tasarımı sadakatle kopyaladım; iki ölü kontrol prototipe taşındı |
+
+⚠️ **Süreç boşluğu:** FAZ 6 sonrası yaptığım tutarlılık geçişi renk, kenarlık ve tipografi
+düzeyindeydi — **kural düzeyinde tasarım/spec çapraz kontrolü hiç yapılmadı.**
+
+### Kararlar ve uygulama
+
+| # | Karar | Uygulama |
+|---|---|---|
+| 1A | "Filtreler" kartı **oda eksenine** dönüştürüldü | `RoomsFilterCard`; `BR-SHELL-31c/31d` yazıldı; `FiltersCard` silindi |
+| 2A | Görünüm seçiciye **ayırıcı** eklendi | `Gün · Hafta · Ay │ Odalara göre` — `BR-SHELL-30` artık karşılanıyor |
+| 3A | `BR-SHELL-31` **üç eksene** indirildi | "diğer filtreler" yer tutucusu silindi; `04-scope-closure.md` PC-01 hizalandı |
+
+Gerekçe kaydı: `14-calendar-shell-spec.md` → **SR-SHELL-09**.
+
+⚠️ **"Katılımcı" filtresi bilinçli olarak eklenmedi** — hiçbir kararda geçmiyor; eklenmesi
+karar alınmamış bir özelliği ürüne sokmak olurdu.
+
+### Etki
+
+- Yeni özellik eklenmedi; dayanağı olmayan iki satır çıkarıldı, korunması kararlaştırılan
+  eksen geri getirildi.
+- Oda ekseni **yalnızca görünümü daraltır** (BR-SHELL-31d): yetki, müsaitlik ve rezervasyon
+  durumu değişmez; odasız etkinlikler etkilenmez.
+- `BR-SHELL-32`'nin "kaç öğe gizli" gereği oda ekseninde karşılandı.
+- Test sayısı 42 → **45**; demo akışı 27 adım, tamamı geçiyor.

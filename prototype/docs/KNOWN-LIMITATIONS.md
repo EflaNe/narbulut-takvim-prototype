@@ -48,7 +48,7 @@ veya backend gerektiren konulardır.
 
 | # | Sınır |
 |---|---|
-| L-25 | Filtreler kartı (Etkinlik türü / Katılımcı) görsel durumdur; filtreleme uygulanmadı |
+| L-25 | Sol rail'de yalnız üç eksen vardır: tarih · takvimler · odalar (`14` BR-SHELL-31). Katılımcı bazlı filtreleme **yoktur** — hiçbir kararda tanımlı değil |
 | L-26 | Oda seçicideki filtre çipleri tek seçimli basit filtrelerdir; canonical'daki açılır menüler yok |
 | L-27 | Sürükle-bırak ile etkinlik taşıma/yeniden boyutlandırma yok (`14` SR-SHELL-05 — kapsam dışı) |
 | L-27a | Hover önizleme kartı **kasıtlı olarak** yalnız gerçek imleçli cihazlarda çalışır; dokunmatikte hiç render edilmez (`14` BR-SHELL-43). Karttaki her bilgi etkinlik yüzeyinde de vardır (BR-SHELL-42). Karttaki tek aksiyon silmedir; düzenleme kartta yapılmaz (BR-SHELL-45) |
