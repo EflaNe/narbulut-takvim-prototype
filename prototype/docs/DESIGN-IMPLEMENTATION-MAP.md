@@ -146,7 +146,8 @@ Her madde gerekçelidir; hiçbiri yeni tasarım yönü değildir.
 | D-08 | Topkapı `onay gerekli` | Canonical 01/02'deki "Onay bekliyor" durumunun tutarlı olması için (K-05) |
 | D-09 | 05 İzinler'de sol railde "Benimle paylaşılanlar" da var | Canonical 05 paylaşım eklenmeden önce üretilmiş; rail tek bileşendir |
 | D-10 | Shift+D demo paneli | Sunum arayüzünde **görünmez**; yalnız persona ve sıfırlama için |
-| D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45 olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
+| D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45c olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
+| D-12 | Kartta **Sil** aksiyonu | Ürün sahibi istedi (1 Eylül 2026). Yıkıcı işlem olduğu için üç kısıtla: yalnız düzenlenebilir etkinlikte, açık onay diyaloğundan geçerek, etiketli ayrı satırda — `14` BR-SHELL-45a/b/c |
 
 ---
 

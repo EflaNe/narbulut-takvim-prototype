@@ -246,7 +246,27 @@ try {
     if (card && norm(card).includes('kimler var') && norm(card).includes('topkapı')) {
       ok('Hover önizleme kartı açıldı (kimler var · oda · durum)');
     } else fail('Hover önizleme kartı doğrulanamadı');
+    if (card && card.includes('Sil')) ok('Kartta silme aksiyonu var');
+    else fail('Kartta silme aksiyonu yok');
     await shot('15-hover-onizleme');
+    await page.mouse.move(5, 5);
+    await sleep(300);
+  }
+
+  /* Paylaşılan salt okunur etkinlikte silme gösterilmez (BR-SHELL-45a) */
+  {
+    const h = await page.evaluateHandle(() => [...document.querySelectorAll('.event')]
+      .find((e) => (e.getAttribute('aria-label') || '').includes('salt okunur')) || null);
+    const el = h.asElement();
+    if (!el) throw new Error('paylaşılan etkinlik bulunamadı');
+    await el.hover();
+    await sleep(700);
+    const card = await page.evaluate(() => {
+      const c = document.querySelector('.ehc');
+      return c ? c.innerText.replace(/\s+/g, ' ') : null;
+    });
+    if (card && !card.includes('Sil')) ok('Paylaşılan salt okunur etkinlikte silme gösterilmiyor');
+    else fail('Paylaşılan etkinlikte silme aksiyonu göründü');
     await page.mouse.move(5, 5);
     await sleep(250);
   }

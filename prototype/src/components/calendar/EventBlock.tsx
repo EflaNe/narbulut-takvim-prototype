@@ -11,6 +11,8 @@ import type { CalendarEvent } from '../../lib/domain/types';
 
 /** Kart, kısa geçişlerde titremesin diye gecikmeyle açılır. */
 const HOVER_DELAY_MS = 400;
+/** İmleç bloktan karta geçerken aradaki boşlukta kart kapanmasın. */
+const CLOSE_DELAY_MS = 160;
 
 interface Props {
   event: CalendarEvent;
@@ -23,7 +25,8 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
   const state = useAppState();
   const dispatch = useDispatch();
   const ref = useRef<HTMLButtonElement>(null);
-  const timer = useRef<number | undefined>(undefined);
+  const openTimer = useRef<number | undefined>(undefined);
+  const closeTimer = useRef<number | undefined>(undefined);
   const [anchor, setAnchor] = useState<DOMRect | null>(null);
   // Dokunmatik cihazda hover kartı hiç render edilmez (ST-DIS-03).
   const canHover = useMediaQuery('(hover: hover) and (pointer: fine)');
@@ -39,14 +42,24 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
   const compact = event.end - event.start <= 30;
 
   const closePreview = useCallback(() => {
-    window.clearTimeout(timer.current);
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
     setAnchor(null);
+  }, []);
+
+  const cancelClose = useCallback(() => window.clearTimeout(closeTimer.current), []);
+
+  const scheduleClose = useCallback(() => {
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setAnchor(null), CLOSE_DELAY_MS);
   }, []);
 
   const openPreview = () => {
     if (!canHover) return;
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(
+    window.clearTimeout(closeTimer.current);
+    window.clearTimeout(openTimer.current);
+    openTimer.current = window.setTimeout(
       () => setAnchor(ref.current?.getBoundingClientRect() ?? null), HOVER_DELAY_MS);
   };
 
@@ -61,7 +74,10 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
     };
   }, [anchor, closePreview]);
 
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  useEffect(() => () => {
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
+  }, []);
 
   const open = () => dispatch(
     shared
@@ -84,12 +100,15 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
           style={{ top, height: height + 4, left, right: 3, background: color, zIndex: 2 + columnIndex }}
           onClick={open} aria-label={aria}
           ref={ref}
-          onMouseEnter={openPreview} onMouseLeave={closePreview}
-          onFocus={openPreview} onBlur={closePreview}>
+          onMouseEnter={openPreview} onMouseLeave={scheduleClose}
+          onFocus={openPreview} onBlur={scheduleClose}>
           <span className="event__title">{event.title}</span>
           <span className="event__ctime">{hhmm(event.start)}</span>
         </button>
-        {anchor && <EventHoverCard event={event} anchor={anchor} />}
+        {anchor && (
+          <EventHoverCard event={event} anchor={anchor}
+            onEnter={cancelClose} onLeave={scheduleClose} onAction={closePreview} />
+        )}
       </>
     );
   }
@@ -100,8 +119,8 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
         style={{ top, height, left, right: 3, zIndex: 2 + columnIndex }}
         onClick={open} aria-label={aria}
         ref={ref}
-        onMouseEnter={openPreview} onMouseLeave={closePreview}
-        onFocus={openPreview} onBlur={closePreview}>
+        onMouseEnter={openPreview} onMouseLeave={scheduleClose}
+        onFocus={openPreview} onBlur={scheduleClose}>
         <div className="event__strip" style={{ background: color }}>
           <span className="event__time">{timeRangeLabel(event.start, event.end)}</span>
           <span className="spacer" style={{ minWidth: 6 }} />
@@ -117,7 +136,10 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
           <span className="event__title">{event.title}</span>
         </div>
       </button>
-      {anchor && <EventHoverCard event={event} anchor={anchor} />}
+      {anchor && (
+          <EventHoverCard event={event} anchor={anchor}
+            onEnter={cancelClose} onLeave={scheduleClose} onAction={closePreview} />
+        )}
     </>
   );
 }

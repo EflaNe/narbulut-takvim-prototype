@@ -196,3 +196,24 @@ notu FAZ 4'te `14-calendar-shell-spec.md`'ye **hiç taşınmamıştı.** Bu FAZ 
 
 Bu bir **ürün kapsamı kararıdır**, otonom modda kendiliğinden kapatılmadı — ürün sahibine
 soruldu ve onayıyla eklendi.
+
+### 8.1 · Karta silme aksiyonu eklendi *(aynı gün)*
+
+Ürün sahibi karttan da silebilmek istedi. ⚠️ Bu, birkaç saat önce yazdığım
+`BR-SHELL-45 — "Kart salt okunurdur: aksiyon, buton veya bağlantı taşımaz"` kuralıyla
+**doğrudan çelişiyordu.** Kural benim spec-level önerimdi, ürün sahibinin kararı değildi;
+bu nedenle revize edildi (BR-SHELL-45…45c, SR-SHELL-08).
+
+Silme yıkıcı bir işlem olduğu için hover yüzeyine üç kısıtla kondu:
+
+| Kısıt | Kural |
+|---|---|
+| Yalnızca kullanıcının düzenleyebildiği etkinlikte gösterilir; paylaşılan salt okunur etkinlikte hiç render edilmez | BR-SHELL-45a · `12` BR-CAL-27 |
+| Doğrudan silmez; açık onay diyaloğundan geçer ve rezervasyon sonucunu belirtir | BR-SHELL-45b · `11` ST-DES-01/02 · `15` BR-EVT-29/30 |
+| Kartın altında **etiketli ayrı satırda** durur; çıplak ikon değildir | BR-SHELL-45c |
+
+Kart artık pointer alabildiği için imleç bloktan karta geçerken 160 ms'lik kapanma
+gecikmesi eklendi; kart bu sürede kendini açık tutar.
+
+Doğrulama: demo akışı **27 adıma** çıktı (kartta silme var · paylaşılanda yok),
+tamamı geçti, konsol hatası 0, tüm kapılar geçti.

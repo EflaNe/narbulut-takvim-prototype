@@ -106,7 +106,7 @@
    Yalnız gerçek imleci olan cihazlarda. Bilgiyi hover'a hapsetmez:
    aynı içerik bloğa tıklanınca açılan drawer'da da vardır (ST-DIS-03). */
 .ehc{position:fixed;z-index:70;width:292px;background:#fff;border:1px solid var(--line-panel);
-  border-radius:var(--r-card);box-shadow:var(--sh-popover);overflow:hidden;pointer-events:none;
+  border-radius:var(--r-card);box-shadow:var(--sh-popover);overflow:hidden;
   animation:ehc-in .12s ease-out}
 @keyframes ehc-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
 .ehc__strip{height:4px}
@@ -136,3 +136,11 @@
 .ehc__more{margin-top:9px;font:400 11.5px/1 var(--font);color:var(--text-tertiary)}
 .ehc__owner{margin-top:12px;padding-top:11px;border-top:1px solid var(--line-divider);
   display:flex;align-items:center;gap:7px;font:400 11.5px/1.4 var(--font);color:var(--text-tertiary)}
+/* Yıkıcı aksiyon: kartın altında ayrı satır — kazara denk gelmesin diye ikon değil, etiketli. */
+.ehc__actions{margin-top:12px;padding-top:10px;border-top:1px solid var(--line-divider);
+  display:flex;align-items:center}
+.ehc__delete{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 10px;
+  margin-left:-10px;border:none;background:transparent;border-radius:var(--r-chip);
+  font:400 12.5px/1 var(--font);color:var(--text-tertiary);transition:background .12s,color .12s}
+.ehc__delete:hover{background:#FAEEEC;color:var(--error)}
+.ehc__hint{margin-left:auto;font:400 11px/1 var(--font);color:var(--text-faint)}

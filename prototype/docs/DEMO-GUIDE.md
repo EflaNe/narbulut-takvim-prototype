@@ -18,7 +18,8 @@ Oturum sahibi: **Deniz Aydın · Ürün Yöneticisi**.
 | 2 | Üstteki **›** okuna bas | Hafta ileri gider, başlık "31 Ağustos – 6 Eylül 2026" olur. *Eski üründe hafta gezinme kontrolleri yoktu.* |
 | 3 | Sol karttaki **Bugün** | Bugünkü haftaya döner. |
 | 4 | Sol raildeki **Proje** onay kutusunu kapat, tekrar aç | Yeşil etkinlikler ızgaradan düşer ve geri gelir. Takvim görünürlüğü gerçekten çalışır. |
-| 4b | **Salı 10:00 "Ürün Demo"** bloğunun üzerine gel ve **yarım saniye bekle** | Önizleme kartı açılır: takvim · saat ve süre · oda · **Onay bekliyor** · **"Kimler var · 22 kişi"** ve her katılımcının müsait/meşgul durumu. *Etkinliği açmadan "kim var, oda uygun mu" sorusunu cevaplıyoruz.* Kart salt okunur; aynı bilgi tıklayınca açılan drawer'da da var — dokunmatik ve klavye kullanıcısı bilgiden mahrum kalmıyor. |
+| 4b | **Salı 10:00 "Ürün Demo"** bloğunun üzerine gel ve **yarım saniye bekle** | Önizleme kartı açılır: takvim · saat ve süre · oda · **Onay bekliyor** · **"Kimler var · 22 kişi"** ve her katılımcının müsait/meşgul durumu. *Etkinliği açmadan "kim var, oda uygun mu" sorusunu cevaplıyoruz.* Kartın altında tek aksiyon var: **Sil** — onay diyaloğundan geçer ve *"oda rezervasyonu da iptal edilecek"* der. Aynı bilgi ve aynı silme yolu tıklayınca açılan drawer'da da var; dokunmatik ve klavye kullanıcısı bilgiden mahrum kalmıyor. |
+| 4c | Paylaşılan **Çarşamba 11:00 "Ürün Demo"** bloğunun üzerine gel | Aynı kart açılır ama **Sil satırı yok** — paylaşılan takvim salt okunurdur, pasif buton bile göstermiyoruz. |
 
 ### Bölüm 2 · Etkinlik ve paylaşım okunabilirliği (≈45 sn)
 
