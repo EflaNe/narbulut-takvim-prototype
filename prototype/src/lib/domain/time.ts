@@ -158,9 +158,13 @@ export function viewRangeLabel(anchor: IsoDate, mode: string): string {
   return `${DAY_NAMES_LONG[weekdayIndex(anchor)]}, ${longDateLabel(anchor)}`;
 }
 
-/** BR-SHELL-03 — ileri/geri aktif görünüm moduna göre hareket eder. */
+/**
+ * BR-SHELL-03 — ileri/geri aktif görünüm moduna göre hareket eder.
+ * ⚠️ Haftalık adımda **seçili günün hafta içindeki konumu korunur**: Cuma'dan ileri
+ * gidince yine Cuma seçili kalır. Böylece tarih kartı ile mini takvim aynı günü gösterir.
+ */
 export function shiftByView(anchor: IsoDate, mode: string, delta: number): IsoDate {
-  if (mode === 'week') return addDays(startOfWeek(anchor), delta * 7);
+  if (mode === 'week') return addDays(anchor, delta * 7);
   if (mode === 'month') return addMonths(anchor, delta);
   return addDays(anchor, delta); // Günlük ve Odalara Göre → 1 gün
 }

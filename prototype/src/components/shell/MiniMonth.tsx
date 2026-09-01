@@ -35,14 +35,18 @@ export function MiniMonth() {
           className={`minimonth__week${week[0] === currentWeekStart ? ' is-current' : ''}`}>
           {week.map((date) => {
             const out = !sameMonth(date, cursor);
+            // BR-SHELL-05b — seçili gün ile bugün ayrı işaretlenir.
+            const selected = date === ui.anchorDate;
             const cls = [
               'minimonth__day',
               out ? 'is-out' : isWeekend(date) ? 'is-weekend' : '',
-              date === today ? 'is-today' : '',
+              date === today && !selected ? 'is-today' : '',
+              selected ? 'is-selected' : '',
             ].filter(Boolean).join(' ');
             return (
               <button key={date} className={cls} type="button"
-                aria-label={date} aria-current={date === today ? 'date' : undefined}
+                aria-label={`${date}${date === today ? ' (bugün)' : ''}`}
+                aria-current={selected ? 'date' : undefined}
                 onClick={() => dispatch({ type: 'setAnchorDate', date })}>
                 {dayOfMonth(date)}
               </button>

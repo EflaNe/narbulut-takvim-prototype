@@ -4,6 +4,7 @@ import {
   activeReservationForEvent, eventsForDate, isCalendarVisible, myCalendars, mySharedCalendars,
   reservationStatusForEvent, visibleEvents,
 } from '../lib/domain/selectors';
+import { weekDates, weekdayIndex } from '../lib/domain/time';
 import type { Room } from '../lib/domain/types';
 import type { AppAction, AppState } from '../lib/state/types';
 
@@ -164,9 +165,16 @@ describe('takvim görünürlüğü ve paylaşım', () => {
 describe('gezinme', () => {
   it('hafta ileri/geri ve Bugün çalışır', () => {
     const next = reducer(base, { type: 'shiftView', delta: 1 });
-    expect(next.ui.anchorDate).toBe('2026-08-31');
+    // Hafta adımı gün konumunu korur: Cuma 28 → Cuma 4 Eylül
+    expect(next.ui.anchorDate).toBe('2026-09-04');
     const back = reducer(next, { type: 'goToday' });
     expect(back.ui.anchorDate).toBe('2026-08-28');
+  });
+
+  it('hafta adımı seçili günün hafta içindeki konumunu korur', () => {
+    const s = run(base, { type: 'shiftView', delta: 1 }, { type: 'shiftView', delta: 1 });
+    expect(weekdayIndex(s.ui.anchorDate)).toBe(weekdayIndex(base.ui.anchorDate));
+    expect(weekDates(s.ui.anchorDate)[0]).toBe('2026-09-07');
   });
 
   it('BR-SHELL-03: adım aktif görünüm moduna göre değişir', () => {

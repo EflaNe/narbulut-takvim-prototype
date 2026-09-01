@@ -406,3 +406,23 @@ duruyordu — aynı bilgiyi iki kez söylemek yerine buton **aktif durum** aldı
 Doğrulama: hafta/gün/ay adımları · mini takvim senkronu · aralık etiketi · `Bugün` dönüşü ve
 aktif durumu · ay kaydırmasında ay sonu taşması (31 Ocak → 28 Şubat). Test 55 → **57**.
 Demo akışı 29 adım, tüm kapılar geçiyor.
+
+### 12.1 · Seçili gün kavramı — *(aynı gün, ikinci tur)*
+
+§12'deki düzeltmeden sonra ürün sahibi kartın **24**'ü, mini takvimin **28**'i gösterdiğini
+bildirdi. Kök neden §12'den daha derindi:
+
+⚠️ **Durumda "seçili gün" diye bir kavram yoktu.** Yalnız `today` ve hafta anchor'ı vardı;
+tarih kartı anchor'ı, mini takvimdeki dolu mavi daire ise `today`'i gösteriyordu —
+**tek gösterge sanılan iki farklı kavram.**
+
+İki düzeltme:
+
+| # | Değişiklik | Kural |
+|---|---|---|
+| 1 | Mini takvimde **seçili gün dolu**, **bugün halka** ile gösterilir; çakıştıklarında yalnız dolu görünür | `BR-SHELL-05b` **(yeni)** |
+| 2 | **Haftalık adım gün konumunu korur** — Cuma'dan ileri gidince yine Cuma seçili kalır. Adım hafta başına sabitlendiği için kart Pazartesi'yi, mini takvim Cuma'yı işaretliyordu | `BR-SHELL-03` (netleştirildi) |
+
+Doğrulama: açılışta tek işaret (bugün = seçili) · hafta adımında Cuma → Cuma · geri
+gidildiğinde 21 dolu / 28 halkalı ayrı görünüyor · mini takvimden gün seçimi karta, aralığa
+ve ızgaraya yansıyor. Test 57 → **58**.

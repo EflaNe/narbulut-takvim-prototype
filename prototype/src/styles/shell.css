@@ -44,8 +44,12 @@
 .minimonth__day:hover{background:#EEF1F5}
 .minimonth__day.is-out{color:var(--text-disabled)}
 .minimonth__day.is-weekend{color:var(--text-muted)}
-.minimonth__day.is-today{background:var(--brand);color:#fff;font-weight:500}
-.minimonth__day.is-today:hover{background:var(--brand-hover)}
+/* Seçili gün: dolu daire — tarih kartıyla aynı günü gösterir (BR-SHELL-05b). */
+.minimonth__day.is-selected{background:var(--brand);color:#fff;font-weight:500}
+.minimonth__day.is-selected:hover{background:var(--brand-hover)}
+/* Bugün, seçili değilken: halka. İki işaret birbirine karışmaz. */
+.minimonth__day.is-today{box-shadow:inset 0 0 0 1.5px var(--brand);color:var(--brand);font-weight:500}
+.minimonth__day.is-today:hover{background:#EAF1FA}
 
 /* ── Takvim listeleri ───────────────────────────────────── */
 .callist{background:#fff;border:1px solid var(--line-panel);border-radius:var(--r-card);padding:12px 8px 8px}
