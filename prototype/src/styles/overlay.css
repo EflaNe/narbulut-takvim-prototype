@@ -28,3 +28,23 @@
 .sheet__head{padding:14px 18px 10px;display:flex;align-items:center;gap:10px}
 .sheet__title{font:500 15px/1.2 var(--font)}
 .sheet__body{flex:1;min-height:0;overflow-y:auto;padding:0 18px 20px}
+
+/* ── Takvim oluştur / düzenle / sil ─────────────────────── */
+.dialog__field{margin-top:18px}
+.dialog__label{font:400 11.5px/1 var(--font);color:var(--text-muted);margin-bottom:7px}
+.palette{display:flex;flex-wrap:wrap;gap:9px}
+.palette button{width:30px;height:30px;border-radius:50%;border:none;padding:0;position:relative;
+  display:flex;align-items:center;justify-content:center}
+.palette button.is-on{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--text-primary)}
+.dialog__choices{margin-top:18px;display:flex;flex-direction:column;gap:2px}
+.choice{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border-radius:10px;
+  border:1px solid var(--line-panel);background:#fff;text-align:left;width:100%;cursor:pointer}
+.choice + .choice{margin-top:8px}
+.choice:hover{background:#F7F9FB}
+.choice.is-on{border-color:var(--brand);background:var(--info-surface)}
+.choice__radio{width:17px;height:17px;border-radius:50%;flex:none;margin-top:1px;
+  box-shadow:inset 0 0 0 1.5px var(--text-off);display:flex;align-items:center;justify-content:center}
+.choice.is-on .choice__radio{box-shadow:inset 0 0 0 5px var(--brand)}
+.choice__title{display:block;font:500 13px/1.35 var(--font);color:var(--text-primary)}
+.choice__sub{display:block;margin-top:4px;font:400 12px/1.5 var(--font);color:var(--text-tertiary)}
+.choice select{margin-top:9px;width:100%}

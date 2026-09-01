@@ -104,6 +104,9 @@ Bu bir **foundation** spec'idir: değeri kendi ekranında değil, mümkün kıld
 | **BR-ROOM-06** | Organizasyonda hiç bina tanımlı değilse Bina/Kat alanları ve filtreleri arayüzde **hiç görünmez** (D-028 progressive disclosure). |
 | **BR-ROOM-07** | **Pasif oda** yeni rezervasyonlarda seçilemez; oda seçicilerinde görünmez. Mevcut ve gelecekteki rezervasyonları **etkilenmez**. |
 | **BR-ROOM-08** | Pasif oda, yönetim listesinde görünür ve tekrar aktif edilebilir. |
+| **BR-ROOM-29** | **Yeni oda, kaydedilene kadar taslaktır.** Oluşturma, düzenlemeyle **aynı formu** kullanır (sihirbaz yoktur, §2). Taslak listede ayrı bir satır olarak görünür ancak **kaydedilmeden oda listesine, oda seçicilere veya izin tablosuna girmez**. *(1 Eylül 2026'da eklendi, SR-ROOM-09.)* |
+| **BR-ROOM-30** | **Bina, oda formundaki lokasyon alanından oluşturulur.** Ayrı bir bina yönetim ekranı **yoktur**. Bina adı organizasyon içinde benzersizdir; aynı adla ikinci bina oluşturulmaz, mevcut olan seçilir. ⚠️ Kat **serbest metindir** ve `BR-ROOM-04` gereği yalnız bina atanmışken girilebilir. |
+| **BR-ROOM-31** | ⚠️ **Rezervasyon kaydı bulunan oda silinemez.** Silme aksiyonu pasiftir ve sebebi **hover gerektirmeden** okunur (`11` ST-DIS-02); kullanıcıya **pasife alma** yolu gösterilir (BR-ROOM-07/08). Hiç rezervasyon kaydı olmayan oda silinebilir; işlem açık onay ister (`11` ST-DES-01). *(Rezervasyon kaydı = geçmiş, iptal ve reddedilenler dâhil; kayıt silinirse denetim izi kopar — `18` BR-APR-43.)* |
 
 ### 5.2 Erişim ve onay yapılandırması
 
@@ -318,4 +321,5 @@ Mobilde zorunlu olan: **oda arama** ve **oda rezervasyonu**. Bu nedenle:
 | SR-ROOM-05 | Onay kapatılınca bekleyen talepler | **Otomatik onaylanmaz** (BR-ROOM-15) | Sessiz toplu onay, ST-CORE-02'nin ruhuna aykırı; onaylayıcının kararı korunur |
 | SR-ROOM-06 | Silinen odanın geçmiş etkinlikleri | **Etkinlik korunur, oda "kaldırılmış" olarak görünür** (BR-ROOM-24) | Geçmiş takvim kaydının bozulmaması; sessiz veri kaybı olmaması |
 | SR-ROOM-07 | Odası olan bina silinebilir mi? | **Hayır, önce atamalar kaldırılmalı** (EC-ROOM-01) | Zincirleme sessiz veri temizliği riskli; kullanıcı ne olacağını bilmeli |
+| SR-ROOM-09 | Oda oluşturma ve bina yönetimi | **Oluşturma düzenlemeyle aynı formda, taslak olarak** (BR-ROOM-29); **bina oda formundan** oluşturulur, ayrı ekran yok (BR-ROOM-30); **rezervasyonlu oda silinmez, pasife alınır** (BR-ROOM-31) | Roller tablosu yöneticinin oda oluşturduğunu söylüyordu ama **oluşturma akışı hiçbir yerde tanımlı değildi**; `BR-ROOM-04/05/06` binayı ön koşul yapıyordu ama **binayı kimin oluşturduğu da tanımsızdı**. Ayrı bir bina yönetim ekranı `D-028` progressive disclosure kararına aykırı olurdu — bina yalnız gerektiğinde görünmeli. Silme yerine pasife alma, `BR-ROOM-07`'nin "mevcut rezervasyonlar etkilenmez" garantisini korur |
 | SR-ROOM-08 | Kapasite düşürülünce mevcut rezervasyon | **Etkilenmez** (EC-ROOM-06) | Geriye dönük kural uygulaması takvimi öngörülemez kılar; `10-permissions` SR-PRM-04 ile aynı ilke |

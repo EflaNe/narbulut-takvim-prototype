@@ -17,7 +17,7 @@ export function OwnedCalendarList() {
         <span className="callist__title">Takvimlerim</span>
         <span className="spacer" />
         <button className="callist__add" aria-label="Takvim ekle" title="Takvim ekle"
-          onClick={() => dispatch({ type: 'toast', message: 'Takvim oluşturma bu prototipte kapsam dışıdır.' })}>
+          onClick={() => dispatch({ type: 'openCalendarForm', mode: 'create' })}>
           <Icon name="plus" size={14} />
         </button>
       </div>
@@ -46,6 +46,8 @@ function CalendarRow({ cal, menuOpen }: { cal: Calendar; menuOpen: boolean }) {
   const state = useAppState();
   const dispatch = useDispatch();
   const visible = isCalendarVisible(state, cal.id);
+  // BR-CAL-41 — paylaşılmış takvim satırda görünür bir iz taşır ve paylaşım yüzeyine götürür.
+  const shareCount = state.shares.filter((s) => s.calendarId === cal.id).length;
 
   return (
     <div className="calrow" style={{ position: 'relative' }}>
@@ -57,6 +59,13 @@ function CalendarRow({ cal, menuOpen }: { cal: Calendar; menuOpen: boolean }) {
       </button>
       <span className="calrow__dot" style={{ background: visible ? cal.color : 'var(--text-off)' }} aria-hidden="true" />
       <span className={`calrow__name${visible ? '' : ' is-off'}`}>{cal.name}</span>
+      {shareCount > 0 && (
+        <button className="calrow__shared" title={`${shareCount} kişiyle paylaşıldı — paylaşımı yönet`}
+          aria-label={`${cal.name}: ${shareCount} kişiyle paylaşıldı, paylaşımı yönet`}
+          onClick={() => dispatch({ type: 'openShareDrawer', calendarId: cal.id })}>
+          <Icon name="share" size={11} />{shareCount}
+        </button>
+      )}
       <span className="spacer" />
       <button className="calrow__dots" aria-label={`${cal.name} seçenekleri`} aria-haspopup="menu"
         aria-expanded={menuOpen}
@@ -67,10 +76,14 @@ function CalendarRow({ cal, menuOpen }: { cal: Calendar; menuOpen: boolean }) {
       {menuOpen && (
         <Menu label={`${cal.name} seçenekleri`} style={{ top: 30, right: 4 }}
           onClose={() => dispatch({ type: 'setCalendarMenu', calendarId: null })}>
-          <button onClick={() => dispatch({ type: 'toast', message: 'Yeniden adlandırma bu prototipte kapsam dışıdır.' })}>
+          <button onClick={() => dispatch({
+            type: 'openCalendarForm', mode: 'edit', calendarId: cal.id, focus: 'name',
+          })}>
             <Icon name="pencil" size={14} />Yeniden adlandır
           </button>
-          <button onClick={() => dispatch({ type: 'toast', message: 'Renk değiştirme bu prototipte kapsam dışıdır.' })}>
+          <button onClick={() => dispatch({
+            type: 'openCalendarForm', mode: 'edit', calendarId: cal.id, focus: 'color',
+          })}>
             <Icon name="palette" size={14} />Rengi değiştir
           </button>
           <button onClick={() => dispatch({ type: 'openShareDrawer', calendarId: cal.id })}>
@@ -78,15 +91,7 @@ function CalendarRow({ cal, menuOpen }: { cal: Calendar; menuOpen: boolean }) {
           </button>
           <div className="menu__sep" />
           <button className="is-destructive" disabled={cal.isDefault}
-            onClick={() => dispatch({
-              type: 'askConfirm',
-              confirm: {
-                title: `${cal.name} silinsin mi?`,
-                body: 'Bu prototipte takvim silme uygulanmadı; onay diyaloğu davranışı gösterilmektedir.',
-                confirmLabel: 'Anladım', tone: 'destructive',
-                action: { type: 'closeConfirm' },
-              },
-            })}>
+            onClick={() => dispatch({ type: 'askDeleteCalendar', calendarId: cal.id })}>
             <Icon name="trash" size={14} />Sil
           </button>
           {cal.isDefault && <div className="menu__hint">Varsayılan takvim silinemez.</div>}

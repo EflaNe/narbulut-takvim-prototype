@@ -149,6 +149,9 @@ Her madde gerekçelidir; hiçbiri yeni tasarım yönü değildir.
 | D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45c olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
 | D-12 | Kartta **Sil** aksiyonu | Ürün sahibi istedi (1 Eylül 2026). Yıkıcı işlem olduğu için üç kısıtla: yalnız düzenlenebilir etkinlikte, açık onay diyaloğundan geçerek, etiketli ayrı satırda — `14` BR-SHELL-45a/b/c |
 | D-13 | ⚠️ **“Filtreler” kartı kaldırıldı, yerine Odalar ekseni kondu** | Canonical'ın kartı **“Etkinlik türü”** satırını taşıyordu; `BR-SHELL-34` (D-037) bu ekseni açıkça kaldırmıştı — tasarım `UX-18`'i geri getiriyordu. Yanındaki **“Katılımcı”** satırının hiçbir kararda karşılığı yoktu. Buna karşılık `KEEP-03`'ün korunmasını istediği **oda ekseni** tasarımdan düşmüştü. 1 Eylül 2026'da ürün sahibi kararıyla düzeltildi — `14` SR-SHELL-09 |
+| D-15 | **Takvim satırında paylaşım izi** *(`⑄ 2`)* | Canonical'da yoktu. Paylaşım yüzeyi düşük kontrastlı bir `⋯` ikonunun arkasında saklıydı ve takvimin paylaşılmış olduğu hiçbir yerde görünmüyordu. 1 Eylül 2026'da ürün sahibi kararıyla eklendi — `12` BR-CAL-43/44, SR-CAL-10 |
+| D-16 | **Takvim oluştur / düzenle / sil diyalogları** | Canonical'da çizilmemişti; `12` §2 kapsam içi diyordu. Renk paleti `BR-CAL-05` gereği yönetilen 8 renkten oluşur ve durum renkleriyle çakışmaz |
+| D-17 | **Oda oluşturma ve bina ekleme** | Canonical'da yoktu; `13` Roller tablosu yöneticinin oda oluşturduğunu söylüyordu. Oluşturma düzenlemeyle aynı formu kullanır (taslak satır), bina lokasyon alanından eklenir — `13` BR-ROOM-29/30, SR-ROOM-09 |
 | D-14 | **Görünüm seçicide ayırıcı** | Canonical `Gün · Hafta · Ay · Odalara göre`yi tek düz sıra olarak çiziyordu; `BR-SHELL-30` zaman ekseni ile kaynak ekseninin görsel olarak ayrılmasını şart koşuyor (`UX-11`). Ayırıcı eklendi — `14` SR-SHELL-09 |
 
 ---

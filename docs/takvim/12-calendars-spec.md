@@ -79,6 +79,8 @@ Bu spec üç işi yapar:
 | **BR-CAL-03** | **Her kullanıcı için otomatik bir varsayılan takvim oluşur.** **Silinemez.** Adı ve rengi değiştirilebilir (D-065). |
 | **BR-CAL-04** | Takvim sayısına ürün seviyesinde sınır konmaz. *(Teknik sınır gerekiyorsa spec dışıdır.)* |
 | **BR-CAL-05** | Renk, **yönetilen bir paletten** seçilir; serbest renk kodu girilmez. Palet, `11-system-states-spec.md`'deki durum renkleriyle (Müsait / Onay bekliyor / Rezerve) **çakışmayacak** şekilde tanımlanır. |
+| **BR-CAL-41** | **Takvim oluşturma yüzeyi iki alan taşır: ad ve renk.** Başka alan sorulmaz (BR-CAL-01). Ad, **kullanıcının kendi takvimleri içinde** benzersizdir; organizasyon geneli benzersizlik aranmaz — takvim kullanıcıya aittir (BR-CAL-02). *(1 Eylül 2026'da eklendi, SR-CAL-10.)* |
+| **BR-CAL-42** | Ad ve renk düzenleme **aynı yüzeyi** kullanır; "yeniden adlandır" ve "rengi değiştir" ayrı akışlar değil, aynı formun odaklandığı alanlardır. **Varsayılan takvim de düzenlenebilir** (BR-CAL-03). |
 
 ### 5.2 Etkinlik ↔ takvim ilişkisi
 
@@ -139,6 +141,8 @@ Bu spec üç işi yapar:
 | **BR-CAL-38** | ⚠️ **Zorunlu açıklama:** paylaşım yüzeyi, paylaşımın **mevcut ve gelecekteki** etkinlik detaylarını kapsadığını **açıkça** belirtir (D-068). Bu, özellikle **varsayılan takvim** paylaşılırken kritiktir — Quick Create etkinlikleri oraya düşer (D-065). |
 | **BR-CAL-39** | **Event-level privacy yoktur** (D-041, D-068). Hassas bir etkinlik görünmemeliyse kullanıcı onu **paylaşılmayan başka bir takvime** taşır. |
 | **BR-CAL-40** | Sahibi organizasyondan ayrılırsa takvimleri **arşivlenir** ve **tüm aktif paylaşımları kaldırılır** (D-066). |
+| **BR-CAL-43** | ⚠️ **Paylaşım giriş noktası, sahibin takvim satırında bulunur ve keşfedilebilir olmalıdır.** Yalnızca bir taşma menüsünün içinde saklı kalamaz. **Paylaşılmış bir takvim satırda görünür bir iz taşır** — en az kaç kişiyle paylaşıldığı — ve bu iz **paylaşım yüzeyine götürür**. *(1 Eylül 2026'da eklendi, SR-CAL-10.)* |
+| **BR-CAL-44** | Paylaşım izi **yalnızca sahibe** gösterilir. Alıcı tarafında karşılığı `BR-CAL-30`'dur (sahibin adı) — alıcı, takvimin başka kaç kişiyle paylaşıldığını görmez. |
 
 ---
 
@@ -346,7 +350,8 @@ Desktop-first (D-047). Mobilde:
 | SR-CAL-03 | Filtre durumu oturumlar arası korunsun mu? | **Evet** (BR-CAL-19) | Her girişte filtreyi yeniden kurmak sürtünme; benchmark'ta takvim seçimleri kalıcı `[I]` |
 | SR-CAL-04 | Aynı renk iki takvimde kullanılabilir mi? | **Evet, izin verilir** (EC-CAL-01) | Zorunlu benzersizlik, çok takvimli kullanıcıyı gereksiz kısıtlar |
 | SR-CAL-05 | Kişisel/organizasyonel takvim ayrımı | **Tek takvim türü var; arayüzde iki bölüm var** — sahip olunanlar *("Takvimlerim")* ve paylaşılanlar *("Benimle paylaşılanlar")* | Bu bir **tür** ayrımı değil, **sahiplik** ayrımıdır (D-064, D-067) |
-| SR-CAL-06 | Takvim silinirken etkinliklere ne olur? | **Önerilen:** açık seçim — *etkinlikleri başka takvime taşı* veya *etkinlikleri de sil*; taşıma önce sunulur. ⚠️ **Bağlayıcı olan yalnızca BR-CAL-22** (sessiz toplu silme yasağı) | FAZ 3'te bağlayıcı karar alınmadı |
+| SR-CAL-06 | Takvim silinirken etkinliklere ne olur? | ✅ **KARARA BAĞLANDI (1 Eylül 2026):** onay diyaloğu **açık seçim** sunar — *etkinlikleri başka takvime taşı* **veya** *etkinlikleri de sil*. **Taşıma önce ve varsayılan olarak** sunulur; taşınacak başka takvim yoksa seçenek pasiftir ve sebebi okunur. Etkinlik yoksa seçim hiç gösterilmez. Etkinlikler silinirse bağlı rezervasyon ve talepler `Cancelled` olur (`18` BR-APR-31) | FAZ 3'te açık bırakılmıştı; `BR-CAL-22` yalnızca sessiz toplu silmeyi yasaklıyordu, hangi seçeneklerin sunulacağını söylemiyordu. Ürün sahibi taşımayı varsayılan seçti: veri kaybı geri alınamaz, taşıma alınabilir |
+| SR-CAL-10 | Paylaşım nasıl keşfedilir? | **Satırda paylaşım izi + `⋯` menüsü birlikte** (BR-CAL-43/44) | Paylaşım yüzeyi vardı ama yalnızca düşük kontrastlı bir `⋯` ikonunun arkasındaydı ve **paylaşılmış olma durumu hiçbir yerde görünmüyordu**. Alıcı tarafı ("Benimle paylaşılanlar") adlandırılmış ve görünürken veren tarafın saklı olması asimetriydi. Alternatif *(başlığa ayrı eylem)* rail'i kalabalıklaştırırdı |
 | SR-CAL-07 | Alıcı paylaşımı kendi tarafından kaldırabilir mi? | **Evet** (BR-CAL-34) | İstenmeyen bir paylaşımı kabul etmeye zorlanmak sidebar'ı kirletir; alıcının çıkış yolu olmalı |
 | SR-CAL-08 | "Benimle paylaşılanlar" boşken | **Bölüm hiç gösterilmez** | Boş bir bölüm sürekli görünür yer kaplar; `13` BR-ROOM-06'nın progressive disclosure ilkesiyle aynı mantık |
 | SR-CAL-09 | Alıcı organizasyondan ayrılırsa sahip bilgilendirilir mi? | **Hayır** (EC-CAL-08) | Sahibin eylemi değil ve aksiyon gerektirmiyor; `19` BR-NOT-07 gürültü kontrolüyle tutarlı |

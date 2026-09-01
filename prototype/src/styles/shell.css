@@ -136,3 +136,9 @@
 .callist__reset{margin:4px 0 2px;padding:0 8px;height:26px;border:none;background:transparent;
   font:400 12px/1 var(--font);color:var(--brand);border-radius:var(--r-chip)}
 .callist__reset:hover{background:#F1F6FC}
+
+/* Paylaşım göstergesi — hem sinyal hem giriş noktası (BR-CAL-41) */
+.calrow__shared{display:inline-flex;align-items:center;gap:4px;height:19px;padding:0 6px;
+  border:none;border-radius:5px;background:#EEF1F5;flex:none;
+  font:400 11px/1 var(--font);color:var(--text-tertiary)}
+.calrow__shared:hover{background:#E2E7EE;color:var(--brand)}

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialState, reducer } from '../lib/state/reducer';
 import {
-  activeReservationForEvent, eventsForDate, isCalendarVisible, mySharedCalendars,
+  activeReservationForEvent, eventsForDate, isCalendarVisible, myCalendars, mySharedCalendars,
   reservationStatusForEvent, visibleEvents,
 } from '../lib/domain/selectors';
+import type { Room } from '../lib/domain/types';
 import type { AppAction, AppState } from '../lib/state/types';
 
 const run = (state: AppState, ...actions: AppAction[]) =>
@@ -201,5 +202,94 @@ describe('oda ekseni — sol rail filtresi', () => {
       { type: 'toggleRoomFilter', roomId: 'room_istanbul' },
       { type: 'setAllRoomFilters', on: true });
     expect(s.ui.hiddenRoomIds).toHaveLength(0);
+  });
+});
+
+describe('takvim CRUD — 12-calendars-spec §2', () => {
+  it('yeni takvim oluşturulur ve oluşturana ait olur', () => {
+    const s = reducer(base, { type: 'createCalendar', name: 'Pazarlama Planı', color: '#0058B8' });
+    const cal = s.calendars.find((c) => c.name === 'Pazarlama Planı')!;
+    expect(cal.ownerId).toBe('usr_deniz');
+    expect(cal.isDefault).toBe(false);
+    expect(myCalendars(s)).toContainEqual(cal);
+  });
+
+  it('takvim adı ve rengi güncellenir', () => {
+    const s = reducer(base, {
+      type: 'updateCalendar', calendarId: 'cal_proje', name: 'Proje X', color: '#7A3E9D',
+    });
+    const cal = s.calendars.find((c) => c.id === 'cal_proje')!;
+    expect(cal.name).toBe('Proje X');
+    expect(cal.color).toBe('#7A3E9D');
+  });
+
+  it('BR-CAL-21: varsayılan takvim silinemez', () => {
+    const s = reducer(base, { type: 'deleteCalendar', calendarId: 'cal_kisisel', mode: 'purge' });
+    expect(s.calendars.some((c) => c.id === 'cal_kisisel')).toBe(true);
+  });
+
+  it('BR-CAL-22: etkinlikler başka takvime taşınabilir', () => {
+    const before = base.events.filter((e) => e.calendarId === 'cal_proje').length;
+    expect(before).toBeGreaterThan(0);
+    const s = reducer(base, {
+      type: 'deleteCalendar', calendarId: 'cal_proje', mode: 'move', targetCalendarId: 'cal_ekip',
+    });
+    expect(s.calendars.some((c) => c.id === 'cal_proje')).toBe(false);
+    expect(s.events.filter((e) => e.calendarId === 'cal_proje')).toHaveLength(0);
+    expect(s.events.filter((e) => e.calendarId === 'cal_ekip').length).toBeGreaterThan(before);
+  });
+
+  it('etkinliklerle birlikte silinince bağlı talepler Cancelled olur', () => {
+    const s = reducer(base, { type: 'deleteCalendar', calendarId: 'cal_proje', mode: 'purge' });
+    expect(s.events.some((e) => e.calendarId === 'cal_proje')).toBe(false);
+    // Kick-off cal_proje'deydi ve bekleyen talebi vardı
+    expect(s.requests.find((r) => r.id === 'req_kickoff')!.status).toBe('cancelled');
+  });
+
+  it('silinen takvimin paylaşımları düşer ve alıcı bilgilendirilir', () => {
+    const shared = run(base, { type: 'addShare', calendarId: 'cal_proje', userId: 'usr_selin' });
+    const s = reducer(shared, {
+      type: 'deleteCalendar', calendarId: 'cal_proje', mode: 'move', targetCalendarId: 'cal_ekip',
+    });
+    expect(s.shares.some((x) => x.calendarId === 'cal_proje')).toBe(false);
+    expect(s.notifications[0].kind).toBe('N-CAL-02');
+  });
+});
+
+describe('oda ve bina CRUD — 13-rooms-spec', () => {
+  const draft = (): Room => ({
+    id: 'room_draft', name: 'Kadıköy', buildingId: 'bld_ana', floor: '4. Kat',
+    capacity: 10, features: ['Beyaz tahta'], active: true,
+    requiresApproval: false, approverUserIds: [], approverGroupIds: [],
+    canView: { allUsers: true, userIds: [], groupIds: [] },
+    canReserve: { allUsers: true, userIds: [], groupIds: [] },
+  });
+
+  it('yeni oda oluşturulur ve seçili hâle gelir', () => {
+    const s = run(base, { type: 'startRoomDraft' }, { type: 'createRoom', room: draft() });
+    const room = s.rooms.find((r) => r.name === 'Kadıköy')!;
+    expect(room.id).not.toBe('room_draft');
+    expect(s.ui.selectedRoomId).toBe(room.id);
+    expect(s.ui.creatingRoom).toBe(false);
+  });
+
+  it('BR-ROOM-31: rezervasyon kaydı olan oda silinemez', () => {
+    const s = reducer(base, { type: 'deleteRoom', roomId: 'room_topkapi' });
+    expect(s.rooms.some((r) => r.id === 'room_topkapi')).toBe(true);
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
+  it('rezervasyonu olmayan oda silinebilir', () => {
+    const created = run(base, { type: 'createRoom', room: draft() });
+    const room = created.rooms.find((r) => r.name === 'Kadıköy')!;
+    const s = reducer(created, { type: 'deleteRoom', roomId: room.id });
+    expect(s.rooms.some((r) => r.id === room.id)).toBe(false);
+  });
+
+  it('BR-ROOM-30: bina oda formundan oluşturulur, aynı ad iki kez eklenmez', () => {
+    const s = run(base,
+      { type: 'createBuilding', name: 'Teknopark' },
+      { type: 'createBuilding', name: 'Teknopark' });
+    expect(s.buildings.filter((b) => b.name === 'Teknopark')).toHaveLength(1);
   });
 });

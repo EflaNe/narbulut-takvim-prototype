@@ -51,6 +51,9 @@ export function createInitialState(): AppState {
       selectedRequestId: 'req_roadmap',
       rejectingRequestId: null,
       selectedRoomId: 'room_istanbul',
+      calendarForm: null,
+      deletingCalendarId: null,
+      creatingRoom: false,
       toast: null,
       demoPanelOpen: false,
       mobileSheet: 'none',
@@ -531,9 +534,148 @@ export function reducer(state: AppState, action: AppAction): AppState {
       }, { toast: { message: 'Talebiniz geri çekildi.', tone: 'info' } });
     }
 
+    /* ── Takvim CRUD (12-calendars-spec §2) ── */
+    case 'openCalendarForm':
+      return ui(state, {
+        calendarForm: {
+          mode: action.mode,
+          calendarId: action.calendarId ?? null,
+          focus: action.focus ?? 'name',
+        },
+        calendarMenuId: null,
+      });
+
+    case 'closeCalendarForm':
+      return ui(state, { calendarForm: null });
+
+    /** BR-CAL-02 — takvim onu oluşturan kullanıcıya aittir. */
+    case 'createCalendar': {
+      const id = `cal_${state.seq}` as CalendarId;
+      const next: AppState = {
+        ...state,
+        calendars: [...state.calendars, {
+          id, name: action.name.trim(), color: action.color,
+          ownerId: state.currentUserId, kind: 'personal', isDefault: false,
+        }],
+        seq: state.seq + 1,
+      };
+      return ui(next, {
+        calendarForm: null,
+        toast: { message: `${action.name.trim()} takvimi oluşturuldu.`, tone: 'success' },
+      });
+    }
+
+    /** BR-CAL-03 — varsayılan takvimin de adı ve rengi değiştirilebilir. */
+    case 'updateCalendar':
+      return ui({
+        ...state,
+        calendars: state.calendars.map((c) => (c.id === action.calendarId
+          ? { ...c, name: action.name.trim(), color: action.color } : c)),
+      }, { calendarForm: null, toast: { message: 'Takvim güncellendi.', tone: 'success' } });
+
+    case 'askDeleteCalendar':
+      return ui(state, { deletingCalendarId: action.calendarId, calendarMenuId: null });
+
+    /**
+     * BR-CAL-21 — varsayılan takvim silinemez.
+     * BR-CAL-22 — etkinlikler sessizce ve topluca silinemez; kullanıcı açık seçim yapar.
+     * BR-CAL-23 — silme tüm paylaşımları kaldırır; alıcılar N-CAL-02 alır.
+     */
+    case 'deleteCalendar': {
+      const cal = state.calendars.find((c) => c.id === action.calendarId);
+      if (!cal || cal.isDefault || cal.ownerId !== state.currentUserId) return state;
+
+      const affected = state.events.filter((e) => e.calendarId === cal.id);
+      let next: AppState = state;
+
+      if (action.mode === 'move' && action.targetCalendarId) {
+        next = {
+          ...next,
+          events: next.events.map((e) => (e.calendarId === cal.id
+            ? { ...e, calendarId: action.targetCalendarId! } : e)),
+        };
+      } else {
+        // Etkinlikler de siliniyorsa bağlı rezervasyon ve talepler Cancelled olur (BR-APR-31).
+        for (const e of affected) next = releaseReservation(next, e.id);
+        next = { ...next, events: next.events.filter((e) => e.calendarId !== cal.id) };
+      }
+
+      // Paylaşımlar düşer, alıcılar bilgilendirilir.
+      const grantees = next.shares.filter((s) => s.calendarId === cal.id).map((s) => s.granteeId);
+      next = { ...next, shares: next.shares.filter((s) => s.calendarId !== cal.id) };
+      for (const g of grantees) {
+        next = notify(next, g, 'N-CAL-02', 'Takvim paylaşımı kaldırıldı',
+          `${cal.name} takvimi silindi ve artık sizinle paylaşılmıyor.`);
+      }
+
+      return ui({
+        ...next,
+        calendars: next.calendars.filter((c) => c.id !== cal.id),
+      }, {
+        deletingCalendarId: null,
+        hiddenCalendarIds: next.ui.hiddenCalendarIds.filter((c) => c !== cal.id),
+        toast: {
+          message: affected.length === 0
+            ? `${cal.name} silindi.`
+            : action.mode === 'move'
+              ? `${cal.name} silindi; ${affected.length} etkinlik taşındı.`
+              : `${cal.name} ve ${affected.length} etkinliği silindi.`,
+          tone: 'info',
+        },
+      });
+    }
+
     /* ── Oda yönetimi ── */
     case 'selectRoom':
       return ui(state, { selectedRoomId: action.roomId });
+
+    case 'startRoomDraft':
+      return ui(state, { creatingRoom: true, selectedRoomId: null });
+
+    case 'cancelRoomDraft':
+      return ui(state, { creatingRoom: false, selectedRoomId: state.rooms[0]?.id ?? null });
+
+    /** BR-ROOM-02 — oda adı organizasyon içinde benzersizdir. */
+    case 'createRoom': {
+      const id = `room_${state.seq}` as RoomId;
+      const room = { ...action.room, id };
+      return ui({ ...state, rooms: [...state.rooms, room], seq: state.seq + 1 }, {
+        creatingRoom: false, selectedRoomId: id,
+        toast: { message: `${room.name} oluşturuldu.`, tone: 'success' },
+      });
+    }
+
+    /** BR-ROOM-31 — rezervasyon kaydı olan oda silinemez; pasife alınır. */
+    case 'deleteRoom': {
+      const room = state.rooms.find((r) => r.id === action.roomId);
+      if (!room) return state;
+      if (state.reservations.some((r) => r.roomId === room.id)) {
+        return ui(state, {
+          confirm: null,
+          toast: {
+            message: `${room.name} silinemez: rezervasyon kaydı var. Bunun yerine pasife alabilirsiniz.`,
+            tone: 'error',
+          },
+        });
+      }
+      const rooms = state.rooms.filter((r) => r.id !== room.id);
+      return ui({ ...state, rooms }, {
+        confirm: null,
+        selectedRoomId: rooms[0]?.id ?? null,
+        toast: { message: `${room.name} silindi.`, tone: 'info' },
+      });
+    }
+
+    /** BR-ROOM-30 — bina, oda formundaki lokasyon alanından oluşturulur. */
+    case 'createBuilding': {
+      const name = action.name.trim();
+      if (!name || state.buildings.some((b) => b.name === name)) return state;
+      return {
+        ...state,
+        buildings: [...state.buildings, { id: `bld_${state.seq}` as never, name }],
+        seq: state.seq + 1,
+      };
+    }
 
     case 'saveRoom':
       return ui({

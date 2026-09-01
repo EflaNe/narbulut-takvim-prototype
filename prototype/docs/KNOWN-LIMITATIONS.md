@@ -40,8 +40,10 @@ veya backend gerektiren konulardır.
 | L-19 | Delegation / self-approval politikası | `BR-APR-17c` |
 | L-20 | Çok adımlı onay, eskalasyon, kural motoru | `BR-APR-21`, `D-034` |
 | L-21 | RSVP akışının ürün tasarımı | `19` §2 — yalnız bildirim tanımlı |
-| L-22 | Takvim oluşturma / yeniden adlandırma / renk değiştirme / silme | Prototipte menü açılır, aksiyon bilgi mesajı verir |
-| L-23 | Oda oluşturma / silme | Mevcut odalar düzenlenebilir; ekleme kapsam dışı |
+| ~~L-22~~ | ~~Takvim oluşturma / yeniden adlandırma / renk / silme~~ | ✅ **1 Eylül 2026'da uygulandı** — `12` BR-CAL-41/42, SR-CAL-06 |
+| ~~L-23~~ | ~~Oda oluşturma / silme~~ | ✅ **1 Eylül 2026'da uygulandı** — `13` BR-ROOM-29/30/31 |
+| L-23a | Bina **yeniden adlandırma ve silme** yok; bina yalnız oluşturulabilir (`13` BR-ROOM-30 ayrı yönetim ekranı öngörmüyor) |
+| L-23b | Oda **kopyalama / toplu oluşturma** yok |
 | L-24 | Mobilde sahip tarafı paylaşım yönetimi | Talimatla kapsam dışı; mobilde yalnız "Takvimi kaldır" |
 
 ## Arayüz sınırları

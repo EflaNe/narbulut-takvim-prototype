@@ -6,9 +6,49 @@ import {
 import { userById } from '../../lib/domain/selectors';
 import { Button } from '../primitives/Button';
 import { Icon } from '../primitives/Icon';
-import type { Room, UserId } from '../../lib/domain/types';
+import type { BuildingId, Room, UserId } from '../../lib/domain/types';
+
+/** BR-PRM-03 — yeni odada her iki erişim kuralı da "Tüm kullanıcılar" ile başlar. */
+const blankRoom = (buildingId: BuildingId | ''): Room => ({
+  id: 'room_draft' as Room['id'],
+  name: '', buildingId: (buildingId || 'bld_ana') as BuildingId, floor: '',
+  capacity: 8, features: [], active: true,
+  requiresApproval: false, approverUserIds: [], approverGroupIds: [],
+  canView: { allUsers: true, userIds: [], groupIds: [] },
+  canReserve: { allUsers: true, userIds: [], groupIds: [] },
+});
 
 const FEATURES = ['Projeksiyon', 'Video konferans', 'Beyaz tahta'];
+
+/**
+ * BR-ROOM-31 — rezervasyon kaydı olan oda silinemez; pasife alınır.
+ * Sebep hover gerektirmeden okunur (`11` ST-DIS-02).
+ */
+function RoomDeleteAction({ room }: { room: Room }) {
+  const state = useAppState();
+  const dispatch = useDispatch();
+  const bookings = state.reservations.filter((r) => r.roomId === room.id).length;
+  if (bookings > 0) {
+    return (
+      <span className="inlinemsg inlinemsg--info" style={{ marginRight: 4 }}>
+        <Icon name="lock" size={14} />
+        {bookings} rezervasyon kaydı var — silinemez, pasife alınabilir
+      </span>
+    );
+  }
+  return (
+    <button className="evd__link evd__link--quiet" style={{ paddingTop: 0 }}
+      onClick={() => dispatch({
+        type: 'askConfirm',
+        confirm: {
+          title: `${room.name} silinsin mi?`,
+          body: 'Bu odanın hiç rezervasyon kaydı yok, bu yüzden silinebilir. İşlem geri alınamaz.',
+          confirmLabel: 'Sil', tone: 'destructive',
+          action: { type: 'deleteRoom', roomId: room.id },
+        },
+      })}>Sil</button>
+  );
+}
 
 function Block({ title, sub, children }: {
   title: string; sub: string; children: React.ReactNode;
@@ -25,22 +65,44 @@ function Block({ title, sub, children }: {
 export function RoomsScreen() {
   const state = useAppState();
   const dispatch = useDispatch();
-  const selectedId = state.ui.selectedRoomId ?? state.rooms[0]?.id ?? null;
-  const source = state.rooms.find((r) => r.id === selectedId) ?? null;
+  const creating = state.ui.creatingRoom;
+  const selectedId = state.ui.selectedRoomId ?? (creating ? null : state.rooms[0]?.id ?? null);
+  const source = creating
+    ? blankRoom(state.buildings[0]?.id ?? '')
+    : state.rooms.find((r) => r.id === selectedId) ?? null;
   const [form, setForm] = useState<Room | null>(source);
   const [approverQuery, setApproverQuery] = useState('');
+  const [newBuilding, setNewBuilding] = useState<string | null>(null);
+  const [pendingBuilding, setPendingBuilding] = useState<string | null>(null);
 
-  useEffect(() => { setForm(source); setApproverQuery(''); }, [source]);
+  // Yeni bina reducer'da oluşturulduktan sonra forma bağlanır.
+  useEffect(() => {
+    if (!pendingBuilding) return;
+    const b = state.buildings.find((x) => x.name === pendingBuilding);
+    if (b) { setForm((f) => (f ? { ...f, buildingId: b.id } : f)); setPendingBuilding(null); }
+  }, [pendingBuilding, state.buildings]);
+
+  useEffect(() => {
+    setForm(source);
+    setApproverQuery('');
+    setNewBuilding(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, creating]);
 
   const blocking = useMemo(() => {
     if (!form) return [];
     const out: string[] = [];
     if (!form.name.trim()) out.push('Oda adı gerekli');
+    // BR-ROOM-02 — oda adı organizasyon içinde benzersizdir.
+    if (form.name.trim() && state.rooms.some((r) => r.id !== form.id
+      && r.name.trim().toLocaleLowerCase('tr-TR') === form.name.trim().toLocaleLowerCase('tr-TR'))) {
+      out.push('Bu adda bir oda zaten var.');
+    }
     if (!roomApprovalConfigValid(form)) out.push('En az bir onaylayıcı seçin.');
     if (!isAccessRuleValid(form.canView)) out.push('“Görebilir” kuralı boş bırakılamaz.');
     if (!isAccessRuleValid(form.canReserve)) out.push('“Rezerve edebilir” kuralı boş bırakılamaz.');
     return out;
-  }, [form]);
+  }, [form, state.rooms]);
 
   const approverSuggestions = useMemo(() => {
     if (!form) return [];
@@ -52,6 +114,21 @@ export function RoomsScreen() {
   }, [approverQuery, state.users, form]);
 
   if (!form) return <div className="admin" />;
+
+  /** BR-ROOM-30 — bina, ayrı bir yönetim ekranı olmadan oda formundan oluşturulur. */
+  const addBuilding = () => {
+    const name = (newBuilding ?? '').trim();
+    if (!name) return;
+    const existing = state.buildings.find(
+      (b) => b.name.toLocaleLowerCase('tr-TR') === name.toLocaleLowerCase('tr-TR'));
+    if (existing) {
+      setForm({ ...form, buildingId: existing.id });
+    } else {
+      dispatch({ type: 'createBuilding', name });
+      setPendingBuilding(name);
+    }
+    setNewBuilding(null);
+  };
 
   const accessValue = (key: 'canView' | 'canReserve') =>
     (form[key].allUsers ? 'all' : 'subjects');
@@ -73,9 +150,10 @@ export function RoomsScreen() {
     <div className="admin">
       <div className="roomedit">
         <header className="roomedit__head">
-          <span className="roomedit__title">{form.name || 'Oda'}</span>
-          <span className="roomedit__eyebrow">Oda ayarları</span>
+          <span className="roomedit__title">{form.name || (creating ? 'Yeni oda' : 'Oda')}</span>
+          <span className="roomedit__eyebrow">{creating ? 'Oluşturuluyor' : 'Oda ayarları'}</span>
           <span className="spacer" />
+          {!creating && <RoomDeleteAction room={form} />}
           <button className="switch" aria-pressed={form.active}
             onClick={() => setForm({ ...form, active: !form.active })}>
             <span className={`switch__track${form.active ? ' is-on' : ''}`}>
@@ -213,10 +291,27 @@ export function RoomsScreen() {
             <div className="formrow">
               <div className="formfield" style={{ flex: 1 }}>
                 <label htmlFor="room-building">Bina</label>
-                <select id="room-building" className="textinput" value={form.buildingId}
-                  onChange={(e) => setForm({ ...form, buildingId: e.target.value as Room['buildingId'] })}>
-                  {state.buildings.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
+                {newBuilding === null ? (
+                  <select id="room-building" className="textinput" value={form.buildingId}
+                    onChange={(e) => {
+                      if (e.target.value === '__new__') { setNewBuilding(''); return; }
+                      setForm({ ...form, buildingId: e.target.value as BuildingId });
+                    }}>
+                    {state.buildings.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                    <option value="__new__">＋ Yeni bina ekle…</option>
+                  </select>
+                ) : (
+                  <div className="newbuilding">
+                    <input className="textinput" autoFocus value={newBuilding}
+                      aria-label="Yeni bina adı" placeholder="Bina adı"
+                      onChange={(e) => setNewBuilding(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') addBuilding(); }} />
+                    <Button variant="outline" size="sm" disabled={!newBuilding.trim()}
+                      onClick={addBuilding}>Ekle</Button>
+                    <Button variant="secondary" size="sm"
+                      onClick={() => setNewBuilding(null)}>Vazgeç</Button>
+                  </div>
+                )}
               </div>
               <div className="formfield" style={{ flex: 1 }}>
                 <label htmlFor="room-floor">Kat</label>
@@ -238,18 +333,21 @@ export function RoomsScreen() {
               <Icon name="xCircle" size={14} />{blocking.length} engelleyici sorun
             </span>
           )}
-          <Button variant="secondary" onClick={() => setForm(source)}>Vazgeç</Button>
+          <Button variant="secondary"
+            onClick={() => (creating ? dispatch({ type: 'cancelRoomDraft' }) : setForm(source))}>
+            Vazgeç
+          </Button>
           <Button variant="primary" disabled={blocking.length > 0}
             onClick={() => {
               const { room, changed } = completeViewFromReserve(form);
-              dispatch({ type: 'saveRoom', room });
+              dispatch(creating ? { type: 'createRoom', room } : { type: 'saveRoom', room });
               if (changed) {
                 dispatch({
                   type: 'toast',
                   message: 'Rezerve edebilme görebilmeyi gerektirdiği için görüntüleme hakkı otomatik eklendi.',
                 });
               }
-            }}>Kaydet</Button>
+            }}>{creating ? 'Odayı oluştur' : 'Kaydet'}</Button>
         </div>
       </div>
     </div>

@@ -321,3 +321,60 @@ Etiket/değer tablosu yalnızca **tarih bloğu ve kartın anlamlı olmadığı**
 (`N-EVT-05`, `N-SER-02`, `N-CAL-02`, `N-RES-04`).
 
 Doğrulama: 16/16 · mobil taşma 0 · harici istek 0 · konsol hatası 0 · HTML kaçış hatası yok.
+
+---
+
+## 11. CRUD tamamlama turu — 1 Eylül 2026
+
+Ürün sahibi iki sorun bildirdi. Biri teşhis düzeltmesi gerektirdi, diğerinde tamamen haklıydı.
+
+### 11.1 · Takvim paylaşımı — eksik değildi, **keşfedilemiyordu**
+
+Paylaşım yüzeyi vardı (`Takvimlerim → ⋯ → Paylaş`) ve demo akışı bunu test edip geçiyordu.
+Gerçek sorun görünürlüktü:
+
+- `⋯` ikonu `#B7BDC6` — çok düşük kontrast, etiketsiz
+- ⚠️ **Takvimin paylaşılmış olduğu hiçbir yerde görünmüyordu.** Bu göstergeyi canonical'a birebir
+  uymak için **ben kaldırmıştım** — hata bendeydi
+- Asimetri: alıcı tarafı ("Benimle paylaşılanlar") adlandırılmış ve görünürken veren taraf saklıydı
+
+**Spec boşluğu:** `12` §5.6 paylaşımın kurallarını eksiksiz tanımlıyordu ama **giriş noktasını ve
+paylaşılmış durumun gösterimini** hiçbir kural tanımlamıyordu.
+
+→ `BR-CAL-43` (giriş noktası keşfedilebilir olmalı, satırda iz) ve `BR-CAL-44` (iz yalnız sahibe)
+yazıldı; gerekçe `SR-CAL-10`.
+
+### 11.2 · Oda ekleme — spec'te vardı, üründe yoktu
+
+`13-rooms-spec` roller tablosu açıkça *"Organizasyon yöneticisi oda **oluşturur**, düzenler,
+pasife alır, siler"* diyordu. Ben `+` butonunu "kapsam dışı" mesajıyla geçmiştim.
+
+Aynı ailede beş stub daha vardı; hepsi tamamlandı:
+
+| Yetenek | Kural |
+|---|---|
+| Takvim oluşturma | `BR-CAL-41` — yalnız ad + palet renk |
+| Takvim yeniden adlandırma / renk | `BR-CAL-42` — ikisi aynı form, varsayılan takvim de düzenlenebilir |
+| Takvim silme | `SR-CAL-06` **karara bağlandı** — açık seçim, taşıma varsayılan |
+| Oda oluşturma | `BR-ROOM-29` — düzenlemeyle aynı form, taslak satır |
+| Bina ekleme | `BR-ROOM-30` — oda formundan, ayrı ekran yok |
+| Oda silme | `BR-ROOM-31` — rezervasyon kaydı varsa silinmez, pasife alınır |
+
+### 11.3 · Açığa çıkan spec boşluğu
+
+⚠️ `BR-ROOM-04/05/06` binayı kat için **ön koşul** yapıyordu ama **binayı kimin, nereden
+oluşturduğu hiçbir spec'te tanımlı değildi.** Oda oluşturma akışı bu boşluğu görünür kıldı.
+`BR-ROOM-30` ile kapatıldı: ayrı bir yönetim ekranı açmak `D-028` progressive disclosure
+kararına aykırı olurdu.
+
+### 11.4 · Doğrulama
+
+12 uçtan uca kontrol geçti: paylaşım izi ve göstergeden drawer açılışı · takvim oluştur/düzenle/sil ·
+etkinlikli takvimde açık seçim · oda taslağı · yeni bina oluşturma ve seçilme · oda listeye ekleme ·
+rezervasyonsuz odada silme · rezervasyonlu odada kilit ve sebebin okunması.
+
+Test 45 → **55**. Demo akışı 29 adım, tamamı geçiyor. Konsol hatası 0, tüm kapılar geçiyor.
+
+⚠️ **Not:** demo verisindeki "Ürün" takviminin rengi `#2F6B4F`, `11-system-states-spec`'teki
+**Rezerve/olumlu** rengiyle aynı — bu `BR-CAL-05`'in "durum renkleriyle çakışmama" şartına
+aykırı. Canonical tasarımdan geldiği için değiştirilmedi; yeni palet bu rengi **içermiyor**.

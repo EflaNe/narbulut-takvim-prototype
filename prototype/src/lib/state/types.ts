@@ -62,6 +62,12 @@ export interface UiState {
   rejectingRequestId: RequestId | null;
   selectedRoomId: RoomId | null;
   toast: { message: string; tone: 'info' | 'success' | 'error' } | null;
+  /** Takvim oluşturma/düzenleme diyaloğu — null ise kapalı */
+  calendarForm: { mode: 'create' | 'edit'; calendarId: CalendarId | null; focus: 'name' | 'color' } | null;
+  /** Takvim silme diyaloğu */
+  deletingCalendarId: CalendarId | null;
+  /** Yeni oda taslağı açık mı (BR-ROOM-29) */
+  creatingRoom: boolean;
   /** Sunum UI'ında görünmez — Shift+D ile açılan demo paneli */
   demoPanelOpen: boolean;
   mobileSheet: 'none' | 'calendars' | 'event' | 'removeShared' | 'newEvent';
@@ -129,7 +135,18 @@ export type AppAction =
   | { type: 'startReject'; requestId: RequestId | null }
   | { type: 'rejectRequest'; requestId: RequestId; reason: string }
   | { type: 'withdrawRequest'; requestId: RequestId }
+  | { type: 'openCalendarForm'; mode: 'create' | 'edit'; calendarId?: CalendarId; focus?: 'name' | 'color' }
+  | { type: 'closeCalendarForm' }
+  | { type: 'createCalendar'; name: string; color: string }
+  | { type: 'updateCalendar'; calendarId: CalendarId; name: string; color: string }
+  | { type: 'askDeleteCalendar'; calendarId: CalendarId | null }
+  | { type: 'deleteCalendar'; calendarId: CalendarId; mode: 'move' | 'purge'; targetCalendarId?: CalendarId }
   | { type: 'selectRoom'; roomId: RoomId | null }
+  | { type: 'startRoomDraft' }
+  | { type: 'cancelRoomDraft' }
+  | { type: 'createRoom'; room: Room }
+  | { type: 'deleteRoom'; roomId: RoomId }
+  | { type: 'createBuilding'; name: string }
   | { type: 'saveRoom'; room: Room }
   | { type: 'updateRoomAccess'; roomId: RoomId; patch: Partial<Room> }
   | { type: 'toast'; message: string; tone?: 'info' | 'success' | 'error' }

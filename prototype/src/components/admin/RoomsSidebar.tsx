@@ -6,7 +6,7 @@ import { Icon } from '../primitives/Icon';
 export function RoomsSidebar() {
   const state = useAppState();
   const dispatch = useDispatch();
-  const selectedId = state.ui.selectedRoomId ?? state.rooms[0]?.id ?? null;
+  const selectedId = state.ui.selectedRoomId ?? (state.ui.creatingRoom ? null : state.rooms[0]?.id ?? null);
   const activeCount = state.rooms.filter((r) => r.active).length;
   const pendingCount = state.requests.filter((r) => r.status === 'pending').length;
   const restricted = state.rooms.filter((r) => !r.canReserve.allUsers).length;
@@ -20,10 +20,21 @@ export function RoomsSidebar() {
           <span className="callist__title">Odalar</span>
           <span className="spacer" />
           <button className="callist__add" aria-label="Oda ekle" title="Oda ekle"
-            onClick={() => dispatch({ type: 'toast', message: 'Oda oluşturma bu prototipte kapsam dışıdır.' })}>
+            onClick={() => dispatch({ type: 'startRoomDraft' })}>
             <Icon name="plus" size={14} />
           </button>
         </div>
+        {/* BR-ROOM-29 — yeni oda, kaydedilene kadar taslak satır olarak durur. */}
+        {state.ui.creatingRoom && (
+          <button className="roomcard is-active is-draft" aria-current="true"
+            onClick={() => dispatch({ type: 'startRoomDraft' })}>
+            <span className="roomcard__top">
+              <span className="roomcard__name">Yeni oda</span>
+              <span className="roomcard__cap">taslak</span>
+            </span>
+            <span className="roomcard__loc">Kaydedilene kadar listeye eklenmez</span>
+          </button>
+        )}
         {state.rooms.map((room) => (
           <button key={room.id} className={`roomcard${room.id === selectedId ? ' is-active' : ''}`}
             aria-current={room.id === selectedId ? 'true' : undefined}

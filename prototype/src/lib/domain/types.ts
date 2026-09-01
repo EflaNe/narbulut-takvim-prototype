@@ -40,6 +40,22 @@ export interface Group {
 
 export type CalendarKind = 'personal' | 'project' | 'team' | 'meetings';
 
+/**
+ * BR-CAL-05 — takvim rengi **yönetilen bir paletten** seçilir; serbest renk kodu girilmez.
+ * Palet, `11-system-states-spec.md`'deki durum renkleriyle çakışmaz:
+ * #2F6B4F (Rezerve/olumlu) · #7A5300 (Onay bekliyor) · #9C3227 (hata) paletten dışlanmıştır.
+ */
+export const CALENDAR_PALETTE = [
+  { hex: '#6259C9', name: 'Mor' },
+  { hex: '#0058B8', name: 'Mavi' },
+  { hex: '#177066', name: 'Çam' },
+  { hex: '#3B7C8C', name: 'Çelik' },
+  { hex: '#A83E69', name: 'Bordo' },
+  { hex: '#7A3E9D', name: 'Menekşe' },
+  { hex: '#B4531F', name: 'Kiremit' },
+  { hex: '#E8A33D', name: 'Amber' },
+] as const;
+
 export interface Calendar {
   id: CalendarId;
   name: string;

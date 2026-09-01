@@ -11,6 +11,7 @@ import { ReadOnlyEventDrawer } from './components/event/ReadOnlyEventDrawer';
 import { RoomPickerDrawer } from './components/room/RoomPickerDrawer';
 import { ShareDrawer } from './components/sharing/ShareDrawer';
 import { ConfirmDialog } from './components/overlay/ConfirmDialog';
+import { CalendarDeleteDialog, CalendarFormDialog } from './components/shell/CalendarDialogs';
 import { Toast } from './components/primitives/Toast';
 import { DemoPanel } from './components/shell/DemoPanel';
 import { MobileApp } from './components/mobile/MobileApp';
@@ -30,6 +31,8 @@ export function App() {
           </div>
         )}
         {state.ui.draft && !state.ui.roomPickerOpen && state.ui.route !== 'calendar' && <EventDrawer />}
+        <CalendarFormDialog />
+        <CalendarDeleteDialog />
         <ConfirmDialog />
         <Toast />
         <DemoPanel />
@@ -50,6 +53,8 @@ export function App() {
       {state.ui.readOnlyEventId && <ReadOnlyEventDrawer />}
       {state.ui.shareCalendarId && <ShareDrawer />}
 
+      <CalendarFormDialog />
+      <CalendarDeleteDialog />
       <ConfirmDialog />
       <Toast />
       <DemoPanel />

@@ -120,3 +120,8 @@
 .permexplain b{color:var(--text-primary);font-weight:500}
 .permfoot{flex:none;display:flex;align-items:center;gap:14px;padding:14px 24px 16px;
   border-top:1px solid var(--line-divider);margin-top:16px}
+.roomcard.is-draft{background:#FBFCFD;box-shadow:inset 3px 0 0 var(--text-faint)}
+.roomcard.is-draft .roomcard__name{color:var(--text-secondary)}
+.roomcard.is-draft .roomcard__cap{color:var(--text-muted)}
+.newbuilding{display:flex;align-items:center;gap:8px;margin-top:8px}
+.newbuilding input{flex:1;min-width:0}
