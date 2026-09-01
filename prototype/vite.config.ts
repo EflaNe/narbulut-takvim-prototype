@@ -5,6 +5,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: './',
   plugins: [react()],
-  server: { port: 5180, strictPort: false },
+  server: {
+    port: 5180,
+    strictPort: false,
+    // Üretilen e-posta çıktıları izlenmesin — sunum sırasında sayfayı yeniden yüklemesin.
+    watch: { ignored: ['**/emails/dist/**'] },
+  },
   preview: { port: 5180 },
 });
