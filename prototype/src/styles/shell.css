@@ -142,3 +142,5 @@
   border:none;border-radius:5px;background:#EEF1F5;flex:none;
   font:400 11px/1 var(--font);color:var(--text-tertiary)}
 .calrow__shared:hover{background:#E2E7EE;color:var(--brand)}
+/* Bugün'e bakılıyorsa buton belirgin durur — ayrıca rozet göstermeye gerek yok. */
+.datehero__today.is-on{background:rgba(255,255,255,.30);font-weight:500}

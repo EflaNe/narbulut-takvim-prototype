@@ -163,10 +163,29 @@ describe('takvim görünürlüğü ve paylaşım', () => {
 
 describe('gezinme', () => {
   it('hafta ileri/geri ve Bugün çalışır', () => {
-    const next = reducer(base, { type: 'shiftWeek', delta: 1 });
+    const next = reducer(base, { type: 'shiftView', delta: 1 });
     expect(next.ui.anchorDate).toBe('2026-08-31');
     const back = reducer(next, { type: 'goToday' });
     expect(back.ui.anchorDate).toBe('2026-08-28');
+  });
+
+  it('BR-SHELL-03: adım aktif görünüm moduna göre değişir', () => {
+    const day = run(base, { type: 'setViewMode', mode: 'day' }, { type: 'shiftView', delta: 1 });
+    expect(day.ui.anchorDate).toBe('2026-08-29');
+
+    const month = run(base, { type: 'setViewMode', mode: 'month' }, { type: 'shiftView', delta: 1 });
+    expect(month.ui.anchorDate).toBe('2026-09-28');
+
+    const byRoom = run(base, { type: 'setViewMode', mode: 'byRoom' }, { type: 'shiftView', delta: -1 });
+    expect(byRoom.ui.anchorDate).toBe('2026-08-27');
+  });
+
+  it('ay kaydırması ayın son gününü aşmaz', () => {
+    const s = run(base,
+      { type: 'setAnchorDate', date: '2026-01-31' },
+      { type: 'setViewMode', mode: 'month' },
+      { type: 'shiftView', delta: 1 });
+    expect(s.ui.anchorDate).toBe('2026-02-28');
   });
 
   it('hızlı oluşturma detaylı forma taşınır ve başlık korunur', () => {

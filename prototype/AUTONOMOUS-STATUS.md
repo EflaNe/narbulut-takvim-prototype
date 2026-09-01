@@ -378,3 +378,31 @@ Test 45 → **55**. Demo akışı 29 adım, tamamı geçiyor. Konsol hatası 0, 
 ⚠️ **Not:** demo verisindeki "Ürün" takviminin rengi `#2F6B4F`, `11-system-states-spec`'teki
 **Rezerve/olumlu** rengiyle aynı — bu `BR-CAL-05`'in "durum renkleriyle çakışmama" şartına
 aykırı. Canonical tasarımdan geldiği için değiştirilmedi; yeni palet bu rengi **içermiyor**.
+
+---
+
+## 12. Navigasyon senkronizasyonu — 1 Eylül 2026
+
+Ürün sahibi tarih kartındaki ileri okuna basınca tarihin ilerlemediğini bildirdi.
+Tek bir hata değildi; **sol rail'in aktif görünümü yansıtmaması** diye tarif edilebilecek
+dört belirtisi olan bir kusurdu.
+
+| # | Hata | Kural |
+|---|---|---|
+| 1 | ⚠️ **Tarih kartı sabit `today`'i gösteriyordu.** Oklar `anchorDate`'i değiştiriyordu ama kartta hiçbir şey değişmiyordu — kullanıcıya navigasyon bozukmuş gibi görünüyordu | `BR-SHELL-04a` **(yeni)** |
+| 2 | **Mini takvim ana görünümü izlemiyordu.** İmleç yalnız ilk render'da `anchorDate`'ten alınıyor, sonra bağımsız kalıyordu | `BR-SHELL-05a` **(yeni)** |
+| 3 | **İleri/geri her modda 1 hafta atlıyordu** — Gün ve Ay görünümünde yanlış *(gözden geçirme listesindeki A2)* | `BR-SHELL-03` (mevcut, uygulanmamıştı) |
+| 4 | **Aralık etiketi her modda hafta aralığı gösteriyordu** — Gün görünümünde bir hafta, Ay görünümünde bir hafta | `BR-SHELL-04` (genişletildi) |
+
+3 ve 4, 1 düzeltilince **görünür hâle geliyordu**: kart doğru tarihi gösterdiği anda aylık
+görünümde bir hafta atlamanın yanlışlığı ortaya çıkıyor. Bu yüzden dördü birlikte kapatıldı.
+
+**Tasarım notu:** kartta önce bir "bugün" rozeti denendi, ama `Bugün` butonu zaten aynı kartta
+duruyordu — aynı bilgiyi iki kez söylemek yerine buton **aktif durum** aldı.
+
+`shiftWeek` aksiyonu `shiftView` ile değiştirildi; adım ve kontrol etiketleri
+(`Sonraki gün` / `hafta` / `ay`) aktif moddan türetiliyor.
+
+Doğrulama: hafta/gün/ay adımları · mini takvim senkronu · aralık etiketi · `Bugün` dönüşü ve
+aktif durumu · ay kaydırmasında ay sonu taşması (31 Ocak → 28 Şubat). Test 55 → **57**.
+Demo akışı 29 adım, tüm kapılar geçiyor.

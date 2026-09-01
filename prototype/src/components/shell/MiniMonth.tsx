@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import {
   DAY_NAMES_MINI, addDays, dayOfMonth, isWeekend, monthLabel, monthMatrix, sameMonth,
@@ -10,6 +10,10 @@ export function MiniMonth() {
   const { today, ui } = useAppState();
   const dispatch = useDispatch();
   const [cursor, setCursor] = useState(ui.anchorDate);
+
+  // BR-SHELL-05 — mini takvim ikincil navigasyondur; ana görünüm nereye giderse
+  // onu takip eder. Kendi ok tuşlarıyla bağımsız ay gezinmesi bozulmaz.
+  useEffect(() => { setCursor(ui.anchorDate); }, [ui.anchorDate]);
   const weeks = monthMatrix(cursor);
   const currentWeekStart = startOfWeek(ui.anchorDate);
 

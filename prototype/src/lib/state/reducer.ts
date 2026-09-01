@@ -9,7 +9,7 @@ import type {
 import {
   canCreatePendingRequest, canDecideRequest, roomAvailability,
 } from '../domain/rules';
-import { addDays, startOfWeek } from '../domain/time';
+import { shiftByView } from '../domain/time';
 import type { AppAction, AppState, EventDraft } from './types';
 import * as demo from './demoData';
 
@@ -130,10 +130,11 @@ export function reducer(state: AppState, action: AppAction): AppState {
     case 'setAnchorDate':
       return ui(state, { anchorDate: action.date, mobileDate: action.date });
 
-    case 'shiftWeek':
-      return ui(state, {
-        anchorDate: addDays(startOfWeek(state.ui.anchorDate), action.delta * 7),
-      });
+    /** BR-SHELL-03 — adım, aktif görünüm moduna göre: gün / hafta / ay. */
+    case 'shiftView': {
+      const date = shiftByView(state.ui.anchorDate, state.ui.viewMode, action.delta);
+      return ui(state, { anchorDate: date, mobileDate: date });
+    }
 
     case 'goToday':
       return ui(state, { anchorDate: state.today, mobileDate: state.today });

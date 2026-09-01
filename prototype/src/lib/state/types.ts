@@ -95,7 +95,7 @@ export interface AppState {
 export type AppAction =
   | { type: 'navigate'; route: Route }
   | { type: 'setAnchorDate'; date: IsoDate }
-  | { type: 'shiftWeek'; delta: number }
+  | { type: 'shiftView'; delta: number }
   | { type: 'goToday' }
   | { type: 'setViewMode'; mode: CalendarViewMode }
   | { type: 'toggleCalendar'; calendarId: CalendarId }

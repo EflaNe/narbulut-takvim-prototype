@@ -1,6 +1,6 @@
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { searchEvents, calendarById, userById } from '../../lib/domain/selectors';
-import { longDateLabel, hhmm, weekRangeLabel } from '../../lib/domain/time';
+import { hhmm, longDateLabel, stepLabel, viewRangeLabel } from '../../lib/domain/time';
 import { Icon } from '../primitives/Icon';
 import { IconButton } from '../primitives/IconButton';
 import { Button } from '../primitives/Button';
@@ -24,12 +24,14 @@ export function TopBar() {
 
   return (
     <header className="topbar">
-      <span className="topbar__range">{weekRangeLabel(state.ui.anchorDate)}</span>
+      <span className="topbar__range">
+        {viewRangeLabel(state.ui.anchorDate, state.ui.viewMode)}
+      </span>
       <div className="topbar__nav">
-        <IconButton icon="chevronLeft" label="Önceki hafta"
-          onClick={() => dispatch({ type: 'shiftWeek', delta: -1 })} />
-        <IconButton icon="chevronRight" label="Sonraki hafta"
-          onClick={() => dispatch({ type: 'shiftWeek', delta: 1 })} />
+        <IconButton icon="chevronLeft" label={`Önceki ${stepLabel(state.ui.viewMode)}`}
+          onClick={() => dispatch({ type: 'shiftView', delta: -1 })} />
+        <IconButton icon="chevronRight" label={`Sonraki ${stepLabel(state.ui.viewMode)}`}
+          onClick={() => dispatch({ type: 'shiftView', delta: 1 })} />
       </div>
       <span className="spacer" />
 

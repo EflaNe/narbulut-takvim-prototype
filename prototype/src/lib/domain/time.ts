@@ -35,6 +35,17 @@ export function addDays(s: IsoDate, n: number): IsoDate {
   return toIso(d);
 }
 
+export function addMonths(s: IsoDate, n: number): IsoDate {
+  const d = fromIso(s);
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  // Ayın son gününü aşan tarihler ay sonuna sabitlenir (31 Ocak → 28 Şubat).
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, last));
+  return toIso(d);
+}
+
 /** 0 = Pazartesi … 6 = Pazar */
 export function weekdayIndex(s: IsoDate): number {
   return (fromIso(s).getDay() + 6) % 7;
@@ -135,4 +146,28 @@ export function monthMatrix(anchor: IsoDate): IsoDate[][] {
 
 export function sameMonth(a: IsoDate, b: IsoDate): boolean {
   return a.slice(0, 7) === b.slice(0, 7);
+}
+
+/**
+ * BR-SHELL-04 — görünen aralık etiketi her zaman yılı içerir ve
+ * aktif görünüm moduna göre değişir.
+ */
+export function viewRangeLabel(anchor: IsoDate, mode: string): string {
+  if (mode === 'week') return weekRangeLabel(anchor);
+  if (mode === 'month') return monthLabel(anchor);
+  return `${DAY_NAMES_LONG[weekdayIndex(anchor)]}, ${longDateLabel(anchor)}`;
+}
+
+/** BR-SHELL-03 — ileri/geri aktif görünüm moduna göre hareket eder. */
+export function shiftByView(anchor: IsoDate, mode: string, delta: number): IsoDate {
+  if (mode === 'week') return addDays(startOfWeek(anchor), delta * 7);
+  if (mode === 'month') return addMonths(anchor, delta);
+  return addDays(anchor, delta); // Günlük ve Odalara Göre → 1 gün
+}
+
+/** Navigasyon kontrollerinin etiketi de moda göre değişir. */
+export function stepLabel(mode: string): string {
+  if (mode === 'week') return 'hafta';
+  if (mode === 'month') return 'ay';
+  return 'gün';
 }
