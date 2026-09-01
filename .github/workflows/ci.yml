@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Aynı dal için üst üste gelen çalıştırmalarda öncekini iptal et.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build · test · lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: E-posta şablonlarını üret
+        run: node emails/build.mjs
+
+      # scripts/demo-flow.mjs, screenshots.mjs ve gates.mjs burada ÇALIŞTIRILMAZ:
+      # puppeteer-core ile yereldeki Google Chrome'a bağlanırlar, runner'da Chrome yoktur.
+
+      - name: Build çıktısını sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: prototype-dist
+          path: prototype/dist
+          retention-days: 14
