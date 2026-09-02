@@ -595,7 +595,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
       return ui(next, {
         cancellingReservationId: null,
-        toast: { message: `${room.name} rezervasyonu kaldırıldı.`, tone: 'default' },
+        toast: { message: `${room.name} rezervasyonu kaldırıldı.`, tone: 'success' },
       });
     }
 
