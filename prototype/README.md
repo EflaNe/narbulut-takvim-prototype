@@ -76,6 +76,18 @@ Sunumda **`npm run dev`** yeterlidir ve en hızlısıdır.
 > `dist/index.html` dosyasını doğrudan çift tıklayarak açmayın: modern tarayıcılar
 > `file://` üzerinden ES modüllerini engeller. `npm run preview` kullanın.
 
+## Tek dosyalık paylaşılabilir demo
+
+```bash
+npm run bundle
+```
+
+→ `dist/narbulut-takvim-demo.html` — **451 kB, tek dosya.**
+
+JS, CSS ve altı Poppins fontu dosyanın içine gömülüdür. Kurulum, sunucu ve internet
+gerektirmez: dosyayı e-postayla gönderin, karşı taraf **çift tıklayıp açar**.
+`file://` üzerinden doğrulandı — harici istek 0, konsol hatası 0.
+
 ## Diğer komutlar
 
 ```bash
