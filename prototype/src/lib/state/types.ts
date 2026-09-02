@@ -155,6 +155,7 @@ export type AppAction =
   | { type: 'updateRoomAccess'; roomId: RoomId; patch: Partial<Room> }
   | { type: 'toast'; message: string; tone?: 'info' | 'success' | 'error' }
   | { type: 'clearToast' }
+  | { type: 'markNotificationsRead' }
   | { type: 'setPersona'; userId: UserId }
   | { type: 'signIn'; userId: UserId }
   | { type: 'signOut' }

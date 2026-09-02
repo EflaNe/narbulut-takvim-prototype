@@ -261,6 +261,12 @@ Bu modül kullanıcı girdisi almaz. Tek doğrulama alanı harici katılımcı e
 
 Bu spec bir yüzey tanımlamaz. Uygulama içi bildirim platform bileşenidir; e-posta istemcide render edilir.
 
+⚠️ **Prototip notu (2 Eylül 2026):** yüzeyin hiç olmaması, üretilen olayların doğrulanamamasına
+yol açtı — paylaşım yapılıyor, bildirim üretiliyor, ama hiçbir yerde görünmüyordu. Prototipe
+**minimum bir karşılık** eklendi: üst çubukta okunmamış sayacı taşıyan bir çan ve bildirim
+listesi. ⚠️ Bu yüzey **yeni bildirim türü üretmez**; yalnız bu spec'te tanımlı olayları gösterir.
+Gerçek üründe yüzeyin platforma mı ait olacağı kararı değişmedi (SR-NOT-09).
+
 Tek kısıt: **bildirimden ilgili etkinliğe/talebe gidiş mobilde de çalışmalıdır** (IR-NOT-01) — "rezervasyon durumunu görme" mobil zorunlu akışlardandır (D-047).
 
 ---
@@ -313,4 +319,5 @@ Tek kısıt: **bildirimden ilgili etkinliğe/talebe gidiş mobilde de çalışma
 | SR-NOT-05 | Organizasyon yöneticisi özel alıcı mı? | **Hayır** | D-039 yöneticiye *yetki* verdi, *abonelik* değil. Tüm etkinlik bildirimlerini yöneticiye göndermek gürültü üretir |
 | SR-NOT-06 | Onaya düşmeyen rezervasyon | **Ayrı bildirim üretmez** (BR-NOT-16) | Sonuç etkinlik oluşturma bildiriminin parçası; ayrı bildirim gereksiz gürültü |
 | SR-NOT-07 | Alıcı paylaşımı kendisi kaldırırsa sahip bilgilendirilir mi? | **Hayır** (BR-NOT-22) | Sahibin aksiyon alması gerekmiyor; `19` BR-NOT-07 gürültü kontrolüyle tutarlı. Sahip paylaşım listesinden zaten görebilir |
+| SR-NOT-09 | Uygulama içi bildirim yüzeyi kimin işi? | **Karar değişmedi: platformun.** Prototipte yalnızca doğrulanabilirlik için minimum bir karşılık bulunur (üst çubukta çan + liste) | Yüzeyin hiç olmaması, spec'te tanımlı olayların çalıştığını göstermeyi imkânsız kılıyordu. Prototipteki karşılık bir ürün kararı değil, **test edilebilirlik** gereğidir; gerçek üründe Narbulut kabuğunun bildirim merkezine bağlanması beklenir |
 | SR-NOT-08 | Sahip organizasyondan ayrılınca alıcılar bilgilendirilir mi? | **Evet, N-CAL-02** (BR-NOT-24) | Alıcının başlatmadığı bir erişim kaybı — BR-NOT-06 gereği bildirim zorunlu. Sessiz kaybolma `11` ST-CORE-01 ihlali olurdu |

@@ -69,6 +69,7 @@
 .calrow__check.is-on{box-shadow:none}
 .calrow__dot{width:8px;height:8px;border-radius:50%;flex:none}
 .calrow__name{font:400 13px/1 var(--font);color:var(--text-primary);flex:none}
+.calrow__name--grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .calrow__name.is-off{color:var(--text-tertiary)}
 .calrow__owner{font:400 11.5px/1 var(--font);color:var(--text-tertiary);min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -142,9 +143,33 @@
 .callist__reset:hover{background:#F1F6FC}
 
 /* Paylaşım göstergesi — hem sinyal hem giriş noktası (BR-CAL-41) */
-.calrow__shared{display:inline-flex;align-items:center;gap:4px;height:19px;padding:0 6px;
-  border:none;border-radius:5px;background:#EEF1F5;flex:none;
-  font:400 11px/1 var(--font);color:var(--text-tertiary)}
+.calrow__shared{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;
+  border:none;border-radius:6px;background:transparent;flex:none;
+  font:400 11px/1 var(--font);color:var(--text-faint);transition:background .12s,color .12s}
+.calrow:hover .calrow__shared{background:#EEF1F5;color:var(--text-tertiary)}
+.calrow__shared.is-on{background:#EEF1F5;color:var(--text-tertiary)}
 .calrow__shared:hover{background:#E2E7EE;color:var(--brand)}
 /* Bugün'e bakılıyorsa buton belirgin durur — ayrıca rozet göstermeye gerek yok. */
 .datehero__today.is-on{background:rgba(255,255,255,.30);font-weight:500}
+
+/* ── Bildirim çanı ──────────────────────────────────────── */
+.bell{position:relative;flex:none}
+.bell__btn{position:relative;display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border:none;border-radius:var(--r-control);background:transparent;
+  color:var(--text-secondary)}
+.bell__btn:hover{background:var(--bg-subtle);color:var(--text-primary)}
+.bell__dot{position:absolute;top:4px;right:4px;min-width:15px;height:15px;padding:0 4px;
+  border-radius:8px;background:var(--error);color:#fff;box-shadow:0 0 0 2px #fff;
+  font:500 9.5px/15px var(--font);text-align:center}
+.bell__head{padding:13px 15px 11px;border-bottom:1px solid var(--line-divider);
+  font:500 13px/1 var(--font);color:var(--text-primary)}
+.bell__empty{padding:22px 16px;font:400 12.5px/1.6 var(--font);color:var(--text-tertiary);
+  text-align:center}
+.bell__list{max-height:380px;overflow-y:auto}
+.bell__item{display:flex;gap:11px;padding:12px 15px;border-bottom:1px solid var(--line-divider)}
+.bell__item:last-child{border-bottom:none}
+.bell__kind{width:3px;border-radius:2px;flex:none;align-self:stretch}
+.bell__title{display:block;font:500 13px/1.35 var(--font);color:var(--text-primary)}
+.bell__body{display:block;margin-top:3px;font:400 12px/1.5 var(--font);color:var(--text-secondary)}
+.bell__meta{display:block;margin-top:5px;font:500 10px/1 var(--font);letter-spacing:.07em;
+  text-transform:uppercase;color:var(--text-muted)}

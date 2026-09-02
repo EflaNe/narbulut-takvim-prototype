@@ -6,10 +6,12 @@ export default defineConfig({
   base: './',
   plugins: [react()],
   server: {
+    // Yerel ağa açık: aynı Wi-Fi'daki başka cihazlar da erişebilir.
+    host: true,
     port: 5180,
     strictPort: false,
     // Üretilen e-posta çıktıları izlenmesin — sunum sırasında sayfayı yeniden yüklemesin.
     watch: { ignored: ['**/emails/dist/**'] },
   },
-  preview: { port: 5180 },
+  preview: { host: true, port: 5180 },
 });

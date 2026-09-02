@@ -472,3 +472,62 @@ ve bir "Tesis" takvimi eklendi. Diğer personaların takvimleri de artık kendi 
 Doğrulama: 10 uçtan uca kontrol · giriş ekranı · 4 persona · şerit · sabit persona satırı ·
 persona değişiminde veri korunumu · Zeynep'in kendi takvimleri · Zeynep'in Kick-off talebini
 görüp onaylayabilmesi · doğrudan bağlantı. Demo akışı 29 adım ve tüm kapılar geçmeye devam ediyor.
+
+---
+
+## 14. Paylaşım keşfedilebilirliği ve bildirim yüzeyi — 2 Eylül 2026
+
+Üç kişilik testte ürün sahibi iki soru sordu: *"kendi takvimimi başkasıyla nasıl paylaşacağım"*
+ve *"paylaştığımda karşı tarafa bildirim düşmeli"*. İkisi de gerçek eksikti.
+
+### 14.1 · İlk düzeltmenin yanlış yarısını çözmüşüm
+
+§11.1'de satıra paylaşım izi eklemiştim — ama iz yalnız `shareCount > 0` iken görünüyordu:
+
+| Takvim | Görünen |
+|---|---|
+| Kişisel *(2 kişiyle paylaşılmış)* | `⑄ 2` rozeti |
+| Proje · Ekip · Toplantılar | **hiçbir şey** — yalnız `#B7BDC6` renginde etiketsiz `⋯` |
+
+Yani *"hangileri paylaşılmış"* sorusunu çözmüş, *"nasıl paylaşırım"* sorusunu çözmemişim.
+Kullanıcının sorduğu ikincisiydi.
+
+**Çözüm:** aynı slot her zaman dolu — paylaşılmamışken **"Paylaş"** (eylem), paylaşılmışken
+**"N kişi"** (durum). İkisi de paylaşım yüzeyine götürür. `BR-CAL-43` genişletildi, `SR-CAL-10`
+güncellendi.
+
+### 14.2 · Bildirim yüzeyi
+
+`N-CAL-01` **üretiliyordu** ama hiçbir yerde görünmüyordu. Sebebi `19-notifications-spec`'in
+bilinçli duruşuydu: *"Bu spec bir yüzey tanımlamaz; uygulama içi bildirim platform bileşenidir."*
+
+Yüzeyin hiç olmaması, spec'te tanımlı olayların çalıştığını **göstermeyi imkânsız kılıyordu.**
+Üst çubuğa okunmamış sayacı taşıyan bir çan ve bildirim listesi eklendi. ⚠️ Yeni bildirim türü
+üretmez; yalnız spec'te tanımlı olayları gösterir. Yüzeyin gerçek üründe platforma ait olacağı
+kararı **değişmedi** — `SR-NOT-09`.
+
+### 14.3 · Çan gelince görünür olan üç eksik
+
+Yüzey eklenince, üretilmeyen bildirimler de görünür hâle geldi:
+
+| # | Eksik | Kural |
+|---|---|---|
+| 1 | ⚠️ **`BR-NOT-22` ihlali:** alıcı paylaşımı kendi kaldırdığında **kendisine bildirim gidiyordu**. Kural açıkça *"kendi eylemi olduğu için kendisine bildirim gitmez; sahibe de gitmez"* diyor | Düzeltildi |
+| 2 | **N-RES-01 hiç üretilmiyordu** — talep oluşuyor ama onaylayıcıya bildirim gitmiyordu | Eklendi |
+| 3 | **N-EVT-01, N-EVT-03, N-RES-04** üretilmiyordu | Eklendi |
+| 4 | `N-CAL-01/02` spec'in istediği **sahibin adını** taşımıyordu (`19` §5.3) | Düzeltildi |
+
+Harici misafire uygulama içi bildirim üretilmez — kanalı yalnız e-postadır (`BR-NOT-03`).
+
+### 14.4 · Doğrulama
+
+Uçtan uca: dört takvimin hepsinde çip · paylaşılmamışlarda "Paylaş" · çipten drawer açılışı ·
+paylaşım sonrası çipin "1 kişi"ye dönmesi · **paylaşanın kendine bildirim almaması** ·
+persona değişince alıcıda okunmamış sayacın belirmesi · panelde `N-CAL-01` ve `N-RES-01` ·
+alıcının railinde paylaşılan takvimin görünmesi.
+
+Test 58 → **62**. Demo akışı 29 adım, tüm kapılar geçiyor, konsol hatası 0.
+
+⚠️ **Test notu:** backend olmadığı için **her tarayıcının kendi veri kopyası vardır.** Üç kişi
+ayrı makinelerden girdiğinde paylaşım karşı tarafta görünmez; akış **tek tarayıcıda persona
+değiştirerek** test edilmelidir.

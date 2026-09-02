@@ -41,6 +41,32 @@ describe('etkinlik oluşturma ve güncelleme', () => {
     expect(s.requests.some((r) => r.eventId === created.id)).toBe(false);
   });
 
+  it('N-RES-01: talep, odanın onaylayıcılarına bildirim düşürür', () => {
+    const s = run(base,
+      { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
+      { type: 'updateDraft', patch: { title: 'Atölye', roomId: 'room_bogazici' } },
+      { type: 'saveEvent' });
+    // Boğaziçi'nin onaylayıcısı Zeynep; talep eden Deniz kendi talebi için bildirim almaz.
+    expect(s.notifications[0].recipientId).toBe('usr_zeynep');
+    expect(s.notifications[0].kind).toBe('N-RES-01');
+    const denizYeni = s.notifications.length - base.notifications.length;
+    expect(s.notifications.filter((n) => n.recipientId === 'usr_deniz').length)
+      .toBe(base.notifications.filter((n) => n.recipientId === 'usr_deniz').length);
+    expect(denizYeni).toBe(1);
+  });
+
+  it('N-EVT-01: davetli iç katılımcılar bilgilendirilir, harici misafir bilgilendirilmez', () => {
+    const s = run(base,
+      { type: 'openEventCreate', date: '2026-08-28', start: 780, end: 840 },
+      { type: 'updateDraft', patch: { title: 'Kahve' } },
+      { type: 'toggleParticipant', userId: 'usr_selin' },
+      { type: 'toggleParticipant', userId: 'usr_guest' },
+      { type: 'saveEvent' });
+    expect(s.notifications.find((n) => n.recipientId === 'usr_selin')?.kind).toBe('N-EVT-01');
+    // Harici misafirin uygulama içi karşılığı yoktur (BR-NOT-03)
+    expect(s.notifications.some((n) => n.recipientId === 'usr_guest')).toBe(false);
+  });
+
   it('onay gerektiren oda seçilirse rezervasyon Pending başlar ve talep üretilir', () => {
     const s = run(base,
       { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
@@ -140,7 +166,17 @@ describe('takvim görünürlüğü ve paylaşım', () => {
     const s = reducer(base, { type: 'removeSharedCalendar', calendarId: 'cal_urun' });
     expect(mySharedCalendars(s).some((x) => x.calendar.id === 'cal_urun')).toBe(false);
     expect(visibleEvents(s).some((e) => e.calendarId === 'cal_urun')).toBe(false);
-    expect(s.notifications[0].kind).toBe('N-CAL-02');
+  });
+
+  it('BR-NOT-22: alıcı kendi kaldırdığında kimseye bildirim gitmez', () => {
+    const s = reducer(base, { type: 'removeSharedCalendar', calendarId: 'cal_urun' });
+    expect(s.notifications).toHaveLength(base.notifications.length);
+  });
+
+  it('sahip paylaşımı kaldırınca alıcı N-CAL-02 alır', () => {
+    const s = reducer(base, { type: 'removeShare', calendarId: 'cal_kisisel', userId: 'usr_mert' });
+    const n = s.notifications.find((x) => x.recipientId === 'usr_mert');
+    expect(n?.kind).toBe('N-CAL-02');
   });
 
   it('sahip paylaşım ekler ve kaldırır; kaldırma anında etkilidir', () => {

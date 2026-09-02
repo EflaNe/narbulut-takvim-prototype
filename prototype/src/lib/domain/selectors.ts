@@ -165,3 +165,12 @@ export function searchEvents(s: AppState, query: string): CalendarEvent[] {
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.start - b.start))
     .slice(0, 20);
 }
+
+/** Oturumdaki kullanıcıya düşen bildirimler, en yenisi başta. */
+export function myNotifications(s: AppState) {
+  return s.notifications.filter((n) => n.recipientId === s.currentUserId);
+}
+
+export function unreadNotificationCount(s: AppState): number {
+  return myNotifications(s).filter((n) => !n.read).length;
+}

@@ -7,9 +7,9 @@ import type {
   RoomId, ShareId, UserId,
 } from '../domain/types';
 import {
-  canCreatePendingRequest, canDecideRequest, roomAvailability,
+  canCreatePendingRequest, canDecideRequest, eligibleApprovers, roomAvailability,
 } from '../domain/rules';
-import { shiftByView } from '../domain/time';
+import { hhmm, shiftByView } from '../domain/time';
 import type { AppAction, AppState, EventDraft } from './types';
 import * as demo from './demoData';
 
@@ -29,7 +29,7 @@ export function createInitialState(): AppState {
     events: demo.events.map((e) => ({ ...e })),
     reservations: demo.reservations.map((r) => ({ ...r })),
     requests: demo.requests.map((r) => ({ ...r })),
-    notifications: [],
+    notifications: demo.notifications.map((n) => ({ ...n })),
     seq: 1,
     ui: {
       route: 'calendar',
@@ -184,8 +184,8 @@ export function reducer(state: AppState, action: AppAction): AppState {
         shares: state.shares.filter(
           (s) => !(s.calendarId === action.calendarId && s.granteeId === state.currentUserId)),
       };
-      return ui(notify(next, state.currentUserId, 'N-CAL-02',
-        'Paylaşım kaldırıldı', `${cal?.name ?? 'Takvim'} artık takviminizde görünmüyor.`), {
+      // BR-NOT-22 — alıcı kendi kaldırdığı için ne kendisine ne sahibine bildirim gider.
+      return ui(next, {
         sharedMenuId: null, confirm: null, mobileSheet: 'none',
         toast: { message: `${cal?.name ?? 'Takvim'} takviminizden kaldırıldı.`, tone: 'info' },
       });
@@ -374,8 +374,26 @@ export function reducer(state: AppState, action: AppAction): AppState {
         };
       }
 
+      // N-EVT-01 — davet edilen iç katılımcılar bilgilendirilir.
+      // Harici misafirin uygulama içi karşılığı yoktur; kanalı e-postadır (BR-NOT-03).
+      if (isNew) {
+        for (const pid of event.participantIds) {
+          if (next.users.find((u) => u.id === pid)?.orgId !== 'narbulut') continue;
+          next = notify(next, pid, 'N-EVT-01', 'Etkinliğe davet edildiniz',
+            `${event.title} · ${event.date} ${hhmm(event.start)} – ${hhmm(event.end)}`);
+        }
+      }
+
       const pendingNow = next.reservations.some(
         (r) => r.eventId === eventId && r.status === 'pending');
+
+      // N-RES-01 — talep, odanın onaylayıcılarına düşer.
+      if (pendingNow && room) {
+        for (const aid of eligibleApprovers(room, state.currentUserId, state.groups)) {
+          next = notify(next, aid, 'N-RES-01', 'Rezervasyon onayınızı bekliyor',
+            `${room.name} · ${event.date} ${hhmm(event.start)} – ${hhmm(event.end)} · ${event.title}`);
+        }
+      }
 
       return ui(next, {
         draft: null, roomPickerOpen: false,
@@ -391,7 +409,14 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
     /** BR-EVT-30 / BR-APR-31 — etkinlik silinince bağlı talep Cancelled olur, silinmez. */
     case 'deleteEvent': {
-      const next = releaseReservation(state, action.eventId);
+      const removed = state.events.find((e) => e.id === action.eventId);
+      let next = releaseReservation(state, action.eventId);
+      // N-EVT-03 — tüm katılımcılar bilgilendirilir.
+      for (const pid of removed?.participantIds ?? []) {
+        if (next.users.find((u) => u.id === pid)?.orgId !== 'narbulut') continue;
+        next = notify(next, pid, 'N-EVT-03', 'Etkinlik iptal edildi',
+          `${removed!.title} · ${removed!.date} ${hhmm(removed!.start)} – ${hhmm(removed!.end)}`);
+      }
       return ui({ ...next, events: next.events.filter((e) => e.id !== action.eventId) }, {
         draft: null, confirm: null, readOnlyEventId: null, mobileSheet: 'none',
         toast: { message: 'Etkinlik silindi.', tone: 'info' },
@@ -431,8 +456,10 @@ export function reducer(state: AppState, action: AppAction): AppState {
         }],
         seq: state.seq + 1,
       };
+      // N-CAL-01 — takvim adı · sahibin adı · erişimin kapsamı (19 §5.3)
+      const owner = state.users.find((u) => u.id === cal?.ownerId);
       return ui(notify(next, action.userId, 'N-CAL-01', 'Bir takvim sizinle paylaşıldı',
-        `${cal?.name ?? 'Takvim'} takvimi sizinle paylaşıldı.`), {
+        `${cal?.name ?? 'Takvim'} · ${owner?.name ?? ''} · etkinlik detaylarını görebilirsiniz, salt okunur`), {
         toast: { message: `${target?.name ?? 'Kullanıcı'} eklendi.`, tone: 'success' },
       });
     }
@@ -446,8 +473,9 @@ export function reducer(state: AppState, action: AppAction): AppState {
         shares: state.shares.filter(
           (s) => !(s.calendarId === action.calendarId && s.granteeId === action.userId)),
       };
+      const owner2 = state.users.find((u) => u.id === cal?.ownerId);
       return ui(notify(next, action.userId, 'N-CAL-02', 'Takvim paylaşımı kaldırıldı',
-        `${cal?.name ?? 'Takvim'} artık sizinle paylaşılmıyor.`), {
+        `${cal?.name ?? 'Takvim'} · ${owner2?.name ?? ''} · erişiminiz sona erdi`), {
         confirm: null,
         toast: {
           message: `${target?.name ?? 'Kullanıcı'} erişimi kaldırıldı. Bu takvim artık kendisine görünmüyor.`,
@@ -528,13 +556,22 @@ export function reducer(state: AppState, action: AppAction): AppState {
     case 'withdrawRequest': {
       const req = state.requests.find((r) => r.id === action.requestId);
       if (!req || req.requesterId !== state.currentUserId || req.status !== 'pending') return state;
-      return ui({
+      let next: AppState = {
         ...state,
         requests: state.requests.map((r) => (r.id === req.id ? { ...r, status: 'cancelled' } : r)),
         reservations: state.reservations.map((r) =>
           r.id === req.reservationId ? { ...r, status: 'cancelled' } : r),
         events: state.events.map((e) => (e.id === req.eventId ? { ...e, roomId: null } : e)),
-      }, { toast: { message: 'Talebiniz geri çekildi.', tone: 'info' } });
+      };
+      // N-RES-04 — karar bekleyen onaylayıcılara "artık beklemede değil" bilgisi gider.
+      const room4 = state.rooms.find((r) => r.id === req.roomId);
+      if (room4) {
+        for (const aid of eligibleApprovers(room4, req.requesterId, state.groups)) {
+          next = notify(next, aid, 'N-RES-04', 'Rezervasyon talebi geri çekildi',
+            `${room4.name} · karar vermenize gerek kalmadı.`);
+        }
+      }
+      return ui(next, { toast: { message: 'Talebiniz geri çekildi.', tone: 'info' } });
     }
 
     /* ── Takvim CRUD (12-calendars-spec §2) ── */
@@ -690,6 +727,13 @@ export function reducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         rooms: state.rooms.map((r) => (r.id === action.roomId ? { ...r, ...action.patch } : r)),
+      };
+
+    case 'markNotificationsRead':
+      return {
+        ...state,
+        notifications: state.notifications.map((n) =>
+          (n.recipientId === state.currentUserId ? { ...n, read: true } : n)),
       };
 
     case 'toast':

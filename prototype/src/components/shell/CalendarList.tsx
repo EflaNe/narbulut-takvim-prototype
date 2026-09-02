@@ -58,15 +58,19 @@ function CalendarRow({ cal, menuOpen }: { cal: Calendar; menuOpen: boolean }) {
         {visible && <Icon name="check" size={11} color="#fff" />}
       </button>
       <span className="calrow__dot" style={{ background: visible ? cal.color : 'var(--text-off)' }} aria-hidden="true" />
-      <span className={`calrow__name${visible ? '' : ' is-off'}`}>{cal.name}</span>
-      {shareCount > 0 && (
-        <button className="calrow__shared" title={`${shareCount} kişiyle paylaşıldı — paylaşımı yönet`}
-          aria-label={`${cal.name}: ${shareCount} kişiyle paylaşıldı, paylaşımı yönet`}
-          onClick={() => dispatch({ type: 'openShareDrawer', calendarId: cal.id })}>
-          <Icon name="share" size={11} />{shareCount}
-        </button>
-      )}
-      <span className="spacer" />
+      <span className={`calrow__name calrow__name--grow${visible ? '' : ' is-off'}`}>{cal.name}</span>
+      {/* BR-CAL-43 — çip her zaman görünür: paylaşılmamışken eylem, paylaşılmışken durum. */}
+      <button className={`calrow__shared${shareCount ? ' is-on' : ''}`}
+        title={shareCount
+          ? `${shareCount} kişiyle paylaşıldı — paylaşımı yönet`
+          : `${cal.name} takvimini paylaş`}
+        aria-label={shareCount
+          ? `${cal.name}: ${shareCount} kişiyle paylaşıldı, paylaşımı yönet`
+          : `${cal.name} takvimini paylaş`}
+        onClick={() => dispatch({ type: 'openShareDrawer', calendarId: cal.id })}>
+        <Icon name="share" size={11} />
+        {shareCount ? `${shareCount} kişi` : 'Paylaş'}
+      </button>
       <button className="calrow__dots" aria-label={`${cal.name} seçenekleri`} aria-haspopup="menu"
         aria-expanded={menuOpen}
         onClick={() => dispatch({ type: 'setCalendarMenu', calendarId: menuOpen ? null : cal.id })}>

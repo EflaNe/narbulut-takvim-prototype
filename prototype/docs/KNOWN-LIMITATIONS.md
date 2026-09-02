@@ -15,6 +15,7 @@ veya backend gerektiren konulardır.
 | L-04 | **Kalıcılık yok** (`localStorage` dahil) | Bilinçli: bozuk bir demo durumu kalıcılaşmasın |
 | L-05 | **Gerçek e-posta gönderimi yok** | SMTP/API kurulmadı; `emails/dist/` statik önizleme |
 | L-06 | **Eşzamanlılık yok** | İki kullanıcının aynı slotu istemesi modellenmedi |
+| L-06a | ⚠️ **Oturum paylaşımı yok.** Her tarayıcının kendi veri kopyası vardır; iki kişi ayrı makineden girdiğinde birbirinin değişikliklerini görmez. Çok kişili akışlar **tek tarayıcıda persona değiştirerek** test edilir |
 | L-07 | **Sunucu tarafı yetki uygulaması yok** | İstemcideki kontroller güvenlik sınırı **değildir** |
 
 ## Zaman ve takvim
@@ -54,7 +55,9 @@ veya backend gerektiren konulardır.
 | L-26 | Oda seçicideki filtre çipleri tek seçimli basit filtrelerdir; canonical'daki açılır menüler yok |
 | L-27 | Sürükle-bırak ile etkinlik taşıma/yeniden boyutlandırma yok (`14` SR-SHELL-05 — kapsam dışı) |
 | L-27a | Hover önizleme kartı **kasıtlı olarak** yalnız gerçek imleçli cihazlarda çalışır; dokunmatikte hiç render edilmez (`14` BR-SHELL-43). Karttaki her bilgi etkinlik yüzeyinde de vardır (BR-SHELL-42). Karttaki tek aksiyon silmedir; düzenleme kartta yapılmaz (BR-SHELL-45) |
-| L-28 | Bildirim merkezi arayüzü yok; bildirimler yalnız durumda tutulur |
+| ~~L-28~~ | ~~Bildirim merkezi arayüzü yok~~ | ✅ **2 Eylül 2026'da eklendi** — üst çubukta çan + liste (`19` SR-NOT-09). Yalnız spec'te tanımlı olayları gösterir |
+| L-28a | Bildirimler **okundu** işaretlenir ama silinemez, filtrelenemez ve tıklanınca ilgili yüzeye gitmez |
+| L-28b | Mobil görünümde bildirim çanı yoktur — mobil kapsam agenda/day ile sınırlı |
 | L-29 | Arama yalnız etkinlik başlığında ve yalnız görünür takvimlerde çalışır |
 | L-30 | Klavye ile ızgara gezinme (ok tuşları) uygulanmadı |
 | L-31 | Yerelleştirme yok — arayüz yalnız Türkçe |

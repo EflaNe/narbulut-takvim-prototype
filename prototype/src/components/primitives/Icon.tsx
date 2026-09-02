@@ -8,7 +8,8 @@ export type IconName =
   | 'calendar' | 'list' | 'building' | 'chevronLeft' | 'chevronRight' | 'chevronUp'
   | 'chevronDown' | 'plus' | 'plusBold' | 'plusCircle' | 'person' | 'people' | 'search'
   | 'check' | 'dots' | 'recurrence' | 'clock' | 'close' | 'trash' | 'pencil' | 'warning'
-  | 'info' | 'door' | 'lock' | 'arrowRight' | 'share' | 'palette' | 'checkCircle' | 'xCircle';
+  | 'info' | 'door' | 'lock' | 'arrowRight' | 'share' | 'palette' | 'checkCircle' | 'xCircle'
+  | 'bell';
 
 const paths: Record<IconName, React.ReactNode> = {
   calendar: (<>
@@ -93,6 +94,10 @@ const paths: Record<IconName, React.ReactNode> = {
   checkCircle: (<>
     <circle cx="8" cy="8" r="5.6" stroke="currentColor" strokeWidth="1.4" />
     <path d="M5.6 8.2l1.7 1.7 3.3-3.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </>),
+  bell: (<>
+    <path d="M4.4 6.8a3.6 3.6 0 0 1 7.2 0c0 3.1 1.1 4.2 1.1 4.2H3.3s1.1-1.1 1.1-4.2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    <path d="M6.6 13.1a1.6 1.6 0 0 0 2.8 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
   </>),
   xCircle: (<>
     <circle cx="8" cy="8" r="5.6" stroke="currentColor" strokeWidth="1.4" />

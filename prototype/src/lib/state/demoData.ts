@@ -331,4 +331,27 @@ export const requests: ApprovalRequest[] = [
   },
 ];
 
-export const notifications: AppNotification[] = [];
+/**
+ * Başlangıç bildirimleri — seed edilmiş paylaşım ve taleplerin karşılığı.
+ * ⚠️ Yeni bildirim türü icat edilmez; hepsi `19-notifications-spec.md`'de tanımlıdır.
+ */
+export const notifications: AppNotification[] = [
+  {
+    id: 'ntf_seed_1', kind: 'N-RES-01', recipientId: 'usr_ahmet',
+    createdAt: '2026-08-26T09:12:00', read: false,
+    title: 'Rezervasyon onayınızı bekliyor',
+    body: 'Topkapı · 27 Ağustos 14:00 – 15:00 · Ürün Roadmap',
+  },
+  {
+    id: 'ntf_seed_2', kind: 'N-RES-01', recipientId: 'usr_zeynep',
+    createdAt: '2026-08-27T11:05:00', read: false,
+    title: 'Rezervasyon onayınızı bekliyor',
+    body: 'Boğaziçi · 28 Ağustos 09:30 – 10:30 · Kick-off',
+  },
+  {
+    id: 'ntf_seed_3', kind: 'N-CAL-01', recipientId: 'usr_deniz',
+    createdAt: '2026-07-02T10:00:00', read: true,
+    title: 'Bir takvim sizinle paylaşıldı',
+    body: 'Ürün · Mert Kaya · etkinlik detaylarını görebilirsiniz, salt okunur',
+  },
+];

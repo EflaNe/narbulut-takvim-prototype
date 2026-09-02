@@ -4,6 +4,7 @@ import { hhmm, longDateLabel, stepLabel, viewRangeLabel } from '../../lib/domain
 import { Icon } from '../primitives/Icon';
 import { IconButton } from '../primitives/IconButton';
 import { Button } from '../primitives/Button';
+import { NotificationBell } from '../shell/NotificationBell';
 import type { CalendarViewMode } from '../../lib/domain/types';
 
 /** Zaman ekseni. */
@@ -90,6 +91,8 @@ export function TopBar() {
           </div>
         )}
       </div>
+
+      <NotificationBell />
 
       <Button variant="primary" onClick={() => dispatch({ type: 'openEventCreate' })}>
         <Icon name="plusBold" size={15} color="#fff" />Yeni etkinlik
