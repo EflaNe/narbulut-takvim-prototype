@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  canCreatePendingRequest, canDecideRequest, canEditEvent, canReserveRoom, canViewRoom,
-  capacityWarning, completeViewFromReserve, eligibleApprovers, isAccessRuleValid,
+  canApproveNow, canCreatePendingRequest, canDecideRequest, canEditEvent, canReserveRoom,
+  canViewRoom, capacityWarning, competingPendingCount,
+  completeViewFromReserve, eligibleApprovers, isAccessRuleValid,
   outsideWorkingHours, participantConflicts, roomAvailability, roomSelectability,
   shareTargetState,
 } from '../lib/domain/rules';
@@ -60,13 +61,28 @@ describe('oda müsaitliği ve seçilebilirlik — 16-room-booking §4.1', () => 
     expect(sel.reason).toBe('Seçtiğiniz saatte dolu');
   });
 
-  it('BR-APR-11/12: bekleyen talep aralığı bloke eder', () => {
+  it('D-070: bekleyen talep slotu bloke ETMEZ, bilgi olarak gösterilir', () => {
     // Boğaziçi Cuma 09:30–10:30 pending (Kick-off)
     expect(roomAvailability('room_bogazici', '2026-08-28', 570, 630, s.reservations)).toBe('pending');
     const sel = roomSelectability(
       room('room_bogazici'), DENIZ, s.groups, '2026-08-28', 570, 630, s.reservations);
-    expect(sel.selectable).toBe(false);
-    expect(sel.reason).toBe('Bu saat için bekleyen bir talep var');
+    expect(sel.selectable).toBe(true);
+    expect(sel.reason).toBe('Bu saat için bekleyen başka bir talep var');
+  });
+
+  it('rakip bekleyen talep sayısı okunabilir', () => {
+    expect(competingPendingCount('room_bogazici', '2026-08-28', 570, 630, s.reservations)).toBe(1);
+    expect(competingPendingCount('room_istanbul', '2026-08-28', 570, 630, s.reservations)).toBe(0);
+  });
+
+  it('BR-APR-13a: rezerve slotta onay verilemez', () => {
+    const rez = s.reservations.find((r) => r.id === 'rsv_urundemo')!; // Topkapı Salı pending
+    // Aynı saate kesinleşmiş bir rezervasyon kurgula
+    const clash = { ...rez, id: 'rsv_x' as typeof rez.id, status: 'reserved' as const };
+    const res = canApproveNow(rez, [...s.reservations, clash]);
+    expect(res.ok).toBe(false);
+    // Çakışma yoksa onay serbest
+    expect(canApproveNow(rez, s.reservations).ok).toBe(true);
   });
 
   it('yetki sebebi müsaitlik sebebinden önceliklidir', () => {

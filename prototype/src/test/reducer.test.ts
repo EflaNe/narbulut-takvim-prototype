@@ -80,13 +80,13 @@ describe('etkinlik oluşturma ve güncelleme', () => {
     expect(s.ui.toast?.message).toBe('Talebiniz gönderildi, onay bekliyor.');
   });
 
-  it('dolu oda seçilirse kayıt engellenir (blocking)', () => {
+  it('rezerve oda seçilirse kayıt engellenir (blocking)', () => {
     const s = run(base,
       { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
       { type: 'updateDraft', patch: { title: 'Çakışan', roomId: 'room_topkapi' } },
       { type: 'saveEvent' });
     expect(s.events.some((e) => e.title === 'Çakışan')).toBe(false);
-    expect(s.ui.toast?.tone).toBe('error');
+    expect(s.ui.toast?.message).toBe('Topkapı seçtiğiniz saatte dolu.');
   });
 
   it('odadan çıkılınca bekleyen talep iptal olur, etkinlik kalır', () => {
@@ -354,5 +354,69 @@ describe('oda ve bina CRUD — 13-rooms-spec', () => {
       { type: 'createBuilding', name: 'Teknopark' },
       { type: 'createBuilding', name: 'Teknopark' });
     expect(s.buildings.filter((b) => b.name === 'Teknopark')).toHaveLength(1);
+  });
+});
+
+describe('rakip talepler — D-070', () => {
+  const first = run(base,
+    { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
+    { type: 'updateDraft', patch: { title: 'A toplantısı', roomId: 'room_bogazici' } },
+    { type: 'saveEvent' });
+
+  const slotReq = (st: AppState, title: string) => {
+    const ev = st.events.find((e) => e.title === title)!;
+    return st.requests.find((q) => q.eventId === ev.id && q.status === 'pending')!;
+  };
+
+  const ikinci = (st: AppState) => run(st,
+    { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
+    { type: 'updateDraft', patch: { title: 'B toplantısı', roomId: 'room_bogazici' } },
+    { type: 'saveEvent' });
+
+  it('aynı slota ikinci talep OLUŞABİLİR', () => {
+    const s2 = ikinci(first);
+    expect(s2.events.some((e) => e.title === 'B toplantısı')).toBe(true);
+    expect(s2.reservations.filter((r) => r.roomId === 'room_bogazici'
+      && r.date === '2026-08-28' && r.start === 660 && r.status === 'pending')).toHaveLength(2);
+  });
+
+  it('birini onaylamak diğerini OTOMATİK REDDETMEZ', () => {
+    const s2 = ikinci(first);
+    const s3 = run(s2,
+      { type: 'setPersona', userId: 'usr_zeynep' },
+      { type: 'approveRequest', requestId: slotReq(s2, 'A toplantısı').id });
+    expect(s3.requests.find((r) => r.id === slotReq(s2, 'A toplantısı').id)!.status).toBe('approved');
+    expect(s3.requests.find((r) => r.id === slotReq(s2, 'B toplantısı').id)!.status).toBe('pending');
+  });
+
+  it('BR-APR-13a: rezerve slotta ikinci onay ENGELLENİR, sebebi yazılır', () => {
+    const s2 = ikinci(first);
+    const s3 = run(s2,
+      { type: 'setPersona', userId: 'usr_zeynep' },
+      { type: 'approveRequest', requestId: slotReq(s2, 'A toplantısı').id },
+      { type: 'approveRequest', requestId: slotReq(s2, 'B toplantısı').id });
+    expect(s3.requests.find((r) => r.id === slotReq(s2, 'B toplantısı').id)!.status).toBe('pending');
+    expect(s3.ui.toast?.tone).toBe('error');
+    expect(s3.ui.toast?.message).toContain('bu saatte rezerve');
+  });
+
+  it('önceki rezervasyon kalkınca ikinci talep onaylanabilir', () => {
+    const s2 = ikinci(first);
+    const zeynep = run(s2, { type: 'setPersona', userId: 'usr_zeynep' });
+    const s3 = reducer(zeynep, { type: 'approveRequest', requestId: slotReq(s2, 'A toplantısı').id });
+    // A etkinliği silinince rezervasyon düşer
+    const s4 = run(s3,
+      { type: 'deleteEvent', eventId: s2.events.find((e) => e.title === 'A toplantısı')!.id },
+      { type: 'approveRequest', requestId: slotReq(s2, 'B toplantısı').id });
+    expect(s4.requests.find((r) => r.id === slotReq(s2, 'B toplantısı').id)!.status).toBe('approved');
+  });
+
+  it('RED, etkinliği silmez — yalnız odasız bırakır', () => {
+    const s3 = run(first,
+      { type: 'setPersona', userId: 'usr_zeynep' },
+      { type: 'rejectRequest', requestId: slotReq(first, 'A toplantısı').id, reason: '' });
+    const a = s3.events.find((e) => e.title === 'A toplantısı')!;
+    expect(a).toBeDefined();
+    expect(a.roomId).toBeNull();
   });
 });

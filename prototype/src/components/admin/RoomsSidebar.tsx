@@ -57,16 +57,24 @@ export function RoomsSidebar() {
       </section>
 
       <section className="statuscard" aria-label="Durum">
+        {/* Karar bekleyen iş en üstte ve vurgulu durur — tek giriş noktası olmamalı ama
+            buradaysa da göze çarpmalı. */}
+        {pendingCount > 0 && (
+          <button className="statuscard__pending"
+            onClick={() => dispatch({ type: 'navigate', route: 'requests' })}>
+            <Icon name="clock" size={15} />
+            <span>
+              <strong>{pendingCount} bekleyen talep</strong>
+              <span>karar bekliyor</span>
+            </span>
+            <Icon name="chevronRight" size={14} />
+          </button>
+        )}
         <div className="statuscard__title">Durum</div>
         <div className="statuscard__row">
           <Icon name="check" size={13} color="var(--text-tertiary)" />
           {activeCount} aktif oda
         </div>
-        <button className="statuscard__row is-link"
-          onClick={() => dispatch({ type: 'navigate', route: 'requests' })}>
-          <Icon name="clock" size={13} />
-          {pendingCount} bekleyen talep
-        </button>
         <div className="statuscard__row">
           <Icon name="lock" size={13} color="var(--text-tertiary)" />
           {restricted} kısıtlı erişim

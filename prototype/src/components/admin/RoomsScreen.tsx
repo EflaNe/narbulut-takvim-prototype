@@ -5,6 +5,7 @@ import {
 } from '../../lib/domain/rules';
 import { userById } from '../../lib/domain/selectors';
 import { Button } from '../primitives/Button';
+import { RoomSchedule } from './RoomSchedule';
 import { Icon } from '../primitives/Icon';
 import type { BuildingId, Room, UserId } from '../../lib/domain/types';
 
@@ -320,6 +321,9 @@ export function RoomsScreen() {
               </div>
             </div>
           </Block>
+
+          {/* Odaya bakarken "kimin, ne zaman isteği var" sorusunun cevabı */}
+          {!creating && <RoomSchedule room={source!} />}
         </div>
 
         <div className="adminfoot">

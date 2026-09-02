@@ -67,7 +67,7 @@ Audit'in 2 numaralı bulgusuna doğrudan cevaptır: bugün oda sistemi var ama *
 | `Görebilir` var, `Rezerve edebilir` yok | Rezerve / Onay bekliyor | ✅ Evet | ❌ Hayır | Yetki sebebi öncelikli gösterilir |
 | `Rezerve edebilir` var | **Müsait** | ✅ Evet | ✅ **Evet** | — |
 | `Rezerve edebilir` var | **Rezerve** | ✅ Evet | ❌ Hayır | "Seçtiğiniz saatte dolu" |
-| `Rezerve edebilir` var | **Onay bekliyor** | ✅ Evet | ❌ Hayır | "Bu saat için bekleyen bir talep var" |
+| `Rezerve edebilir` var | **Onay bekliyor** | ✅ Evet | ✅ **Evet** | *"Bu saat için N bekleyen talep var; siz de talep edebilirsiniz"* — ⚠️ engel değil, bilgi (D-070) |
 | Oda **pasif** | — | ❌ Hayır | — | `13` BR-ROOM-07 |
 
 ---
@@ -249,7 +249,7 @@ Ortak sözleşme: `11-system-states-spec.md`.
 | **EC-RB-04** | Etkinlik tüm gün yapılır | Oda rezervasyonu **günün tamamını** kaplar; müsaitlik buna göre hesaplanır. |
 | **EC-RB-05** | Çok günlü etkinliğe oda bağlanır | Rezervasyon **kesintisiz** olarak tüm aralığı kaplar; ara günlerde de oda dolu görünür. |
 | **EC-RB-06** | Bekleyen talep reddedilir | Slot **serbest kalır** ve oda tekrar Müsait olur → `18-reservation-approval-spec.md`. |
-| **EC-RB-07** | Aynı slota iki kullanıcı aynı anda talep gönderir | İlk talep slotu bloke eder (BR-RB-21); ikinci kullanıcı "Onay bekliyor" görür ve seçemez. Aynı slota ikinci talep oluşmaz. |
+| **EC-RB-07** | Aynı slota iki kullanıcı talep gönderir | ⚠️ **İkisi de talep gönderebilir** (D-070, `18` BR-APR-13). Her ikisi de "Onay bekliyor" durumunda birikir; onaylayıcı kuyruğunda ve odanın takviminde yan yana görünür. Biri onaylanınca **diğeri otomatik reddedilmez** (`18` BR-APR-13b); slot kesinleştiği için ikinci onay **engellenir** ve sebebi gösterilir (`18` BR-APR-13a). |
 | **EC-RB-08** | Kapasite, oda seçildikten sonra yöneticice düşürülür | Mevcut rezervasyon etkilenmez (`13` EC-ROOM-06); uyarı yalnızca yeni seçimlerde çalışır. |
 | **EC-RB-09** | Seride tüm örnekler dolu | Oda seçilemez; sebep "seçilen tarihlerin tümünde dolu" olarak gösterilir. |
 | **EC-RB-10** | Onay gerektiren odada seri talebi kısmen çakışıyor | Ön kontrol çakışmayı yakalar (BR-RB-29a); özet gösterilir ve **talep gönderilmez** (BR-RB-29b). Kullanıcı çözdükten sonra kalan occurrence'lar için tek talep oluşur. |

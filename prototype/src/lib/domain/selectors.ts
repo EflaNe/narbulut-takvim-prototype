@@ -174,3 +174,8 @@ export function myNotifications(s: AppState) {
 export function unreadNotificationCount(s: AppState): number {
   return myNotifications(s).filter((n) => !n.read).length;
 }
+
+/** Oturumdaki kullanıcının **karar verebileceği** bekleyen talepler (kendi talepleri hariç). */
+export function decidableRequests(s: AppState) {
+  return s.requests.filter((r) => r.status === 'pending' && canDecide(s, r.id));
+}

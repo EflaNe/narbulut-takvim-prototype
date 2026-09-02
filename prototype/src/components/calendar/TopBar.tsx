@@ -1,5 +1,5 @@
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
-import { searchEvents, calendarById, userById } from '../../lib/domain/selectors';
+import { calendarById, decidableRequests, searchEvents, userById } from '../../lib/domain/selectors';
 import { hhmm, longDateLabel, stepLabel, viewRangeLabel } from '../../lib/domain/time';
 import { Icon } from '../primitives/Icon';
 import { IconButton } from '../primitives/IconButton';
@@ -91,6 +91,16 @@ export function TopBar() {
           </div>
         )}
       </div>
+
+      {/* Karar bekleyen iş, bildirimden ayrıdır: okunsa da kaybolmaz. */}
+      {decidableRequests(state).length > 0 && (
+        <button className="pendingbadge"
+          onClick={() => dispatch({ type: 'navigate', route: 'requests' })}
+          aria-label={`${decidableRequests(state).length} talep onayınızı bekliyor`}>
+          <Icon name="clock" size={14} />
+          {decidableRequests(state).length} talep
+        </button>
+      )}
 
       <NotificationBell />
 

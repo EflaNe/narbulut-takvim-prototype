@@ -119,9 +119,11 @@ Bazı odalar ortak ve değerli kaynaklardır; bunlara yapılan rezervasyonun **b
 
 | ID | Kural |
 |---|---|
-| **BR-APR-11** | **Bekleyen talep zaman aralığını bloke eder** (D-036). |
-| **BR-APR-12** | Bloke edilen slot diğer kullanıcılara **"Onay bekliyor"** olarak görünür ve **seçilemez** (`16` BR-RB-21, seçilebilirlik matrisi §4.1). |
-| **BR-APR-13** | Aynı slota **ikinci bir talep oluşturulamaz** (`16` EC-RB-07). |
+| **BR-APR-11** | ⚠️ **Bekleyen talep zaman aralığını BLOKE ETMEZ** (D-070, D-036'nın bu maddesini geçersiz kılar). Yalnızca **kesinleşmiş rezervasyon** bloke eder. |
+| **BR-APR-12** | Aynı aralıkta bekleyen talep varken oda **seçilebilir kalır**; durum kullanıcıya **bilgi olarak** gösterilir: *"Bu saat için N bekleyen talep var. Siz de talep edebilirsiniz; kararı onaylayıcı verir."* (`16` seçilebilirlik matrisi §4.1). |
+| **BR-APR-13** | ⚠️ **Aynı slota birden fazla talep oluşturulabilir.** Kullanıcı talep göndermekten engellenmez; **rakip talepler birikir** ve karar onaylayıcıya kalır (D-070). |
+| **BR-APR-13a** | ⚠️ **Çakışma karar anında değerlendirilir.** Bir slot kesinleşmişken aynı aralığa düşen başka bir talep **onaylanamaz**; onaylayıcıya **sebebi** ve engelleyen rezervasyonun sahibi gösterilir (`11` ST-DIS-02). Onaylayıcı isterse önce mevcut rezervasyonu kaldırıp sonra onaylar. |
+| **BR-APR-13b** | ⚠️ **Bir talebin onaylanması diğer bekleyen talepleri otomatik reddetmez.** Rakip talepler `Pending` kalır; her biri **açık bir kararla** sonuçlanır. Sessiz toplu red yapılmaz (`11` ST-CORE-01). |
 | **BR-APR-14** | Bekleyen durum takvimde ve oda görünümlerinde **kalıcı bir rozetle** gösterilir (`11` ST-PEND-01/02, `14` BR-SHELL-20/29). |
 | **BR-APR-15** | Bekleyen durum, **kimden ne beklendiğini** söyler (`11` ST-PEND-03). |
 | **BR-APR-16** | Talep eden, kendi bekleyen talebini **geri çekebilir** → `Cancelled`. |
@@ -149,6 +151,9 @@ Bazı odalar ortak ve değerli kaynaklardır; bunlara yapılan rezervasyonun **b
 | ID | Kural |
 |---|---|
 | **BR-APR-25** | Onaylayıcı için **kendi sorumlu olduğu odaların taleplerini** listeleyen bir kuyruk bulunur. Başka odaların talepleri görünmez (BR-APR-03). |
+| **BR-APR-25a** | ⭐ **Oda ekseninde görünüm.** Bir odaya bakarken *"bu odaya kim, ne zaman talep göndermiş"* sorusu **odanın kendi yüzeyinden** cevaplanabilir: yaklaşan rezervasyonlar ve bekleyen talepler tek listede, tarih/saat · talep eden · durum ile. Karar verilebilen satırlarda onay/red aksiyonu bulunur. *(2 Eylül 2026'da eklendi, SR-APR-08.)* |
+| **BR-APR-25b** | ⚠️ Oda takviminde **talep eden ve etkinlik adı**, yalnızca kararı verebilecek veya etkinliği zaten okuyabilen kullanıcıya gösterilir. Diğerleri için satır yalnız **doluluk** taşır — `10` BR-PRM-06, BR-APR-27. |
+| **BR-APR-25c** | ⚠️ **Karar bekleyen iş, bildirimden ayrı bir sinyaldir.** Bildirim okunduğunda kaybolur; karar bekleyen talep **kararı verilene kadar** görünür kalmalıdır. Onaylayıcı, ilgili yönetim ekranına girmeden de bekleyen iş olduğunu görebilmelidir. |
 | **BR-APR-26** | Kuyruk satırı **en az** şu bağlamı taşır: **etkinlik · oda · talep eden · tarih/saat · tekrar bilgisi · durum**. |
 | **BR-APR-27** | ⚠️ Kuyruk, talep edenin **etkinlik detaylarını** açığa çıkarmaz — yalnızca kararı vermek için gereken bağlam gösterilir. Free/busy detay yasağı (`10` BR-PRM-11) burada da geçerlidir. *(SR-APR-05)* |
 | **BR-APR-28** | Kuyrukta **bekleyen talepler öncelikli** görünür; karara bağlanmış talepler geçmiş olarak erişilebilir kalır. |
@@ -370,5 +375,7 @@ Desktop-first (D-047). **"Rezervasyon durumunu görme" mobil zorunlu akışlarda
 | SR-APR-03 | Onaylayıcısız kalan oda | ⚠️ **Bu durum bir invariant ihlalidir ve önlenir** (BR-APR-02/02a/02b). Yalnızca kullanıcı silinmesi gibi dolaylı yollarla oluşabilir; oluşursa **çözülmesi gereken hata** olarak işaretlenir | Onaylayıcısız approval-required oda **kalıcı broken-state** üretir; form seviyesinde engellenmeli |
 | SR-APR-04 | Karar geri alınabilir mi? | **Hayır; yeni talep gerekir** (BR-APR-22) | Geri alma, durum makinesini ve bildirim akışını karmaşıklaştırır; D-034'ün basit tutma kısıtına aykırı |
 | SR-APR-05 | Kuyruk ne kadar bilgi gösterir? | **Karar için gereken minimum bağlam** (BR-APR-27) | Onaylayıcı, talep edenin takvim detaylarına erişim kazanmamalı — `10` BR-PRM-11'in sızıntı kanalı olmamalı |
+| SR-APR-07 | Aynı slota birden fazla talep gelebilir mi? | ✅ **Evet — rakip talepler birikir** (BR-APR-11/12/13). Kullanıcı engellenmez; çakışma **karar anında** değerlendirilir (BR-APR-13a) ve onay diğerlerini **otomatik reddetmez** (BR-APR-13b) | D-036 ilk gelenin slotu kapatmasını seçmişti; pratikte "iki kişi aynı odayı istedi, hangisi daha acil" değerlendirmesi yapılamıyordu. Ürün sahibi kararıyla model değişti — **D-070**. ⚠️ Otomatik red bilinçli olarak **yok**: onaylanmayan talebin akıbetini yönetici açıkça belirler. Fiziksel çakışma yine imkânsız, çünkü ikinci onay engellenir |
+| SR-APR-08 | "Bu odaya kimin isteği var" nerede görünür? | **Odanın kendi yüzeyinde** (BR-APR-25a) | Onay kuyruğu *onaylayıcı* eksenlidir: tüm odaların talepleri karışık gelir. Soru odadan başladığında cevap da odada olmalı. Detay görünürlüğü BR-PRM-06 ile sınırlandırıldı |
 | SR-APR-06 | Etkinlik zamanı değişirse talep? | **Yeniden değerlendirilir, iptal edilmez** (BR-APR-34) | Otomatik iptal kullanıcıyı sürprizle karşılar; onaylayıcının bilgilendirilmesi yeterli |
 | SR-APR-07 | Kendi talebini onaylama | ⚠️ **Engellenir** (BR-APR-17a); ayrıca **eligible approver yoksa talep hiç oluşturulmaz** (BR-APR-17b) | Onay bağımsız bir karar mekanizmasıdır. Talep oluşturulup karara bağlanamaması **çözümsüz Pending** üretirdi; engelleme talep aşamasına alındı. Self-approval politikası kapsam dışı (BR-APR-17c) |

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { roomById, userById } from '../../lib/domain/selectors';
-import { canCreatePendingRequest, eligibleApprovers, roomSelectability, roomAvailability } from '../../lib/domain/rules';
+import { canCreatePendingRequest, competingPendingCount, eligibleApprovers, roomAvailability, roomSelectability } from '../../lib/domain/rules';
 import {
   DAY_NAMES_LONG, WORK_END_H, WORK_START_H, hhmm, longDateLabel, timeRangeLabel, weekdayIndex,
 } from '../../lib/domain/time';
@@ -56,7 +56,8 @@ export function RoomPickerDrawer() {
     for (let s = WORK_START_H * 60; s + duration <= WORK_END_H * 60; s += 30) {
       const av = roomAvailability(
         room.id, draft.date, s, s + duration, state.reservations, draft.id ?? undefined);
-      if (av === 'available') out.push(s);
+      // D-070 — bekleyen talep saati kapatmaz.
+      if (av !== 'reserved') out.push(s);
       if (out.length >= 7) break;
     }
     return out;
@@ -133,7 +134,7 @@ export function RoomPickerDrawer() {
                       <span className="pill pill--rejected">Talep edilen saat dolu</span>
                     )}
                     {sel.availability === 'pending' && (
-                      <span className="pill pill--pending">Bekleyen talep var</span>
+                      <span className="pill pill--pending">Talep edilmiş</span>
                     )}
                     {sel.reason === 'Bu odayı rezerve etme yetkiniz yok' && (
                       <span className="pill pill--cancelled">Rezervasyon yetkiniz yok</span>
@@ -153,11 +154,19 @@ export function RoomPickerDrawer() {
                       Kapasite {attendees - room.capacity} kişi aşılıyor; rezervasyonu engellemez.
                     </div>
                   )}
-                  {sel.availability !== 'available' && sel.selectable === false
-                    && sel.reason !== 'Bu odayı rezerve etme yetkiniz yok' && (
+                  {sel.availability === 'reserved' && sel.reason !== 'Bu odayı rezerve etme yetkiniz yok' && (
                     <div className="rcard__note rcard__note--err">
                       <Icon name="xCircle" size={13} />
                       {timeRangeLabel(draft.start, draft.end)} arası kapalı; alttaki saatlerden birini seçebilirsiniz.
+                    </div>
+                  )}
+                  {/* D-070 — rakip talep engel değil; kararın onaylayıcıda olduğu söylenir. */}
+                  {sel.availability === 'pending' && sel.selectable && (
+                    <div className="rcard__note rcard__note--warn">
+                      <Icon name="clock" size={13} />
+                      Bu saat için {competingPendingCount(room.id, draft.date, draft.start, draft.end,
+                        state.reservations, draft.id ?? undefined)} bekleyen talep var.
+                      Siz de talep edebilirsiniz; kararı onaylayıcı verir.
                     </div>
                   )}
                   {sel.reason === 'Bu odayı rezerve etme yetkiniz yok' && (

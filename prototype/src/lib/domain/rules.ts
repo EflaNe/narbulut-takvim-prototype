@@ -99,6 +99,10 @@ export function shareTargetState(
 
 export type RoomAvailability = 'available' | 'reserved' | 'pending';
 
+/**
+ * ⚠️ D-070 — **bekleyen talep slotu bloke etmez.** Yalnız kesinleşmiş rezervasyon bloke eder.
+ * `'pending'` dönmesi "başkası da istemiş" bilgisidir; seçimi engellemez (BR-APR-12).
+ */
 export function roomAvailability(
   roomId: RoomId, date: IsoDate, start: Minutes, end: Minutes,
   reservations: Reservation[], ignoreEventId?: string,
@@ -112,6 +116,34 @@ export function roomAvailability(
   if (active.some((r) => r.status === 'reserved')) return 'reserved';
   if (active.some((r) => r.status === 'pending')) return 'pending';
   return 'available';
+}
+
+/** Aynı aralığa düşen bekleyen talep sayısı — bilgi amaçlıdır, engel değildir. */
+export function competingPendingCount(
+  roomId: RoomId, date: IsoDate, start: Minutes, end: Minutes,
+  reservations: Reservation[], ignoreEventId?: string,
+): number {
+  return reservations.filter(
+    (r) => r.roomId === roomId && r.date === date && r.status === 'pending'
+      && r.eventId !== ignoreEventId && overlaps(start, end, r.start, r.end),
+  ).length;
+}
+
+/**
+ * ⚠️ D-070 — **onay anında çakışma kontrolü.**
+ * Talepler serbestçe birikir; çakışma yalnız karar anında değerlendirilir.
+ * Slot kesinleşmişse onay verilemez — ama bekleyen talep **otomatik reddedilmez**,
+ * karar yöneticide kalır (BR-APR-13a/13b).
+ */
+export function canApproveNow(
+  reservation: Reservation, reservations: Reservation[],
+): { ok: true } | { ok: false; blockedBy: Reservation } {
+  const clash = reservations.find(
+    (r) => r.id !== reservation.id && r.roomId === reservation.roomId
+      && r.date === reservation.date && r.status === 'reserved'
+      && overlaps(reservation.start, reservation.end, r.start, r.end),
+  );
+  return clash ? { ok: false, blockedBy: clash } : { ok: true };
 }
 
 export interface RoomSelectability {
@@ -144,10 +176,11 @@ export function roomSelectability(
   if (availability === 'reserved') {
     return { visible: true, selectable: false, availability, reason: 'Seçtiğiniz saatte dolu' };
   }
+  // D-070 — bekleyen talep varken oda **seçilebilir**; bilgi olarak belirtilir.
   if (availability === 'pending') {
     return {
-      visible: true, selectable: false, availability,
-      reason: 'Bu saat için bekleyen bir talep var',
+      visible: true, selectable: true, availability,
+      reason: 'Bu saat için bekleyen başka bir talep var',
     };
   }
   return { visible: true, selectable: true, availability, reason: null };

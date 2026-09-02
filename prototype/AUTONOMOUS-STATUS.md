@@ -574,3 +574,53 @@ Doğrulama: üç aksiyon · bekleyen talepte sebebin görünmesi · kartın salt
 tıklamayı engellememesi · paylaşılan etkinlikte menünün açılmaması · "Oda değiştir" ile oda
 seçicinin açılması · silmede onay diyaloğu ve rezervasyon sonucunun yazılı olması.
 Konsol hatası 0.
+
+---
+
+## 16. Rakip talep modeli — 2 Eylül 2026
+
+Ürün sahibi bir senaryo sordu: *"İki kullanıcı aynı odaya aynı saate istek attı, birini kabul
+ettik. Diğerini kabul edersek ne olur?"*
+
+### Teşhis: senaryo mevcut modelde oluşmuyordu
+
+`BR-APR-13` + `EC-RB-07` gereği ilk talep slotu bloke ediyordu; ikinci kullanıcı odayı
+**seçemiyordu bile**. Beş senaryo testle doğrulandı — onay, red, geri çekme sonrası slotun
+ne olduğu dahil.
+
+Ama soru, modelin kendisinin sorgulanması gerektiğini gösterdi: *"iki kişi aynı odayı istedi,
+hangisi daha acil"* değerlendirmesi yapılamıyordu.
+
+### Karar: D-070
+
+Ürün sahibinin ifadesiyle: *"kullanıcı yine yollayabilsin, oda yöneticisinin kararına kalsın;
+otomatik red olmasın, teklif yollayamama gibi bir durum olmasın."*
+
+| | Önce (D-036) | Şimdi (D-070) |
+|---|---|---|
+| İkinci kullanıcı | Odayı seçemez | **Talep gönderebilir** |
+| Bekleyen talep | Slotu bloke eder | **Bloke etmez**, bilgi olarak gösterilir |
+| Onay sonrası | — | Diğerleri **otomatik reddedilmez**, `Pending` kalır |
+| Çakışma kontrolü | Talep anında | ⚠️ **Karar anında** |
+
+⚠️ **Çözülmesi şart olan nokta:** otomatik red yoksa, yönetici ikinci talebi de onaylarsa aynı
+odada iki rezervasyon oluşurdu. Bu ürün sahibine ayrıca soruldu; karar: **ikinci onay
+engellenir**, sebebi ve engelleyen rezervasyonun sahibi gösterilir, yönetici isterse önce onu
+kaldırır. Böylece `FN-03` *(odalarda "dolu" kavramı yok)* bulgusuna geri dönülmüyor.
+
+Etkilenen kurallar: `BR-APR-11/12/13` yeniden yazıldı, `BR-APR-13a/13b` eklendi,
+`16` §4.1 seçilebilirlik matrisi ve `EC-RB-07` güncellendi, `SR-APR-07` gerekçeyi taşıyor.
+
+### İki yüzey eklendi
+
+| Ne | Neden |
+|---|---|
+| **"Bu odanın takvimi"** — Odalar ekranında, seçili odanın bekleyen talepleri ve rezervasyonları tek listede, satır içi onay/red ile | *"Bu odaya kim ne zaman istek attı"* sorusunun cevabı yoktu. Onay kuyruğu **onaylayıcı** eksenli; soru **oda** ekseninden geliyordu (`BR-APR-25a`) |
+| **Üst çubukta karar bekleyen iş rozeti** + Durum kartının vurgulanması | Talepler ekranına tek giriş noktası Odalar'daki soluk bir satırdı. ⚠️ Ayrıca **karar bekleyen iş bildirimden ayrı bir sinyaldir**: bildirim okununca kaybolur, bekleyen talep karar verilene kadar durmalıdır (`BR-APR-25c`) |
+
+Oda takviminde talep eden ve etkinlik adı **yalnız kararı verebilecek veya etkinliği zaten
+okuyabilen** kullanıcıya gösterilir; diğerleri için satır yalnız doluluk taşır
+(`BR-APR-25b`, `10` BR-PRM-06).
+
+Test 62 → **69**. Uçtan uca: rozet · vurgulu durum kartı · oda takvimi ve satır içi karar ·
+oda seçicide rakip talebin engel değil bilgi olması. Konsol hatası 0.

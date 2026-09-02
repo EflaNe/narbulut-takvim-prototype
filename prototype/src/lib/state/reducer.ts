@@ -7,7 +7,7 @@ import type {
   RoomId, ShareId, UserId,
 } from '../domain/types';
 import {
-  canCreatePendingRequest, canDecideRequest, eligibleApprovers, roomAvailability,
+  canApproveNow, canCreatePendingRequest, canDecideRequest, eligibleApprovers, roomAvailability,
 } from '../domain/rules';
 import { hhmm, shiftByView } from '../domain/time';
 import type { AppAction, AppState, EventDraft } from './types';
@@ -67,6 +67,8 @@ export function createInitialState(): AppState {
 /* ────────────────────────────── yardımcılar ────────────────────────────── */
 
 const nextId = (s: AppState, prefix: string) => `${prefix}_${s.seq}`;
+
+const userById2 = (s: AppState, id: UserId) => s.users.find((u) => u.id === id)?.name;
 
 function ui(state: AppState, patch: Partial<AppState['ui']>): AppState {
   return { ...state, ui: { ...state.ui, ...patch } };
@@ -294,16 +296,12 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
       // Engelleyici: oda çakışması (BR-RB-21)
       if (room) {
+        // D-070 — yalnız kesinleşmiş rezervasyon engeller; bekleyen talep engellemez.
         const avail = roomAvailability(
           room.id, d.date, d.start, d.end, state.reservations, d.id ?? undefined);
-        if (avail !== 'available') {
+        if (avail === 'reserved') {
           return ui(state, {
-            toast: {
-              message: avail === 'reserved'
-                ? `${room.name} seçtiğiniz saatte dolu.`
-                : `${room.name} için bu saatte bekleyen bir talep var.`,
-              tone: 'error',
-            },
+            toast: { message: `${room.name} seçtiğiniz saatte dolu.`, tone: 'error' },
           });
         }
         // Engelleyici: eligible approver invariant (BR-APR-17b)
@@ -508,6 +506,25 @@ export function reducer(state: AppState, action: AppAction): AppState {
       if (!room || !canDecideRequest(req, room, state.currentUserId, state.groups)) {
         return ui(state, { toast: { message: 'Bu talebi onaylama yetkiniz yok.', tone: 'error' } });
       }
+
+      // D-070 / BR-APR-13a — çakışma karar anında değerlendirilir.
+      const rez = state.reservations.find((r) => r.id === req.reservationId);
+      if (rez) {
+        const check = canApproveNow(rez, state.reservations);
+        if (!check.ok) {
+          const holder = state.events.find((e) => e.id === check.blockedBy.eventId);
+          const who = userById2(state, check.blockedBy.requesterId);
+          return ui(state, {
+            toast: {
+              message: `${room.name} bu saatte rezerve: ${who ?? 'başka bir kullanıcı'}`
+                + `${holder ? ` · ${holder.title}` : ''}. Onaylamak için önce o rezervasyonu kaldırın.`,
+              tone: 'error',
+            },
+          });
+        }
+      }
+
+      // ⚠️ Diğer bekleyen talepler otomatik reddedilmez (BR-APR-13b).
       const next: AppState = {
         ...state,
         requests: state.requests.map((r) => (r.id === req.id

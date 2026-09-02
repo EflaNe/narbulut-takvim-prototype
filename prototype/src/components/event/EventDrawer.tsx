@@ -4,8 +4,8 @@ import {
   calendarById, myCalendars, reservationStatusForEvent, roomById, userById,
 } from '../../lib/domain/selectors';
 import {
-  capacityWarning, isPastDate, outsideWorkingHours, roomAvailability,
-  canCreatePendingRequest, eligibleApprovers,
+  canCreatePendingRequest, capacityWarning, competingPendingCount, eligibleApprovers,
+  isPastDate, outsideWorkingHours, roomAvailability,
 } from '../../lib/domain/rules';
 import { suggestTimes } from '../../lib/domain/scheduling';
 import {
@@ -50,10 +50,17 @@ export function EventDrawer({ dimmed }: { dimmed?: boolean }) {
   if (!draft.title.trim()) blocking.push('Etkinlik adı gerekli');
   if (draft.end <= draft.start) blocking.push('Bitiş saati başlangıçtan sonra olmalı');
   if (roomAvail === 'reserved') blocking.push(`${room!.name} seçtiğiniz saatte dolu`);
-  if (roomAvail === 'pending') blocking.push(`${room!.name} için bekleyen bir talep var`);
   if (!approverCheck.ok) blocking.push(approverCheck.message);
 
   const warnings: string[] = [];
+  // D-070 — aynı saate başkası da talep etmiş olabilir; bu engel değil, bilgidir.
+  const rakip = room
+    ? competingPendingCount(room.id, draft.date, draft.start, draft.end,
+      state.reservations, draft.id ?? undefined)
+    : 0;
+  if (rakip > 0) {
+    warnings.push(`Bu saat için ${rakip} bekleyen talep daha var — kararı onaylayıcı verir`);
+  }
   const cap = capacityWarning(room ?? null, draft.participantIds.length + 1);
   if (cap) warnings.push(`${cap.replace(/\.$/, '')} — rezervasyonu engellemez`);
   if (outsideWorkingHours(draft.start, draft.end)) {
@@ -338,11 +345,7 @@ export function EventDrawer({ dimmed }: { dimmed?: boolean }) {
                     onClick={() => dispatch({ type: 'openRoomPicker' })}>Başka oda seç</button>
                 </div>
               )}
-              {roomAvail === 'pending' && (
-                <div className="inlinemsg inlinemsg--error">
-                  <Icon name="xCircle" size={14} />Bu saat için bekleyen bir talep var
-                </div>
-              )}
+
               {room.requiresApproval && roomAvail === 'available' && approverCheck.ok && (
                 <div className="inlinemsg inlinemsg--info">
                   <Icon name="clock" size={14} />
