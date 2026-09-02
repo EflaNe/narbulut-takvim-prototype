@@ -11,6 +11,7 @@ import './styles/drawer.css';
 import './styles/admin.css';
 import './styles/requests.css';
 import './styles/mobile.css';
+import './styles/demo.css';
 import { App } from './App';
 import { StoreProvider } from './lib/state/StoreContext';
 

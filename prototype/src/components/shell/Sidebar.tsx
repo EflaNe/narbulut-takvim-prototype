@@ -3,6 +3,7 @@ import { DateHero } from './DateHero';
 import { MiniMonth } from './MiniMonth';
 import { OwnedCalendarList, SharedCalendarList } from './CalendarList';
 import { RoomsFilterCard } from './RoomsFilterCard';
+import { PersonaSwitcher } from '../demo/PersonaSwitcher';
 
 export function Sidebar() {
   return (
@@ -13,6 +14,7 @@ export function Sidebar() {
       <OwnedCalendarList />
       <SharedCalendarList />
       <RoomsFilterCard />
+      <PersonaSwitcher />
     </div>
   );
 }

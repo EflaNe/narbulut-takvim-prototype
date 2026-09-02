@@ -1,6 +1,7 @@
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { NavRail } from '../shell/NavRail';
 import { Icon } from '../primitives/Icon';
+import { PersonaSwitcher } from '../demo/PersonaSwitcher';
 
 /** 04 · Oda yönetimi kendi sol rail'ini taşır — takvim rail'i değil. */
 export function RoomsSidebar() {
@@ -71,6 +72,8 @@ export function RoomsSidebar() {
           {restricted} kısıtlı erişim
         </div>
       </section>
+
+      <PersonaSwitcher />
     </div>
   );
 }

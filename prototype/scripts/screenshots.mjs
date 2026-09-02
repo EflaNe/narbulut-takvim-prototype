@@ -2,7 +2,9 @@
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 
-const BASE = process.argv[2] || 'http://localhost:5180';
+const RAW = process.argv[2] || 'http://localhost:5180';
+// Ürün ekranlarını demo kabuğu olmadan yakala: doğrudan giriş + şerit kapalı.
+const BASE = `${RAW}/?p=deniz&banner=off`;
 const OUT = process.argv[3] || '/private/tmp/claude-501/shots/screens';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 mkdirSync(OUT, { recursive: true });

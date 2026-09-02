@@ -49,6 +49,21 @@ npm run dev
 
 → http://localhost:5180
 
+Açılışta bir **demo giriş ekranı** gelir: hangi kullanıcı gözüyle test edeceğinizi seçersiniz.
+⚠️ Bu **kimlik doğrulama değildir** — backend yok, gerçek oturum açma mümkün değil.
+
+| Persona | Ne test edilir |
+|---|---|
+| **Deniz Aydın** · Ürün Yöneticisi | Etkinlik oluşturma, oda ayırma, takvim paylaşma |
+| **Zeynep Aksoy** · Tesis Yönetimi | Boğaziçi onaylayıcısı — Deniz'in talebini karara bağlar |
+| **Ahmet Yıldız** · Operasyon | Topkapı onaylayıcısı — Mert'in talebini karara bağlar |
+| **Mert Kaya** · Ürün Müdürü | Paylaşan taraf — "Ürün" takvimini Deniz ile paylaşmış |
+
+Persona sol rail'in altındaki **DEMO** satırından değiştirilir; **veriler korunur**, böylece
+onay akışı uçtan uca test edilebilir.
+
+Doğrudan bağlantı: `?p=zeynep` giriş ekranını atlar · `&banner=off` üstteki bilgi şeridini kapatır.
+
 ## Derleme ve statik sunum
 
 ```bash

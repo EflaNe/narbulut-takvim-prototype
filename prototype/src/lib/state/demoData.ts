@@ -78,10 +78,13 @@ export const calendars: Calendar[] = [
   // Başkalarına ait — Deniz ile paylaşılmış
   { id: 'cal_urun', name: 'Ürün', color: '#2F6B4F', ownerId: 'usr_mert', kind: 'team', isDefault: false },
   { id: 'cal_pazarlama', name: 'Pazarlama', color: '#B4531F', ownerId: 'usr_ayse', kind: 'team', isDefault: false },
-  // Paylaşılmayan kişisel takvimler — yalnız free/busy kaynağı (BR-PRM-11)
-  { id: 'cal_ayse_ozel', name: 'Ayşe · Kişisel', color: '#7C8697', ownerId: 'usr_ayse', kind: 'personal', isDefault: true },
-  { id: 'cal_ahmet_ozel', name: 'Ahmet · Kişisel', color: '#7C8697', ownerId: 'usr_ahmet', kind: 'personal', isDefault: true },
-  { id: 'cal_mert_ozel', name: 'Mert · Kişisel', color: '#7C8697', ownerId: 'usr_mert', kind: 'personal', isDefault: true },
+  // Diğer kullanıcıların kendi takvimleri — Deniz için yalnız free/busy kaynağı (BR-PRM-11),
+  // o kullanıcı olarak girildiğinde kendi takvimi olarak görünür.
+  { id: 'cal_ayse_ozel', name: 'Kişisel', color: '#B4531F', ownerId: 'usr_ayse', kind: 'personal', isDefault: true },
+  { id: 'cal_ahmet_ozel', name: 'Kişisel', color: '#3B7C8C', ownerId: 'usr_ahmet', kind: 'personal', isDefault: true },
+  { id: 'cal_mert_ozel', name: 'Kişisel', color: '#7A3E9D', ownerId: 'usr_mert', kind: 'personal', isDefault: true },
+  { id: 'cal_zeynep_ozel', name: 'Kişisel', color: '#177066', ownerId: 'usr_zeynep', kind: 'personal', isDefault: true },
+  { id: 'cal_zeynep_tesis', name: 'Tesis', color: '#0058B8', ownerId: 'usr_zeynep', kind: 'team', isDefault: false },
 ];
 
 /** 08 · Takvim Paylaşımı — Kişisel takvim iki kişiyle paylaşılmış. */
@@ -254,6 +257,21 @@ export const events: CalendarEvent[] = [
     participantIds: [], roomId: null, notes: '', recurrence: NO_REPEAT(),
   },
   {
+    id: 'evt_zeynep_tur', calendarId: 'cal_zeynep_tesis', title: 'Kat Turu',
+    date: '2026-08-28', start: 540, end: 600, organizerId: 'usr_zeynep',
+    participantIds: ['usr_pinar'], roomId: null, notes: '', recurrence: { kind: 'weekly', count: 12 },
+  },
+  {
+    id: 'evt_zeynep_bakim', calendarId: 'cal_zeynep_tesis', title: 'Bakım Planlama',
+    date: '2026-08-26', start: 900, end: 990, organizerId: 'usr_zeynep',
+    participantIds: ['usr_ahmet'], roomId: 'room_istanbul', notes: '', recurrence: { kind: 'none', count: 1 },
+  },
+  {
+    id: 'evt_zeynep_1on1', calendarId: 'cal_zeynep_ozel', title: 'Ekip 1:1',
+    date: '2026-08-27', start: 600, end: 630, organizerId: 'usr_zeynep',
+    participantIds: [], roomId: null, notes: '', recurrence: { kind: 'none', count: 1 },
+  },
+  {
     id: 'evt_eski', calendarId: 'cal_ahmet_ozel', title: 'Bölge Toplantısı',
     date: '2026-08-19', start: 600, end: 720, organizerId: 'usr_kaan',
     participantIds: ['usr_okan'], roomId: null, notes: '', recurrence: NO_REPEAT(),
@@ -281,6 +299,7 @@ export const reservations: Reservation[] = [
   { id: 'rsv_retro', eventId: 'evt_retro', roomId: 'room_galata', date: '2026-08-28', start: 900, end: 960, status: 'reserved', requesterId: 'usr_deniz' },
   { id: 'rsv_ops', eventId: 'evt_ops_haftalik', roomId: 'room_topkapi', date: '2026-08-28', start: 660, end: 720, status: 'reserved', requesterId: 'usr_ahmet' },
   { id: 'rsv_eski', eventId: 'evt_eski', roomId: 'room_topkapi', date: '2026-08-19', start: 600, end: 720, status: 'rejected', requesterId: 'usr_kaan' },
+  { id: 'rsv_zeynep_bakim', eventId: 'evt_zeynep_bakim', roomId: 'room_istanbul', date: '2026-08-26', start: 900, end: 990, status: 'reserved', requesterId: 'usr_zeynep' },
 ];
 
 export const requests: ApprovalRequest[] = [

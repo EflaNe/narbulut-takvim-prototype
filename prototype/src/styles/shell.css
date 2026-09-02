@@ -1,10 +1,10 @@
-.app{position:relative;height:100vh;width:100%;background:#fff;display:flex;overflow:hidden;
+.app{position:relative;height:100%;width:100%;background:#fff;display:flex;overflow:hidden;
   font:400 13px/1.5 var(--font);color:var(--text-primary)}
 
 /* ── Sol rail ───────────────────────────────────────────── */
 .sidebar{width:var(--sidebar-w);flex:none;border-right:1px solid var(--line-panel);
   background:var(--bg-sidebar);display:flex;flex-direction:column;padding:14px 14px 12px;gap:14px;
-  overflow-y:auto}
+  overflow-y:auto;scrollbar-gutter:stable}
 .sidebar > *{flex:none}
 .navrail{display:flex;align-items:center;gap:4px}
 .navrail button{display:flex;align-items:center;gap:7px;height:32px;padding:0 10px;border:none;

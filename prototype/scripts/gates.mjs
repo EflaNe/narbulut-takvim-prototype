@@ -4,7 +4,8 @@
  */
 import puppeteer from 'puppeteer-core';
 
-const BASE = process.argv[2] || 'http://localhost:5180';
+const RAW = process.argv[2] || 'http://localhost:5180';
+const BASE = `${RAW}/?p=deniz&banner=off`;
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 const browser = await puppeteer.launch({
@@ -16,7 +17,7 @@ const external = [];
 const errors = [];
 page.on('request', (r) => {
   const u = r.url();
-  if (!u.startsWith(BASE) && !u.startsWith('data:') && !u.startsWith('blob:')) external.push(u);
+  if (!u.startsWith(RAW) && !u.startsWith('data:') && !u.startsWith('blob:')) external.push(u);
 });
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });

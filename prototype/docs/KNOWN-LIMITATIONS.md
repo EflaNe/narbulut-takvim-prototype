@@ -11,7 +11,7 @@ veya backend gerektiren konulardır.
 |---|---|---|
 | L-01 | **Backend yok** | Tüm veri bellekte; `src/lib/state/demoData.ts` |
 | L-02 | **Veritabanı yok** | Sayfa yenilendiğinde her şey başlangıç durumuna döner |
-| L-03 | **Kimlik doğrulama yok** | Oturum kullanıcısı sabit: Deniz Aydın |
+| L-03 | **Kimlik doğrulama yok** | Giriş ekranı bir **persona seçicidir**, doğrulama yapmaz. Şifre yok, oturum yok, yetki sunucuda kontrol edilmez |
 | L-04 | **Kalıcılık yok** (`localStorage` dahil) | Bilinçli: bozuk bir demo durumu kalıcılaşmasın |
 | L-05 | **Gerçek e-posta gönderimi yok** | SMTP/API kurulmadı; `emails/dist/` statik önizleme |
 | L-06 | **Eşzamanlılık yok** | İki kullanıcının aynı slotu istemesi modellenmedi |

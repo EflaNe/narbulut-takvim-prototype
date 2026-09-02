@@ -3,6 +3,9 @@
 Hazırlık: `npm run dev` → http://localhost:5180 · pencere **1440×900 veya daha geniş**.
 Sayfayı yenilemek her zaman başlangıç durumuna döndürür.
 
+Açılışta demo giriş ekranı gelir; sunum için **Deniz Aydın**'ı seçin. Doğrudan açmak isterseniz
+`?p=deniz&banner=off` bağlantısı giriş ekranını ve üstteki bilgi şeridini atlar.
+
 Açılışta gördükleriniz: **28 Ağustos 2026 Cuma** haftası, saat **15:00** (mavi "şimdi" çizgisi).
 Oturum sahibi: **Deniz Aydın · Ürün Yöneticisi**.
 
@@ -61,6 +64,7 @@ Ekranda dört odanın dördü de farklı bir durumu gösterir:
 | # | Ne yapılır | Beklenen sonuç |
 |---|---|---|
 | 16 | Sol raildeki **Odalar** → Durum kartında **"4 bekleyen talep"** | Talepler ekranı: solda liste, sağda seçili talebin detayı. |
+| 16b | *(isteğe bağlı)* Sol rail'in altındaki **DEMO** satırından **Zeynep Aksoy**'a geçin | Kendi talebinizi onaylayamazsınız (`BR-APR-17a`); Zeynep Boğaziçi'nin onaylayıcısı olduğu için talep onun kuyruğunda. **Veriler korunur.** |
 | 17 | Listeden **"Sunum Provası"** | Detayda **Onayla/Reddet yok**. Yerine: *"Bu sizin talebiniz. Kendi rezervasyon talebinizi onaylayamazsınız; kararı Zeynep Aksoy verecek."* + **Talebi geri çek**. |
 | 18 | Listeden **"Ürün Roadmap"** (Mert Kaya) | Deniz bu odanın onaylayıcısı olduğu için **Onayla / Reddet** görünür. Detayda oda, talep eden, katılımcı/kapasite ve **odanın o günkü yatay çizelgesi**. |
 | 19 | **Onayla** | "Topkapı rezervasyonu onaylandı." |

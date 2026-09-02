@@ -426,3 +426,49 @@ tarih kartı anchor'ı, mini takvimdeki dolu mavi daire ise `today`'i gösteriyo
 Doğrulama: açılışta tek işaret (bugün = seçili) · hafta adımında Cuma → Cuma · geri
 gidildiğinde 21 dolu / 28 halkalı ayrı görünüyor · mini takvimden gün seçimi karta, aralığa
 ve ızgaraya yansıyor. Test 57 → **58**.
+
+---
+
+## 13. Demo kabuğu — 2 Eylül 2026
+
+Prototip paydaşlara test ettirilecek. "Küçük bir login ekranı" istendi.
+
+⚠️ **Gerçek kimlik doğrulama mümkün değil** — backend yok, şifre kontrolü tarayıcıda çalışır
+ve konsolu açan görür. Bu yüzden giriş ekranı **persona seçici** olarak tasarlandı: hem kapı
+görevi görür hem test için gerçekten işe yarar.
+
+### Neden persona seçici
+
+Test edilecek en kritik akış onay: *talep oluştur → onayla → takvimde rezerve gör*. Ama
+`BR-APR-17a` gereği kimse kendi talebini onaylayamaz. Sahte bir e-posta/şifre formu bunu
+çözmezdi; persona seçici doğal olarak çözüyor.
+
+| Persona | Rolü | Test ettiği |
+|---|---|---|
+| Deniz Aydın | Ürün Yöneticisi | Etkinlik, oda, paylaşım — talebi **oluşturan** taraf |
+| Zeynep Aksoy | Tesis Yönetimi | Boğaziçi onaylayıcısı — Deniz'in talebini karara bağlar |
+| Ahmet Yıldız | Operasyon | Topkapı onaylayıcısı — Mert'in talebini karara bağlar |
+| Mert Kaya | Ürün Müdürü | Paylaşan taraf |
+
+### Eklenenler
+
+| Öğe | Not |
+|---|---|
+| **Giriş ekranı** | Persona kartları + "neyi test edebilirsiniz" 5 adımlık tur |
+| **Demo şeridi** | Üstte: *"Tasarım prototipi · veriler örnektir · yenileme sıfırlar"*. Kapatılabilir |
+| **Persona satırı** | Sol rail'in altında, **DEMO** etiketli, sticky. Değişim **veriyi korur** |
+| **Doğrudan bağlantı** | `?p=zeynep` giriş ekranını, `&banner=off` şeridi atlar |
+
+⚠️ Üçü de **ürün arayüzü değildir**; canonical 01–08'in kompozisyonuna dokunmaz. Paket ekran
+görüntüleri ve tüm doğrulama betikleri `?p=deniz&banner=off` ile üretilir, yani ürün ekranları
+demo kabuğu olmadan yakalanır.
+
+### Veri tamamlaması
+
+Zeynep'in hiç takvimi yoktu — onunla girilince ekran boş kalıyordu. Kendisine bir varsayılan
+ve bir "Tesis" takvimi eklendi. Diğer personaların takvimleri de artık kendi adlarıyla
+("Kişisel") görünüyor; Deniz için bunlar hâlâ yalnız free/busy kaynağıdır (`10` BR-PRM-11).
+
+Doğrulama: 10 uçtan uca kontrol · giriş ekranı · 4 persona · şerit · sabit persona satırı ·
+persona değişiminde veri korunumu · Zeynep'in kendi takvimleri · Zeynep'in Kick-off talebini
+görüp onaylayabilmesi · doğrudan bağlantı. Demo akışı 29 adım ve tüm kapılar geçmeye devam ediyor.

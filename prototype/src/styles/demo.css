@@ -1,0 +1,68 @@
+/* ── Demo kabuğu ─────────────────────────────────────────
+   ⚠️ Bunlar ürün arayüzü değildir: prototipi test edilebilir kılan sarmalayıcıdır.
+   Canonical 01–08 ekranlarının kompozisyonuna dokunmaz. */
+.demoshell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.demoshell > .app,.demoshell > .mob{height:100%;flex:1;min-height:0}
+
+.demoband{flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;height:34px;
+  background:#16191D;color:rgba(255,255,255,.86);font:400 12px/1 var(--font)}
+.demoband strong{color:#fff;font-weight:500}
+.demoband__dot{width:6px;height:6px;border-radius:50%;background:#E8A33D;flex:none}
+.demoband__sep{color:rgba(255,255,255,.30)}
+.demoband__x{margin-left:auto;border:none;background:transparent;color:rgba(255,255,255,.55);
+  display:flex;padding:5px;border-radius:6px}
+.demoband__x:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── Giriş ekranı ───────────────────────────────────────── */
+.login{height:100vh;overflow-y:auto;background:var(--bg-sidebar);
+  display:flex;align-items:flex-start;justify-content:center;padding:56px 24px}
+.login__inner{width:100%;max-width:940px}
+.login__head{text-align:center;margin-bottom:34px}
+.login__brand{font:600 20px/1 var(--font);color:var(--brand);letter-spacing:-.01em}
+.login__title{margin-top:14px;font:600 26px/1.25 var(--font);letter-spacing:-.018em}
+.login__sub{margin-top:10px;font:400 13.5px/1.6 var(--font);color:var(--text-secondary)}
+.login__cols{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;
+  align-items:start}
+.login__label{font:500 10.5px/1 var(--font);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:12px}
+.persona{display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+  background:#fff;border:1px solid var(--line-panel);border-radius:var(--r-card);
+  padding:15px 16px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.persona + .persona{margin-top:10px}
+.persona:hover{border-color:#B9CFE6;box-shadow:0 2px 10px rgba(22,25,29,.07)}
+.persona:focus-visible{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,88,184,.14);outline:none}
+.persona__av{width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;font:500 13px/1 var(--font);color:#fff}
+.persona__name{font:500 14.5px/1.3 var(--font);color:var(--text-primary)}
+.persona__role{margin-top:3px;font:400 12.5px/1.4 var(--font);color:var(--text-tertiary)}
+.persona__can{margin-top:8px;font:400 12.5px/1.5 var(--font);color:var(--text-secondary)}
+.persona__go{margin-left:auto;align-self:center;color:var(--text-faint);display:flex;flex:none}
+.persona:hover .persona__go{color:var(--brand)}
+
+.login__panel{background:#fff;border:1px solid var(--line-panel);border-radius:var(--r-card);
+  padding:18px 20px 20px}
+.login__steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.login__steps li{counter-increment:s;position:relative;padding:0 0 0 30px;
+  font:400 13px/1.55 var(--font);color:var(--text-secondary)}
+.login__steps li + li{margin-top:13px}
+.login__steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:20px;height:20px;
+  border-radius:50%;background:var(--bg-subtle);color:var(--text-secondary);
+  font:500 11px/20px var(--font);text-align:center}
+.login__note{margin-top:18px;padding-top:15px;border-top:1px solid var(--line-divider);
+  font:400 12px/1.6 var(--font);color:var(--text-muted)}
+
+/* ── Sol rail'deki persona satırı ───────────────────────── */
+/* Test sırasında hep erişilebilir olmalı: rail kayarken alta sabitlenir. */
+.personarow{position:sticky;bottom:-12px;z-index:5;margin-top:auto;
+  background:#fff;border:1px solid var(--line-panel);border-radius:var(--r-card);
+  padding:9px 10px;box-shadow:0 -10px 16px -8px rgba(247,249,251,.95),0 1px 3px rgba(22,25,29,.06)}
+.personarow__tag{font:500 9.5px/1 var(--font);letter-spacing:.11em;color:var(--text-faint);
+  margin-bottom:8px}
+.personarow__btn{display:flex;align-items:center;gap:9px;width:100%;border:none;background:transparent;
+  padding:0;text-align:left}
+.personarow__av{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;font:500 10px/1 var(--font);color:#fff}
+.personarow__name{font:400 12.5px/1 var(--font);color:var(--text-primary);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.personarow__role{margin-top:3px;font:400 11px/1 var(--font);color:var(--text-tertiary)}
+.personarow__btn:hover .personarow__name{color:var(--brand)}

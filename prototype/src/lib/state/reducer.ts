@@ -54,6 +54,8 @@ export function createInitialState(): AppState {
       calendarForm: null,
       deletingCalendarId: null,
       creatingRoom: false,
+      signedIn: false,
+      demoBannerOpen: true,
       toast: null,
       demoPanelOpen: false,
       mobileSheet: 'none',
@@ -706,6 +708,21 @@ export function reducer(state: AppState, action: AppAction): AppState {
           tone: 'info',
         },
       });
+
+    /**
+     * ⚠️ Gerçek kimlik doğrulama değildir — backend yok.
+     * Demo giriş ekranı yalnızca hangi persona ile test edileceğini seçer.
+     */
+    case 'signIn':
+      return ui({ ...state, currentUserId: action.userId }, {
+        signedIn: true, route: 'calendar', anchorDate: state.today, mobileDate: state.today,
+      });
+
+    case 'signOut':
+      return ui(state, { signedIn: false });
+
+    case 'dismissDemoBanner':
+      return ui(state, { demoBannerOpen: false });
 
     case 'toggleDemoPanel':
       return ui(state, { demoPanelOpen: !state.ui.demoPanelOpen });

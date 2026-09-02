@@ -7,7 +7,8 @@
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 
-const BASE = process.argv[2] || 'http://localhost:5180';
+const RAW = process.argv[2] || 'http://localhost:5180';
+const BASE = `${RAW}/?p=deniz&banner=off`;
 const SHOTS = process.env.SHOT_DIR || '/private/tmp/claude-501/shots/flow';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 mkdirSync(SHOTS, { recursive: true });

@@ -68,6 +68,10 @@ export interface UiState {
   deletingCalendarId: CalendarId | null;
   /** Yeni oda taslağı açık mı (BR-ROOM-29) */
   creatingRoom: boolean;
+  /** Demo giriş ekranı geçildi mi (gerçek kimlik doğrulama değildir) */
+  signedIn: boolean;
+  /** Üstteki demo bilgi şeridi açık mı */
+  demoBannerOpen: boolean;
   /** Sunum UI'ında görünmez — Shift+D ile açılan demo paneli */
   demoPanelOpen: boolean;
   mobileSheet: 'none' | 'calendars' | 'event' | 'removeShared' | 'newEvent';
@@ -152,6 +156,9 @@ export type AppAction =
   | { type: 'toast'; message: string; tone?: 'info' | 'success' | 'error' }
   | { type: 'clearToast' }
   | { type: 'setPersona'; userId: UserId }
+  | { type: 'signIn'; userId: UserId }
+  | { type: 'signOut' }
+  | { type: 'dismissDemoBanner' }
   | { type: 'toggleDemoPanel' }
   | { type: 'resetDemo' }
   | { type: 'setMobileSheet'; sheet: UiState['mobileSheet'] }
