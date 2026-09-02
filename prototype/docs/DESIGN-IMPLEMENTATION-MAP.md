@@ -24,6 +24,7 @@ Her canonical ekranın React karşılığı ve bilinçli sapmalar aşağıdadır
 | Çalışma saatleri dışı bantlar, bugün sütunu, hafta sonu sütunu, şimdi çizgisi | `calendar/WeekGrid.tsx` |
 | Tüm takvimler kapalı boş durumu | `calendar/EmptyGridState.tsx` |
 | Etkinlik hover önizleme kartı *(canonical'da çizili değil — `14` BR-SHELL-41…45)* | `calendar/EventHoverCard.tsx` |
+| Etkinlik bağlam menüsü *(sağ tık — `KEEP-13`, `14` BR-SHELL-46…50)* | `calendar/EventContextMenu.tsx` |
 
 ### 02 · Etkinlik oluştur / düzenle  *(quiet editable event editor — kilitli)*
 
@@ -147,7 +148,8 @@ Her madde gerekçelidir; hiçbiri yeni tasarım yönü değildir.
 | D-09 | 05 İzinler'de sol railde "Benimle paylaşılanlar" da var | Canonical 05 paylaşım eklenmeden önce üretilmiş; rail tek bileşendir |
 | D-10 | Shift+D demo paneli | Sunum arayüzünde **görünmez**; yalnız persona ve sıfırlama için |
 | D-11 | Etkinlik hover önizleme kartı | Canonical'da çizilmemişti; 1 Eylül 2026'da ürün sahibi kapsama aldı. Tasarımı canonical token'larla kuruldu, spec'e `14` BR-SHELL-41…45c olarak yazıldı. Dokunmatik cihazda hiç render edilmez (BR-SHELL-43) |
-| D-12 | Kartta **Sil** aksiyonu | Ürün sahibi istedi (1 Eylül 2026). Yıkıcı işlem olduğu için üç kısıtla: yalnız düzenlenebilir etkinlikte, açık onay diyaloğundan geçerek, etiketli ayrı satırda — `14` BR-SHELL-45a/b/c |
+| D-12 | ~~Kartta **Sil** aksiyonu~~ → **geri alındı** | 2 Eylül 2026'da bağlam menüsü kapsama girince kart salt okunura döndürüldü; yıkıcı aksiyon tek yerde toplandı — `14` BR-SHELL-45, SR-SHELL-12 |
+| D-18 | **Etkinlikte sağ tık bağlam menüsü** | Canonical'da çizilmemişti ama **mevcut üründe vardı** — FAZ 1'de kaydedilmemiş bir kalıp (`KEEP-13`, audit rev.4). Düzenle · oda değiştir · sil; pasif öğenin sebebi menüde yazılı — `14` BR-SHELL-46…50 |
 | D-13 | ⚠️ **“Filtreler” kartı kaldırıldı, yerine Odalar ekseni kondu** | Canonical'ın kartı **“Etkinlik türü”** satırını taşıyordu; `BR-SHELL-34` (D-037) bu ekseni açıkça kaldırmıştı — tasarım `UX-18`'i geri getiriyordu. Yanındaki **“Katılımcı”** satırının hiçbir kararda karşılığı yoktu. Buna karşılık `KEEP-03`'ün korunmasını istediği **oda ekseni** tasarımdan düşmüştü. 1 Eylül 2026'da ürün sahibi kararıyla düzeltildi — `14` SR-SHELL-09 |
 | D-15 | **Takvim satırında paylaşım izi** *(`⑄ 2`)* | Canonical'da yoktu. Paylaşım yüzeyi düşük kontrastlı bir `⋯` ikonunun arkasında saklıydı ve takvimin paylaşılmış olduğu hiçbir yerde görünmüyordu. 1 Eylül 2026'da ürün sahibi kararıyla eklendi — `12` BR-CAL-43/44, SR-CAL-10 |
 | D-16 | **Takvim oluştur / düzenle / sil diyalogları** | Canonical'da çizilmemişti; `12` §2 kapsam içi diyordu. Renk paleti `BR-CAL-05` gereği yönetilen 8 renkten oluşur ve durum renkleriyle çakışmaz |

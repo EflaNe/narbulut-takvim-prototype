@@ -531,3 +531,46 @@ Test 58 → **62**. Demo akışı 29 adım, tüm kapılar geçiyor, konsol hatas
 ⚠️ **Test notu:** backend olmadığı için **her tarayıcının kendi veri kopyası vardır.** Üç kişi
 ayrı makinelerden girdiğinde paylaşım karşı tarafta görünmez; akış **tek tarayıcıda persona
 değiştirerek** test edilmelidir.
+
+---
+
+## 15. Denetim boşluğu: sağ tık bağlam menüsü — 2 Eylül 2026
+
+Ürün sahibi mevcut Narbulut ürününden bir ekran görüntüsü paylaştı: etkinliğe sağ tıklayınca
+**Güncelle · Oda değiştir · Kaldır** menüsü açılıyor.
+
+⚠️ **Bu kalıp hiçbir belgemizde geçmiyordu** — ne bulgu, ne `KEEP` maddesi, ne spec. FAZ 1
+denetimi `KEEP-12` ile sağdan açılan drawer kalıbını kaydetmiş ama bunu kaçırmıştı. Yani
+"ekleyelim mi" sorusu değil, **kaldırırsak mevcut kullanıcı için regresyon** olacak bir kalıp.
+
+Denetim rev.4 ile güncellendi: **`KEEP-13`** *(kalıbın kendisi)* ve **`UX-54`** *(pasif menü
+öğesinin sebebi yazmıyor — ekran görüntüsünde "Oda değiştir" gri ama neden olduğu okunmuyor)*.
+
+### Ortaya çıkan çakışma
+
+Kalıp kapsama girince aynı etkinlik için **üç yüzey** oluştu: hover önizleme kartı (içinde Sil),
+sağ tık menüsü, tıklayınca açılan drawer. Ürün sahibinin kararıyla bölünme netleştirildi:
+
+| Yüzey | İşi |
+|---|---|
+| **Hover** | Oku — salt okunur önizleme |
+| **Sağ tık** | Yap — düzenle · oda değiştir · sil |
+| **Tıklama** | Tam düzenleme |
+
+⚠️ Bu, 1 Eylül'de karta eklenen **Sil aksiyonunun geri alınması** demekti. Ürün sahibi bu
+sonucu bilerek onayladı; `BR-SHELL-45` ilk hâline döndürüldü.
+
+### Uygulanan kurallar
+
+| Kural | İçerik |
+|---|---|
+| `BR-SHELL-46` | Menü hızlandırıcıdır; her işlem etkinlik yüzeyinden de yapılabilir |
+| `BR-SHELL-47` | Paylaşılan salt okunur etkinlikte **hiç açılmaz**, tarayıcı menüsü engellenmez |
+| `BR-SHELL-48` | Pasif öğenin sebebi menüde yazılı; engellenmeyen ama sonucu olan aksiyonda sonuç önceden belirtilir *(bekleyen talebi olan etkinlikte oda değiştirme → "Bekleyen talep iptal olur")* |
+| `BR-SHELL-49` | Silme açık onay diyaloğundan geçer |
+| `BR-SHELL-50` | Mobilde karşılığı yoktur |
+
+Doğrulama: üç aksiyon · bekleyen talepte sebebin görünmesi · kartın salt okunur olması ve
+tıklamayı engellememesi · paylaşılan etkinlikte menünün açılmaması · "Oda değiştir" ile oda
+seçicinin açılması · silmede onay diyaloğu ve rezervasyon sonucunun yazılı olması.
+Konsol hatası 0.

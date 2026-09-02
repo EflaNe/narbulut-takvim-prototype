@@ -6,13 +6,12 @@ import {
 import { HOUR_H, hhmm, minutesToY, timeRangeLabel } from '../../lib/domain/time';
 import { Icon } from '../primitives/Icon';
 import { EventHoverCard } from './EventHoverCard';
+import { EventContextMenu } from './EventContextMenu';
 import { useMediaQuery } from '../../lib/useMediaQuery';
 import type { CalendarEvent } from '../../lib/domain/types';
 
 /** Kart, kısa geçişlerde titremesin diye gecikmeyle açılır. */
 const HOVER_DELAY_MS = 400;
-/** İmleç bloktan karta geçerken aradaki boşlukta kart kapanmasın. */
-const CLOSE_DELAY_MS = 160;
 
 interface Props {
   event: CalendarEvent;
@@ -28,6 +27,7 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
   const openTimer = useRef<number | undefined>(undefined);
   const closeTimer = useRef<number | undefined>(undefined);
   const [anchor, setAnchor] = useState<DOMRect | null>(null);
+  const [ctx, setCtx] = useState<{ x: number; y: number } | null>(null);
   // Dokunmatik cihazda hover kartı hiç render edilmez (ST-DIS-03).
   const canHover = useMediaQuery('(hover: hover) and (pointer: fine)');
   const cal = calendarById(state, event.calendarId);
@@ -47,13 +47,6 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
     setAnchor(null);
   }, []);
 
-  const cancelClose = useCallback(() => window.clearTimeout(closeTimer.current), []);
-
-  const scheduleClose = useCallback(() => {
-    window.clearTimeout(openTimer.current);
-    window.clearTimeout(closeTimer.current);
-    closeTimer.current = window.setTimeout(() => setAnchor(null), CLOSE_DELAY_MS);
-  }, []);
 
   const openPreview = () => {
     if (!canHover) return;
@@ -79,6 +72,15 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
     window.clearTimeout(closeTimer.current);
   }, []);
 
+  /** BR-SHELL-46 — bağlam menüsü yalnız düzenlenebilir etkinlikte açılır;
+   *  paylaşılan salt okunur etkinlikte tarayıcının kendi menüsü çıkar (`12` BR-CAL-27). */
+  const onContextMenu = (e: React.MouseEvent) => {
+    if (shared) return;
+    e.preventDefault();
+    closePreview();
+    setCtx({ x: e.clientX, y: e.clientY });
+  };
+
   const open = () => dispatch(
     shared
       ? { type: 'openReadOnlyEvent', eventId: event.id }
@@ -100,15 +102,14 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
           style={{ top, height: height + 4, left, right: 3, background: color, zIndex: 2 + columnIndex }}
           onClick={open} aria-label={aria}
           ref={ref}
-          onMouseEnter={openPreview} onMouseLeave={scheduleClose}
-          onFocus={openPreview} onBlur={scheduleClose}>
+          onMouseEnter={openPreview} onMouseLeave={closePreview}
+          onFocus={openPreview} onBlur={closePreview}
+          onContextMenu={onContextMenu}>
           <span className="event__title">{event.title}</span>
           <span className="event__ctime">{hhmm(event.start)}</span>
         </button>
-        {anchor && (
-          <EventHoverCard event={event} anchor={anchor}
-            onEnter={cancelClose} onLeave={scheduleClose} onAction={closePreview} />
-        )}
+        {anchor && <EventHoverCard event={event} anchor={anchor} />}
+        {ctx && <EventContextMenu event={event} x={ctx.x} y={ctx.y} onClose={() => setCtx(null)} />}
       </>
     );
   }
@@ -119,8 +120,9 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
         style={{ top, height, left, right: 3, zIndex: 2 + columnIndex }}
         onClick={open} aria-label={aria}
         ref={ref}
-        onMouseEnter={openPreview} onMouseLeave={scheduleClose}
-        onFocus={openPreview} onBlur={scheduleClose}>
+        onMouseEnter={openPreview} onMouseLeave={closePreview}
+        onFocus={openPreview} onBlur={closePreview}
+        onContextMenu={onContextMenu}>
         <div className="event__strip" style={{ background: color }}>
           <span className="event__time">{timeRangeLabel(event.start, event.end)}</span>
           <span className="spacer" style={{ minWidth: 6 }} />
@@ -136,10 +138,8 @@ export function EventBlock({ event, columnIndex, columnCount }: Props) {
           <span className="event__title">{event.title}</span>
         </div>
       </button>
-      {anchor && (
-          <EventHoverCard event={event} anchor={anchor}
-            onEnter={cancelClose} onLeave={scheduleClose} onAction={closePreview} />
-        )}
+      {anchor && <EventHoverCard event={event} anchor={anchor} />}
+        {ctx && <EventContextMenu event={event} x={ctx.x} y={ctx.y} onClose={() => setCtx(null)} />}
     </>
   );
 }

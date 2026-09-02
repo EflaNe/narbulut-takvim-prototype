@@ -54,7 +54,8 @@ veya backend gerektiren konulardır.
 | L-25 | Sol rail'de yalnız üç eksen vardır: tarih · takvimler · odalar (`14` BR-SHELL-31). Katılımcı bazlı filtreleme **yoktur** — hiçbir kararda tanımlı değil |
 | L-26 | Oda seçicideki filtre çipleri tek seçimli basit filtrelerdir; canonical'daki açılır menüler yok |
 | L-27 | Sürükle-bırak ile etkinlik taşıma/yeniden boyutlandırma yok (`14` SR-SHELL-05 — kapsam dışı) |
-| L-27a | Hover önizleme kartı **kasıtlı olarak** yalnız gerçek imleçli cihazlarda çalışır; dokunmatikte hiç render edilmez (`14` BR-SHELL-43). Karttaki her bilgi etkinlik yüzeyinde de vardır (BR-SHELL-42). Karttaki tek aksiyon silmedir; düzenleme kartta yapılmaz (BR-SHELL-45) |
+| L-27a | Hover önizleme kartı **kasıtlı olarak** yalnız gerçek imleçli cihazlarda çalışır; dokunmatikte hiç render edilmez (`14` BR-SHELL-43). Karttaki her bilgi etkinlik yüzeyinde de vardır (BR-SHELL-42). Kart **salt okunurdur**; aksiyonlar sağ tık menüsündedir (BR-SHELL-45/46) |
+| L-27b | Sağ tık bağlam menüsünün **mobilde karşılığı yoktur** (`14` BR-SHELL-50). Hızlandırıcıdır; her işlem etkinlik yüzeyinden de yapılabilir |
 | ~~L-28~~ | ~~Bildirim merkezi arayüzü yok~~ | ✅ **2 Eylül 2026'da eklendi** — üst çubukta çan + liste (`19` SR-NOT-09). Yalnız spec'te tanımlı olayları gösterir |
 | L-28a | Bildirimler **okundu** işaretlenir ama silinemez, filtrelenemez ve tıklanınca ilgili yüzeye gitmez |
 | L-28b | Mobil görünümde bildirim çanı yoktur — mobil kapsam agenda/day ile sınırlı |

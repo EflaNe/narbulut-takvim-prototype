@@ -1,9 +1,8 @@
 import { createPortal } from 'react-dom';
-import { useAppState, useDispatch } from '../../lib/state/StoreContext';
+import { useAppState } from '../../lib/state/StoreContext';
 import {
   calendarById, isSharedEvent, reservationStatusForEvent, roomById, userById,
 } from '../../lib/domain/selectors';
-import { canEditEvent } from '../../lib/domain/rules';
 import { overlaps, timeRangeLabel } from '../../lib/domain/time';
 import { Icon } from '../primitives/Icon';
 import { Avatar } from '../primitives/Avatar';
@@ -18,18 +17,14 @@ const MAX_PEOPLE = 4;
  * ⚠️ Bilgiyi hover'a hapsetmez: aynı içerik bloğa tıklanınca açılan drawer'da da vardır
  * (`11` ST-DIS-03, tasarım brief'i madde 2–3). Dokunmatik cihazlarda hiç render edilmez.
  *
- * Tek aksiyonu silmedir (BR-SHELL-45): onay diyaloğundan geçer, paylaşılan salt okunur
- * etkinlikte hiç gösterilmez (`12` BR-CAL-27) ve drawer'daki silme yolunun yerini almaz.
+ * ⚠️ **Salt okunurdur, aksiyon taşımaz** (BR-SHELL-45). Etkinlik üzerindeki işlemler
+ * sağ tık menüsüne ve drawer'a aittir — bilgi yüzeyi ile aksiyon yüzeyi ayrıdır.
  */
-export function EventHoverCard({ event, anchor, onEnter, onLeave, onAction }: {
+export function EventHoverCard({ event, anchor }: {
   event: CalendarEvent;
   anchor: DOMRect;
-  onEnter: () => void;
-  onLeave: () => void;
-  onAction: () => void;
 }) {
   const state = useAppState();
-  const dispatch = useDispatch();
   const cal = calendarById(state, event.calendarId);
   const room = roomById(state, event.roomId);
   const status = reservationStatusForEvent(state, event.id);
@@ -70,28 +65,8 @@ export function EventHoverCard({ event, anchor, onEnter, onLeave, onAction }: {
   const duration = event.end - event.start;
   const durationLabel = `${Math.floor(duration / 60) ? `${Math.floor(duration / 60)} sa ` : ''}${duration % 60 ? `${duration % 60} dk` : ''}`.trim();
 
-  const canDelete = canEditEvent(event, state.calendars, state.currentUserId);
-  const hasReservation = status !== 'none';
-
-  const askDelete = () => {
-    onAction();
-    dispatch({
-      type: 'askConfirm',
-      confirm: {
-        title: `“${event.title}” silinsin mi?`,
-        body: hasReservation
-          ? `Bu işlem geri alınamaz. ${room?.name ?? 'Oda'} rezervasyonu da iptal edilecek; talep kaydı geçmişte kalır.`
-          : 'Bu işlem geri alınamaz.',
-        confirmLabel: 'Sil',
-        tone: 'destructive',
-        action: { type: 'deleteEvent', eventId: event.id },
-      },
-    });
-  };
-
   return createPortal(
-    <div className="ehc" style={{ left, top }} role="group" aria-label={`${event.title} önizleme`}
-      onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <div className="ehc" style={{ left, top }} role="presentation" aria-hidden="true">
       <div className="ehc__strip" style={{ background: cal?.color }} />
       <div className="ehc__body">
         <div className="ehc__cal">
@@ -170,16 +145,6 @@ export function EventHoverCard({ event, anchor, onEnter, onLeave, onAction }: {
           </div>
         )}
 
-        {/* BR-CAL-27 — paylaşılan takvim etkinliğinde silme hiç gösterilmez. */}
-        {canDelete && (
-          <div className="ehc__actions">
-            <button className="ehc__delete" onClick={askDelete}
-              aria-label={`${event.title} etkinliğini sil`}>
-              <Icon name="trash" size={14} />Sil
-            </button>
-            {hasReservation && <span className="ehc__hint">oda da düşer</span>}
-          </div>
-        )}
       </div>
     </div>,
     document.body,

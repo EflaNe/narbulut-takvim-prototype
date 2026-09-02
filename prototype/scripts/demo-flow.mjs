@@ -261,27 +261,48 @@ try {
     if (card && norm(card).includes('kimler var') && norm(card).includes('topkapı')) {
       ok('Hover önizleme kartı açıldı (kimler var · oda · durum)');
     } else fail('Hover önizleme kartı doğrulanamadı');
-    if (card && card.includes('Sil')) ok('Kartta silme aksiyonu var');
-    else fail('Kartta silme aksiyonu yok');
+    // BR-SHELL-45 — kart salt okunur; aksiyonlar bağlam menüsünde.
+    if (card && !card.includes('Sil')) ok('Önizleme kartı salt okunur (aksiyon taşımıyor)');
+    else fail('Kartta aksiyon var');
     await shot('15-hover-onizleme');
     await page.mouse.move(5, 5);
     await sleep(300);
   }
 
-  /* Paylaşılan salt okunur etkinlikte silme gösterilmez (BR-SHELL-45a) */
+  /* Bağlam menüsü — KEEP-13, BR-SHELL-46…50 */
   {
-    const h = await page.evaluateHandle(() => [...document.querySelectorAll('.event')]
-      .find((e) => (e.getAttribute('aria-label') || '').includes('salt okunur')) || null);
-    const el = h.asElement();
-    if (!el) throw new Error('paylaşılan etkinlik bulunamadı');
-    await el.hover();
-    await sleep(700);
-    const card = await page.evaluate(() => {
-      const c = document.querySelector('.ehc');
-      return c ? c.innerText.replace(/\s+/g, ' ') : null;
+    const box = await page.evaluate(() => {
+      const e = [...document.querySelectorAll('.event')]
+        .find((x) => (x.getAttribute('aria-label') || '').includes('Kick-off'));
+      const r = e.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + 12 };
     });
-    if (card && !card.includes('Sil')) ok('Paylaşılan salt okunur etkinlikte silme gösterilmiyor');
-    else fail('Paylaşılan etkinlikte silme aksiyonu göründü');
+    await page.mouse.click(box.x, box.y, { button: 'right' });
+    await sleep(320);
+    const menu = await page.evaluate(() =>
+      document.querySelector('.ctxmenu')?.innerText.replace(/\s+/g, ' ') ?? null);
+    if (menu && norm(menu).includes('düzenle') && norm(menu).includes('oda değiştir')
+        && norm(menu).includes('sil')) ok('Sağ tık menüsü: düzenle · oda değiştir · sil');
+    else fail(`Bağlam menüsü doğrulanamadı: ${menu}`);
+    if (menu && norm(menu).includes('bekleyen talep iptal olur')) {
+      ok('Sonucu olan aksiyonda sonuç önceden yazılı (BR-SHELL-48)');
+    } else fail('Aksiyon sonucu belirtilmedi');
+    await shot('16-baglam-menusu');
+    await page.keyboard.press('Escape');
+    await sleep(250);
+
+    /* Paylaşılan salt okunur etkinlikte menü hiç açılmaz (BR-SHELL-47) */
+    const sbox = await page.evaluate(() => {
+      const e = [...document.querySelectorAll('.event')]
+        .find((x) => (x.getAttribute('aria-label') || '').includes('salt okunur'));
+      const r = e.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + 12 };
+    });
+    await page.mouse.click(sbox.x, sbox.y, { button: 'right' });
+    await sleep(320);
+    const shared = await page.evaluate(() => !document.querySelector('.ctxmenu'));
+    if (shared) ok('Paylaşılan salt okunur etkinlikte menü açılmıyor');
+    else fail('Paylaşılan etkinlikte menü açıldı');
     await page.mouse.move(5, 5);
     await sleep(250);
   }
@@ -298,12 +319,12 @@ try {
   if (!noCard) fail('Mobilde hover kartı render edildi');
   if (await has('Takvimler')) ok('Mobil agenda görünümü açıldı (390px)');
   else fail('Mobil görünüm açılmadı');
-  await shot('16-mobil');
+  await shot('17-mobil');
   await clickText('Takvimler', { exact: true });
   if (await has('BENİMLE PAYLAŞILANLAR') || await has('Benimle paylaşılanlar')) {
     ok('Mobil Takvimler sheet’i açıldı');
   } else fail('Mobil sheet açılmadı');
-  await shot('17-mobil-takvimler');
+  await shot('18-mobil-takvimler');
 } catch (e) {
   fail(`Mobil kontrol hatası: ${e.message}`);
 }
