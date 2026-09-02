@@ -7,9 +7,10 @@ import type {
   RoomId, ShareId, UserId,
 } from '../domain/types';
 import {
-  canApproveNow, canCreatePendingRequest, canDecideRequest, eligibleApprovers, roomAvailability,
+  canApproveNow, canCancelReservation, canCreatePendingRequest, canDecideRequest,
+  eligibleApprovers, roomAvailability,
 } from '../domain/rules';
-import { hhmm, shiftByView } from '../domain/time';
+import { hhmm, longDateLabel, shiftByView, timeRangeLabel } from '../domain/time';
 import type { AppAction, AppState, EventDraft } from './types';
 import * as demo from './demoData';
 
@@ -50,6 +51,7 @@ export function createInitialState(): AppState {
       confirm: null,
       selectedRequestId: 'req_roadmap',
       rejectingRequestId: null,
+    cancellingReservationId: null,
       selectedRoomId: 'room_istanbul',
       calendarForm: null,
       deletingCalendarId: null,
@@ -517,7 +519,8 @@ export function reducer(state: AppState, action: AppAction): AppState {
           return ui(state, {
             toast: {
               message: `${room.name} bu saatte rezerve: ${who ?? 'başka bir kullanıcı'}`
-                + `${holder ? ` · ${holder.title}` : ''}. Onaylamak için önce o rezervasyonu kaldırın.`,
+                + `${holder ? ` · ${holder.title}` : ''}. Onaylamak için o rezervasyonu`
+                + ' "Bu odanın takvimi" listesinden kaldırın.',
               tone: 'error',
             },
           });
@@ -541,6 +544,60 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
     case 'startReject':
       return ui(state, { rejectingRequestId: action.requestId });
+
+    case 'startCancelReservation':
+      return ui(state, { cancellingReservationId: action.reservationId });
+
+    /**
+     * D-071 / BR-APR-28 — oda sorumlusu kesinleşmiş rezervasyonu gerekçeyle kaldırır.
+     *
+     * ⚠️ Talep kaydına **dokunulmaz**: `approved` olarak kalır (BR-APR-22). Düşen şey
+     * rezervasyondur; etkinlik **silinmez**, odasız kalır (BR-APR-19 ile aynı davranış).
+     * Gerekçe zorunludur — sahibi neden odasız kaldığını bilmek zorundadır (BR-APR-28b).
+     */
+    case 'cancelReservation': {
+      const rez = state.reservations.find((r) => r.id === action.reservationId);
+      if (!rez) return state;
+      const room = state.rooms.find((r) => r.id === rez.roomId);
+      if (!room || !canCancelReservation(rez, room, state.currentUserId, state.groups)) {
+        return ui(state, {
+          toast: { message: 'Bu rezervasyonu kaldırma yetkiniz yok.', tone: 'error' },
+        });
+      }
+      const reason = action.reason.trim();
+      if (!reason) {
+        return ui(state, {
+          toast: { message: 'Kaldırma gerekçesi zorunludur.', tone: 'error' },
+        });
+      }
+
+      let next: AppState = {
+        ...state,
+        reservations: state.reservations.map((r) => (r.id === rez.id
+          ? { ...r, status: 'cancelled', cancelledById: state.currentUserId, cancelReason: reason }
+          : r)),
+        // ⚠️ Etkinlik silinmez; yalnız oda bağı kopar (BR-APR-19).
+        events: state.events.map((e) => (e.id === rez.eventId ? { ...e, roomId: null } : e)),
+      };
+
+      // N-RES-06 — sahibine gider. Kendi rezervasyonunu kaldıranı bilgilendirmeyiz (BR-NOT-22).
+      if (rez.requesterId !== state.currentUserId) {
+        const ev = state.events.find((e) => e.id === rez.eventId);
+        const by = userById2(state, state.currentUserId);
+        next = notify(
+          next, rez.requesterId, 'N-RES-06',
+          `${room.name} rezervasyonunuz kaldırıldı`,
+          `${longDateLabel(rez.date)} · ${timeRangeLabel(rez.start, rez.end)}`
+          + `${ev ? ` · ${ev.title}` : ''} — ${by ?? 'oda sorumlusu'}: ${reason}`
+          + ' Etkinliğiniz duruyor, odasız kaldı.',
+        );
+      }
+
+      return ui(next, {
+        cancellingReservationId: null,
+        toast: { message: `${room.name} rezervasyonu kaldırıldı.`, tone: 'default' },
+      });
+    }
 
     /** BR-APR-19 — red: slot serbest kalır, etkinlik silinmez; odasız kalır. */
     case 'rejectRequest': {

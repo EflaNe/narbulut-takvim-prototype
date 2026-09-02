@@ -368,6 +368,12 @@ describe('rakip talepler — D-070', () => {
     return st.requests.find((q) => q.eventId === ev.id && q.status === 'pending')!;
   };
 
+  /** ⚠️ Yalnız status'e bakmak yetmez: demo verisinde onlarca 'reserved' kayıt var. */
+  const rezOf = (st: AppState, title: string) => {
+    const ev = st.events.find((e) => e.title === title)!;
+    return st.reservations.find((r) => r.eventId === ev.id && r.status === 'reserved')!;
+  };
+
   const ikinci = (st: AppState) => run(st,
     { type: 'openEventCreate', date: '2026-08-28', start: 660, end: 720 },
     { type: 'updateDraft', patch: { title: 'B toplantısı', roomId: 'room_bogazici' } },
@@ -409,6 +415,71 @@ describe('rakip talepler — D-070', () => {
       { type: 'deleteEvent', eventId: s2.events.find((e) => e.title === 'A toplantısı')!.id },
       { type: 'approveRequest', requestId: slotReq(s2, 'B toplantısı').id });
     expect(s4.requests.find((r) => r.id === slotReq(s2, 'B toplantısı').id)!.status).toBe('approved');
+  });
+
+  it('D-071: oda sorumlusu rezervasyonu kaldırır — etkinlik durur, sahibi bilgilenir', () => {
+    const zeynep = run(first, { type: 'setPersona', userId: 'usr_zeynep' });
+    const onayli = reducer(zeynep,
+      { type: 'approveRequest', requestId: slotReq(first, 'A toplantısı').id });
+    const rez = rezOf(onayli, 'A toplantısı');
+
+    const s = reducer(onayli,
+      { type: 'cancelReservation', reservationId: rez.id, reason: 'Bakım planlandı' });
+
+    // rezervasyon düşer, gerekçe ve kaldıran saklanır
+    const after = s.reservations.find((r) => r.id === rez.id)!;
+    expect(after.status).toBe('cancelled');
+    expect(after.cancelReason).toBe('Bakım planlandı');
+    expect(after.cancelledById).toBe('usr_zeynep');
+
+    // ⚠️ BR-APR-22 — talep kaydı GERİ ALINMAZ, 'approved' kalır
+    expect(s.requests.find((r) => r.id === slotReq(first, 'A toplantısı').id)!.status)
+      .toBe('approved');
+
+    // etkinlik silinmez, odasız kalır
+    const ev = s.events.find((e) => e.title === 'A toplantısı')!;
+    expect(ev).toBeDefined();
+    expect(ev.roomId).toBeNull();
+
+    // sahibine N-RES-06 gider, gerekçeyle
+    const n = s.notifications.find((x) => x.kind === 'N-RES-06')!;
+    expect(n.recipientId).toBe(rez.requesterId);
+    expect(n.body).toContain('Bakım planlandı');
+  });
+
+  it('D-071: gerekçesiz kaldırma reddedilir', () => {
+    const zeynep = run(first, { type: 'setPersona', userId: 'usr_zeynep' });
+    const onayli = reducer(zeynep,
+      { type: 'approveRequest', requestId: slotReq(first, 'A toplantısı').id });
+    const rez = rezOf(onayli, 'A toplantısı');
+    const s = reducer(onayli, { type: 'cancelReservation', reservationId: rez.id, reason: '  ' });
+    expect(s.reservations.find((r) => r.id === rez.id)!.status).toBe('reserved');
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
+  it('D-071: oda sorumlusu OLMAYAN kaldıramaz', () => {
+    const zeynep = run(first, { type: 'setPersona', userId: 'usr_zeynep' });
+    const onayli = reducer(zeynep,
+      { type: 'approveRequest', requestId: slotReq(first, 'A toplantısı').id });
+    const rez = rezOf(onayli, 'A toplantısı');
+    const s = run(onayli,
+      { type: 'setPersona', userId: 'usr_deniz' },
+      { type: 'cancelReservation', reservationId: rez.id, reason: 'olmaz' });
+    expect(s.reservations.find((r) => r.id === rez.id)!.status).toBe('reserved');
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
+  it('D-071: kaldırma sonrası bekleyen rakip talep onaylanabilir', () => {
+    const s2 = ikinci(first);
+    const zeynep = run(s2, { type: 'setPersona', userId: 'usr_zeynep' });
+    const onayli = reducer(zeynep,
+      { type: 'approveRequest', requestId: slotReq(s2, 'A toplantısı').id });
+    const rez = rezOf(onayli, 'A toplantısı');
+    const s = run(onayli,
+      { type: 'cancelReservation', reservationId: rez.id, reason: 'Bakım' },
+      { type: 'approveRequest', requestId: slotReq(s2, 'B toplantısı').id });
+    expect(s.requests.find((r) => r.id === slotReq(s2, 'B toplantısı').id)!.status)
+      .toBe('approved');
   });
 
   it('RED, etkinliği silmez — yalnız odasız bırakır', () => {

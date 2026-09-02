@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { canDecide, readableCalendarIds, userById } from '../../lib/domain/selectors';
-import { competingPendingCount } from '../../lib/domain/rules';
+import { canCancelReservation, competingPendingCount, isRoomApprover } from '../../lib/domain/rules';
 import { longDateLabel, timeRangeLabel } from '../../lib/domain/time';
 import { Button } from '../primitives/Button';
 import { Icon } from '../primitives/Icon';
@@ -18,9 +19,8 @@ export function RoomSchedule({ room }: { room: Room }) {
   const state = useAppState();
   const dispatch = useDispatch();
   const readable = new Set(readableCalendarIds(state));
-  const isApprover = room.approverUserIds.includes(state.currentUserId)
-    || room.approverGroupIds.some((g) =>
-      state.groups.find((x) => x.id === g)?.memberIds.includes(state.currentUserId));
+  const [reason, setReason] = useState('');
+  const isApprover = isRoomApprover(room, state.currentUserId, state.groups);
 
   const rows = state.reservations
     .filter((r) => r.roomId === room.id && r.date >= state.today
@@ -52,6 +52,7 @@ export function RoomSchedule({ room }: { room: Room }) {
         // D-070 — aynı aralıkta başka bekleyen talep var mı?
         const rakip = competingPendingCount(
           room.id, r.date, r.start, r.end, state.reservations, r.eventId);
+        const cancelling = state.ui.cancellingReservationId === r.id;
 
         return (
           <div className={`rsched__row rsched__row--${r.status}`} key={r.id}>
@@ -95,6 +96,49 @@ export function RoomSchedule({ room }: { room: Room }) {
             )}
             {r.status === 'pending' && !decidable && req?.requesterId === state.currentUserId && (
               <span className="rsched__note">sizin talebiniz</span>
+            )}
+
+            {cancelling && (
+              <div className="rsched__cancel">
+                <div className="rsched__cancelhead">
+                  Rezervasyon kaldırılsın mı? Etkinlik <strong>silinmez</strong>, odasız kalır
+                  {requester && requester.id !== state.currentUserId
+                    ? <> ve {requester.name} bilgilendirilir.</> : '.'}
+                </div>
+                <label className="rsched__canlabel" htmlFor={`cx-${r.id}`}>
+                  Gerekçe (zorunlu) — sahibine iletilir.
+                </label>
+                <textarea id={`cx-${r.id}`} className="textinput" rows={2} value={reason} autoFocus
+                  placeholder="Örn. bu saatte bakım planlandı."
+                  onChange={(e) => setReason(e.target.value)} />
+                <div className="rsched__canrow">
+                  <Button variant="danger" size="sm" disabled={!reason.trim()}
+                    onClick={() => dispatch({
+                      type: 'cancelReservation', reservationId: r.id, reason,
+                    })}>
+                    Kaldır
+                  </Button>
+                  <Button variant="secondary" size="sm"
+                    onClick={() => dispatch({
+                      type: 'startCancelReservation', reservationId: null,
+                    })}>
+                    Vazgeç
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* D-071 — oda sorumlusu kesinleşmiş rezervasyonu gerekçeyle kaldırabilir. */}
+            {canCancelReservation(r, room, state.currentUserId, state.groups) && !cancelling && (
+              <div className="rsched__actions">
+                <Button variant="outline" size="sm"
+                  onClick={() => {
+                    setReason('');
+                    dispatch({ type: 'startCancelReservation', reservationId: r.id });
+                  }}>
+                  Kaldır
+                </Button>
+              </div>
             )}
           </div>
         );

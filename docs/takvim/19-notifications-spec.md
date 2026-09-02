@@ -133,6 +133,7 @@ Bu spec tek bir soruyu cevaplar:
 | **N-RES-03** | **Rezervasyon reddedildi** | Talep eden | Oda · tarih/saat · kararı veren · **varsa red gerekçesi** (`18` BR-APR-20/38) | ❌ |
 | **N-RES-04** | **Rezervasyon iptal edildi** | Karşı taraf: talep eden geri çektiyse **onaylayıcı**, etkinlik silindiyse **onaylayıcı** | Oda · tarih/saat · iptal sebebi *(geri çekildi / etkinlik silindi)* | ❌ |
 | **N-RES-05** | **Bekleyen talebin etkinlik zamanı değişti** | Onaylayıcı | Oda · eski ve yeni tarih/saat (`18` BR-APR-34) | ❌ |
+| **N-RES-06** ⚠️ | **Rezervasyon oda sorumlusu tarafından kaldırıldı** | Rezervasyon sahibi | Oda · tarih/saat · etkinlik · kaldıran · **zorunlu gerekçe** (`18` BR-APR-28b) · *"etkinliğiniz duruyor, odasız kaldı"* | ❌ |
 
 | ID | Kural |
 |---|---|
@@ -184,6 +185,12 @@ Bu spec tek bir soruyu cevaplar:
 18-reservation-approval → onaylayıcı karar verir
    ├── Onayla → N-RES-02 (talep edene)
    └── Reddet → N-RES-03 (talep edene, varsa gerekçeyle)
+
+oda sorumlusu kesinleşmiş rezervasyonu kaldırdı (18 BR-APR-28)
+   └── N-RES-06 (rezervasyon sahibine, ZORUNLU gerekçeyle)
+       ⚠️ kendi rezervasyonunu kaldırana bildirim gitmez (BR-NOT-22)
+       ⚠️ katılımcılara ayrıca bildirim gitmez — oda değişikliği
+          katılımcıya görünürse N-EVT-02 kapsamına girer (EC-NOT-08 ile aynı ilke)
 → karar veren kişiye bildirim GİTMEZ (BR-NOT-05)
 ```
 
@@ -237,6 +244,7 @@ Bu modül kullanıcı girdisi almaz. Tek doğrulama alanı harici katılımcı e
 | **EC-NOT-05** | Organizasyon yöneticisi başkasının etkinliğini düzenler (D-039) | Katılımcılar N-EVT-02 alır. **Organizatör de alır** — kendi başlatmadığı bir değişikliktir (BR-NOT-06). *(SR-NOT-03)* |
 | **EC-NOT-06** | Katılımcı organizasyondan çıkarıldı, etkinlik hâlâ duruyor | Etkinlik bildirimlerinden **düşürülür**; ancak katılımcı listesinden sessizce silinmez (`15` EC-EVT-06). |
 | **EC-NOT-07** | Onaylayıcı olmayan biri odanın onaylayıcısı yapıldı, bekleyen talepler var | Yeni onaylayıcı bekleyen talepler için bildirim alır — kuyruğuyla tutarlı olması gerekir (IR-NOT-03). |
+| **EC-NOT-09** | Rezervasyonu kaldıran, aynı zamanda sahibi | Bildirim **gitmez** (BR-NOT-22). Eylemin sonucu zaten ekranda görünür. |
 | **EC-NOT-08** | Oda talebi reddedildi, etkinlik odasız kaldı | Talep edene N-RES-03 gider. **Katılımcılara ayrıca bildirim gitmez** — oda değişikliği katılımcıya görünürse N-EVT-02 kapsamına girer. *(SR-NOT-02 ile tutarlı)* |
 | **EC-NOT-09** | Süresiz seri iptal edilir | N-SER-02, occurrence sayısı yerine **tarih aralığı** ile ifade edilir (`15` BR-EVT-38). |
 | **EC-NOT-10** | Harici misafirin e-posta adresi geçersiz / ulaşmıyor | Gönderim sorunu **açıkça bildirilir** (IR-NOT-04). Etkinlik yine de geçerlidir. |

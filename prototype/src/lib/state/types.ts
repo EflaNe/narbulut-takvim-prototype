@@ -1,7 +1,7 @@
 import type {
   AppNotification, ApprovalRequest, Building, Calendar, CalendarEvent, CalendarId,
   CalendarShare, CalendarViewMode, Group, IsoDate, Minutes, Recurrence, Reservation,
-  RequestId, Room, RoomId, User, UserId, EventId,
+  RequestId, ReservationId, Room, RoomId, User, UserId, EventId,
 } from '../domain/types';
 
 export type Route = 'calendar' | 'permissions' | 'rooms' | 'requests';
@@ -60,6 +60,8 @@ export interface UiState {
   confirm: ConfirmState | null;
   selectedRequestId: RequestId | null;
   rejectingRequestId: RequestId | null;
+  /** D-071 — kaldırma gerekçesi istenen rezervasyon */
+  cancellingReservationId: ReservationId | null;
   selectedRoomId: RoomId | null;
   toast: { message: string; tone: 'info' | 'success' | 'error' } | null;
   /** Takvim oluşturma/düzenleme diyaloğu — null ise kapalı */
@@ -139,6 +141,8 @@ export type AppAction =
   | { type: 'startReject'; requestId: RequestId | null }
   | { type: 'rejectRequest'; requestId: RequestId; reason: string }
   | { type: 'withdrawRequest'; requestId: RequestId }
+  | { type: 'startCancelReservation'; reservationId: ReservationId | null }
+  | { type: 'cancelReservation'; reservationId: ReservationId; reason: string }
   | { type: 'openCalendarForm'; mode: 'create' | 'edit'; calendarId?: CalendarId; focus?: 'name' | 'color' }
   | { type: 'closeCalendarForm' }
   | { type: 'createCalendar'; name: string; color: string }

@@ -197,6 +197,33 @@ export function eligibleApprovers(room: Room, requesterId: UserId, groups: Group
   return Array.from(new Set([...direct, ...viaGroup])).filter((u) => u !== requesterId);
 }
 
+/**
+ * Kullanıcı bu odanın onaylayıcısı mı? `eligibleApprovers`'tan farkı: talep eden
+ * elenmez. Onay yetkisi için değil, **oda sorumluluğu** için sorulur (BR-APR-28).
+ */
+export function isRoomApprover(room: Room, userId: UserId, groups: Group[]): boolean {
+  if (room.approverUserIds.includes(userId)) return true;
+  return room.approverGroupIds.some(
+    (gid) => groups.find((g) => g.id === gid)?.memberIds.includes(userId),
+  );
+}
+
+/**
+ * D-071 / BR-APR-28 — oda sorumlusu **kendi odasındaki kesinleşmiş rezervasyonu**
+ * gerekçeyle kaldırabilir.
+ *
+ * ⚠️ Bu, kararı geri almak **değildir** — BR-APR-22 yerinde durur. Talep kaydı geçmişte
+ * `approved` kalır; düşen şey rezervasyondur. Kaldırma yeni ve ayrı bir eylemdir,
+ * kendi gerekçesi ve kendi bildirimiyle (N-RES-06) izlenir.
+ */
+export function canCancelReservation(
+  reservation: Reservation, room: Room, userId: UserId, groups: Group[],
+): boolean {
+  if (reservation.status !== 'reserved') return false;
+  if (reservation.roomId !== room.id) return false;
+  return isRoomApprover(room, userId, groups);
+}
+
 /** BR-APR-02 — onay açıksa en az bir onaylayıcı tanımlı olmak zorundadır. */
 export function roomApprovalConfigValid(room: Room): boolean {
   if (!room.requiresApproval) return true;

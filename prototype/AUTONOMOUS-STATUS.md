@@ -609,7 +609,7 @@ engellenir**, sebebi ve engelleyen rezervasyonun sahibi gösterilir, yönetici i
 kaldırır. Böylece `FN-03` *(odalarda "dolu" kavramı yok)* bulgusuna geri dönülmüyor.
 
 Etkilenen kurallar: `BR-APR-11/12/13` yeniden yazıldı, `BR-APR-13a/13b` eklendi,
-`16` §4.1 seçilebilirlik matrisi ve `EC-RB-07` güncellendi, `SR-APR-07` gerekçeyi taşıyor.
+`16` §4.1 seçilebilirlik matrisi ve `EC-RB-07` güncellendi, `SR-APR-09` gerekçeyi taşıyor.
 
 ### İki yüzey eklendi
 
@@ -624,3 +624,56 @@ okuyabilen** kullanıcıya gösterilir; diğerleri için satır yalnız doluluk 
 
 Test 62 → **69**. Uçtan uca: rozet · vurgulu durum kartı · oda takvimi ve satır içi karar ·
 oda seçicide rakip talebin engel değil bilgi olması. Konsol hatası 0.
+
+---
+
+## 17. Rezervasyon kaldırma — 2 Eylül 2026
+
+Ürün sahibi bir devam senaryosu sordu: *"Yönetici benim isteğimi kabul etti, sonra bir şeyler
+oldu ve değiştirdi — böyle bir şey yapabiliyor mu?"*
+
+### ⚠️ Teşhis: hayır, ve bu kendi ürettiğim bir tutarsızlıktı
+
+`BR-APR-22` kararı geri almayı yasaklıyor, `BR-APR-04` onaylayıcıya hiçbir ek yetki vermiyordu.
+Rezervasyon yalnız **organizatörün** eylemiyle düşüyordu.
+
+Ama bir gün önce `D-070` ile eklediğim engelleme mesajı şunu diyordu:
+
+> *"Onaylamak için önce o rezervasyonu kaldırın."*
+
+**Yöneticinin bunu yapabileceği hiçbir yol yoktu.** Kullanıcıya yapamayacağı bir eylem
+öneriliyordu — sebep okunabilirdi ama uygulanabilir değildi.
+
+### Karar: D-071
+
+Ürün sahibi *"gerekçeyle kaldırabilsin"* dedi. Uygulanan hâli:
+
+| | |
+|---|---|
+| Kim | Yalnız **o odanın** sorumlusu (`BR-APR-28e`) |
+| Ne | Yalnız `Reserved` rezervasyon — etkinliğin kendisine dokunulamaz (`BR-APR-28d`) |
+| Gerekçe | **Zorunlu**, sahibine iletilir (`BR-APR-28b`) |
+| Etkinlik | **Silinmez**, odasız kalır |
+| Talep kaydı | ⚠️ `Approved` **kalır** — bu kararı geri almak değildir (`BR-APR-28a`) |
+| İz | Kaldıran + gerekçe kalıcı saklanır (`BR-APR-28c`) |
+| Bildirim | `N-RES-06`, sahibine; kendi rezervasyonunu kaldırana gitmez |
+
+⚠️ **`BR-APR-04` ilk kez değişti** — "hiçbir ek yetki vermez" → "tek bir ek yetki verir".
+Yetkiyi tek eyleme ve tek odaya daraltmak, kuralın *"onaylayıcı ayrıcalıklı kullanıcı
+değildir"* ilkesini koruyor (`SR-APR-11`).
+
+Gerekçenin **zorunlu** olması, red gerekçesinin opsiyonel olmasından bilinçli olarak ayrışır:
+red beklenen bir cevaptır, kaldırma sahibinin hesaba katmadığı bir müdahaledir (`SR-APR-12`).
+
+### Yol boyunca bulunan iki hata
+
+**1. Numaralandırma çakışması.** Bir gün önce eklediğim `SR-APR-07`/`08`, zaten var olan
+`SR-APR-07` *(self-approval)* ile çakışıyordu — `EC-APR-11` ondan bahsediyordu. Yenileri
+`SR-APR-09`/`10` olarak yeniden numaralandı, referanslar düzeltildi.
+
+**2. Yanlış sebepten geçen testler.** Kaldırma testlerinde rezervasyonu
+`find(r => r.status === 'reserved')` ile seçmiştim; bu demo verisindeki `rsv_sprint`'i
+yakalıyordu. İki test **yanlış rezervasyonu kaldırdığı hâlde geçiyordu**. Seçici etkinliğe
+daraltıldı (`rezOf`), dördüncü test o zaman gerçekten kırıldı ve düzeltildi.
+
+Test 69 → **73**.

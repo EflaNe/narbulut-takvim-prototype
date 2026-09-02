@@ -140,6 +140,13 @@ export interface Reservation {
   end: Minutes;
   status: ReservationStatus;
   requesterId: UserId;
+  /**
+   * D-071 — rezervasyonu oda yöneticisi kaldırdıysa kim ve neden.
+   * ⚠️ Backend bu iki alanı **kalıcı tutmalı**: talep kaydı "onaylandı" olarak durur,
+   * neyin neden düştüğünün tek izi burasıdır (`18` BR-APR-28c).
+   */
+  cancelledById?: UserId | null;
+  cancelReason?: string | null;
 }
 
 export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
@@ -167,7 +174,7 @@ export type NotificationKind =
   | 'N-EVT-01' | 'N-EVT-02' | 'N-EVT-03' | 'N-EVT-04' | 'N-EVT-05' | 'N-EVT-06'
   | 'N-SER-01' | 'N-SER-02' | 'N-SER-03'
   | 'N-CAL-01' | 'N-CAL-02'
-  | 'N-RES-01' | 'N-RES-02' | 'N-RES-03' | 'N-RES-04' | 'N-RES-05';
+  | 'N-RES-01' | 'N-RES-02' | 'N-RES-03' | 'N-RES-04' | 'N-RES-05' | 'N-RES-06';
 
 export interface AppNotification {
   id: NotificationId;

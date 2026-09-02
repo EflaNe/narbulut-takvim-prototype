@@ -102,7 +102,7 @@ Bazı odalar ortak ve değerli kaynaklardır; bunlara yapılan rezervasyonun **b
 | **BR-APR-02b** | Mevcut bir odanın **son onaylayıcısı kaldırılmaya çalışılırsa** ve onay hâlâ açıksa **işlem engellenir**. Kullanıcı ya yeni onaylayıcı ekler ya onayı kapatır. |
 | **BR-APR-02c** | **Onay kapatılırsa onaylayıcı zorunluluğu kalkar.** |
 | **BR-APR-03** | Onaylayıcı **yalnızca o odanın** onaylayıcısıdır (D-042, `13` BR-ROOM-13). Sistem geneli approver rolü yoktur. |
-| **BR-APR-04** | Onaylayıcı olmak **hiçbir ek yetki vermez**: odayı düzenleyemez, etkinliği düzenleyemez, başka odaların taleplerini göremez (`13` BR-ROOM-14, `15` BR-EVT-27). |
+| **BR-APR-04** | Onaylayıcı olmak **tek bir ek yetki verir**: sorumlu olduğu odanın rezervasyonunu kaldırmak (BR-APR-28). Bunun dışında odayı düzenleyemez, etkinliği düzenleyemez, başka odaların taleplerini göremez (`13` BR-ROOM-14, `15` BR-EVT-27). *(2 Eylül 2026'da D-071 ile daraltılmış biçimde genişletildi; önceki hâli "hiçbir ek yetki vermez" idi.)* |
 | **BR-APR-05** | Onay açık bir odada, `Rezerve edebilir` yetkisi fiilen **"talep gönderebilir"** anlamına gelir (D-035a). Yetkisi olmayan talep de gönderemez. |
 
 ### 5.2 Talep oluşumu
@@ -151,9 +151,15 @@ Bazı odalar ortak ve değerli kaynaklardır; bunlara yapılan rezervasyonun **b
 | ID | Kural |
 |---|---|
 | **BR-APR-25** | Onaylayıcı için **kendi sorumlu olduğu odaların taleplerini** listeleyen bir kuyruk bulunur. Başka odaların talepleri görünmez (BR-APR-03). |
-| **BR-APR-25a** | ⭐ **Oda ekseninde görünüm.** Bir odaya bakarken *"bu odaya kim, ne zaman talep göndermiş"* sorusu **odanın kendi yüzeyinden** cevaplanabilir: yaklaşan rezervasyonlar ve bekleyen talepler tek listede, tarih/saat · talep eden · durum ile. Karar verilebilen satırlarda onay/red aksiyonu bulunur. *(2 Eylül 2026'da eklendi, SR-APR-08.)* |
+| **BR-APR-25a** | ⭐ **Oda ekseninde görünüm.** Bir odaya bakarken *"bu odaya kim, ne zaman talep göndermiş"* sorusu **odanın kendi yüzeyinden** cevaplanabilir: yaklaşan rezervasyonlar ve bekleyen talepler tek listede, tarih/saat · talep eden · durum ile. Karar verilebilen satırlarda onay/red aksiyonu bulunur. *(2 Eylül 2026'da eklendi, SR-APR-10.)* |
 | **BR-APR-25b** | ⚠️ Oda takviminde **talep eden ve etkinlik adı**, yalnızca kararı verebilecek veya etkinliği zaten okuyabilen kullanıcıya gösterilir. Diğerleri için satır yalnız **doluluk** taşır — `10` BR-PRM-06, BR-APR-27. |
 | **BR-APR-25c** | ⚠️ **Karar bekleyen iş, bildirimden ayrı bir sinyaldir.** Bildirim okunduğunda kaybolur; karar bekleyen talep **kararı verilene kadar** görünür kalmalıdır. Onaylayıcı, ilgili yönetim ekranına girmeden de bekleyen iş olduğunu görebilmelidir. |
+| **BR-APR-28** | ⭐ **Rezervasyonu kaldırma.** Oda sorumlusu, sorumlu olduğu odadaki `Reserved` bir rezervasyonu kaldırabilir. Kaldırma sonrası slot serbest kalır; bekleyen rakip talepler karar verilebilir hâle gelir (BR-APR-13a). |
+| **BR-APR-28a** | ⚠️ Kaldırma, **kararı geri almak değildir** (BR-APR-22 yerinde durur). Talep kaydı `Approved` olarak kalır; durumu değişen **rezervasyondur** (`Cancelled`). Kaldırma kendi gerekçesi ve kendi bildirimiyle izlenen **ayrı bir eylemdir**. |
+| **BR-APR-28b** | ⚠️ **Gerekçe zorunludur** ve rezervasyon sahibine iletilir (N-RES-06). *(Red gerekçesinin opsiyonel olmasından — BR-APR-20 — bilinçli olarak ayrışır: red talep edenin **beklediği** bir cevaptır, kaldırma ise sahibinin **hesaba katmadığı** bir müdahaledir.)* |
+| **BR-APR-28c** | ⚠️ Kaldıran kullanıcı ve gerekçe **kalıcı olarak saklanır**. Talep kaydı `Approved` göründüğü için, neyin neden düştüğünün tek izi budur. |
+| **BR-APR-28d** | Kaldırma etkinliği **silmez**: etkinlik odasız kalır (BR-APR-19 ile aynı davranış). Oda sorumlusunun etkinliğin kendisine — başlık, saat, katılımcı — hiçbir yetkisi yoktur. |
+| **BR-APR-28e** | Yetki **oda başınadır**: kullanıcı yalnız sorumlusu olduğu odalarda kaldırabilir. Sorumlu olmayan kullanıcı için aksiyon **gösterilmez**. |
 | **BR-APR-26** | Kuyruk satırı **en az** şu bağlamı taşır: **etkinlik · oda · talep eden · tarih/saat · tekrar bilgisi · durum**. |
 | **BR-APR-27** | ⚠️ Kuyruk, talep edenin **etkinlik detaylarını** açığa çıkarmaz — yalnızca kararı vermek için gereken bağlam gösterilir. Free/busy detay yasağı (`10` BR-PRM-11) burada da geçerlidir. *(SR-APR-05)* |
 | **BR-APR-28** | Kuyrukta **bekleyen talepler öncelikli** görünür; karara bağlanmış talepler geçmiş olarak erişilebilir kalır. |
@@ -271,6 +277,8 @@ Ortak sözleşme: `11-system-states-spec.md`.
 | ID | Kural | Sınıf |
 |---|---|---|
 | **V-APR-01** | Karara bağlanmış talep tekrar karara bağlanamaz (BR-APR-22) | **Engelleyici** |
+| **V-APR-04** | Kaldırma gerekçesi boş olamaz (BR-APR-28b) | **Engelleyici** |
+| **V-APR-05** | Yalnız `Reserved` rezervasyon kaldırılabilir; sorumlu olunmayan odada aksiyon yoktur (BR-APR-28/28e) | **Engelleyici** |
 | **V-APR-02** | Onaylayıcı olmayan kullanıcı karar veremez (BR-APR-17) | **Engelleyici** — aksiyon zaten görünmez |
 | **V-APR-03** | Aynı etkinlik + oda için ikinci `Pending` talep oluşamaz (BR-APR-10) | **Engelleyici** |
 | **V-APR-04** | Seri talebinde kısmi çakışma çözülmeden gönderim (BR-APR-09) | **Engelleyici** |
@@ -293,6 +301,9 @@ Ortak sözleşme: `11-system-states-spec.md`.
 | **EC-APR-08** | Etkinliğin zamanı, talep beklerken değişir | Talep yeni aralık için yeniden değerlendirilir; yeni aralık bloke edilir, onaylayıcı bilgilendirilir (BR-APR-34). Çakışma varsa kullanıcı engelleyici hata görür (`16` BR-RB-20). |
 | **EC-APR-09** | Seri talebi bekliyorken seri düzenlenir | Kapsam seçimi (`15` BR-EVT-34) talebi etkiler; etkilenecek occurrence sayısı kapsam isteminde belirtilir ve talep yeniden değerlendirilir. |
 | **EC-APR-10** | Talep reddedildikten sonra kullanıcı aynı odayı tekrar seçer | **Yeni bir talep** oluşur (BR-APR-22); önceki red kaydı korunur. |
+| **EC-APR-12** | Oda sorumlusu **kendi** rezervasyonunu kaldırır | İzin verilir — çıkar çatışması yoktur (BR-APR-17a self-approval yasağı **onaya** özgüdür). Kendine bildirim gitmez (`19` BR-NOT-22). |
+| **EC-APR-13** | Rezervasyon kaldırıldıktan sonra sahibi aynı odayı tekrar ister | **Yeni bir talep** oluşur; kaldırma kaydı korunur (BR-APR-28c). Aynı slot boşsa engel yoktur. |
+| **EC-APR-14** | Kaldırılan rezervasyonun etkinliği seri bir occurrence'a aitse | Yalnız **o occurrence** odasız kalır; serinin diğer occurrence'ları etkilenmez (`17` BR-SER-14 ile tutarlı). |
 | **EC-APR-11** | Onaylayıcı, kendi oluşturduğu etkinliğin talebini görür | ⚠️ **Karara bağlayamaz** (BR-APR-17a). Kuyrukta talep görünür ancak Onayla/Reddet aksiyonları **gösterilmez**; başka bir onaylayıcı karar vermelidir. *(SR-APR-07)* |
 | **EC-APR-13** | Odanın tek onaylayıcısı, talebi oluşturan kişinin kendisi | ⚠️ **Talep OLUŞTURULMAZ.** Engelleyici validasyon: *"Bu rezervasyonu onaylayabilecek başka bir kullanıcı bulunmuyor"* (BR-APR-17b). Kullanıcı başka oda seçer, onaysız oda seçer veya odasız devam eder (BR-APR-17e). Çözümsüz `Pending` üretilmez. |
 | **EC-APR-14** | Bekleyen talebin etkinlik zamanı geçti | Talep terminal duruma geçer, slot serbest kalır, kayıt korunur (BR-APR-42/43/44). |
@@ -375,7 +386,9 @@ Desktop-first (D-047). **"Rezervasyon durumunu görme" mobil zorunlu akışlarda
 | SR-APR-03 | Onaylayıcısız kalan oda | ⚠️ **Bu durum bir invariant ihlalidir ve önlenir** (BR-APR-02/02a/02b). Yalnızca kullanıcı silinmesi gibi dolaylı yollarla oluşabilir; oluşursa **çözülmesi gereken hata** olarak işaretlenir | Onaylayıcısız approval-required oda **kalıcı broken-state** üretir; form seviyesinde engellenmeli |
 | SR-APR-04 | Karar geri alınabilir mi? | **Hayır; yeni talep gerekir** (BR-APR-22) | Geri alma, durum makinesini ve bildirim akışını karmaşıklaştırır; D-034'ün basit tutma kısıtına aykırı |
 | SR-APR-05 | Kuyruk ne kadar bilgi gösterir? | **Karar için gereken minimum bağlam** (BR-APR-27) | Onaylayıcı, talep edenin takvim detaylarına erişim kazanmamalı — `10` BR-PRM-11'in sızıntı kanalı olmamalı |
-| SR-APR-07 | Aynı slota birden fazla talep gelebilir mi? | ✅ **Evet — rakip talepler birikir** (BR-APR-11/12/13). Kullanıcı engellenmez; çakışma **karar anında** değerlendirilir (BR-APR-13a) ve onay diğerlerini **otomatik reddetmez** (BR-APR-13b) | D-036 ilk gelenin slotu kapatmasını seçmişti; pratikte "iki kişi aynı odayı istedi, hangisi daha acil" değerlendirmesi yapılamıyordu. Ürün sahibi kararıyla model değişti — **D-070**. ⚠️ Otomatik red bilinçli olarak **yok**: onaylanmayan talebin akıbetini yönetici açıkça belirler. Fiziksel çakışma yine imkânsız, çünkü ikinci onay engellenir |
-| SR-APR-08 | "Bu odaya kimin isteği var" nerede görünür? | **Odanın kendi yüzeyinde** (BR-APR-25a) | Onay kuyruğu *onaylayıcı* eksenlidir: tüm odaların talepleri karışık gelir. Soru odadan başladığında cevap da odada olmalı. Detay görünürlüğü BR-PRM-06 ile sınırlandırıldı |
+| SR-APR-09 | Aynı slota birden fazla talep gelebilir mi? | ✅ **Evet — rakip talepler birikir** (BR-APR-11/12/13). Kullanıcı engellenmez; çakışma **karar anında** değerlendirilir (BR-APR-13a) ve onay diğerlerini **otomatik reddetmez** (BR-APR-13b) | D-036 ilk gelenin slotu kapatmasını seçmişti; pratikte "iki kişi aynı odayı istedi, hangisi daha acil" değerlendirmesi yapılamıyordu. Ürün sahibi kararıyla model değişti — **D-070**. ⚠️ Otomatik red bilinçli olarak **yok**: onaylanmayan talebin akıbetini yönetici açıkça belirler. Fiziksel çakışma yine imkânsız, çünkü ikinci onay engellenir |
+| SR-APR-10 | "Bu odaya kimin isteği var" nerede görünür? | **Odanın kendi yüzeyinde** (BR-APR-25a) | Onay kuyruğu *onaylayıcı* eksenlidir: tüm odaların talepleri karışık gelir. Soru odadan başladığında cevap da odada olmalı. Detay görünürlüğü BR-PRM-06 ile sınırlandırıldı |
+| SR-APR-11 | Onaylanmış rezervasyon sonradan kaldırılabilir mi? | ✅ **Evet — oda sorumlusu, zorunlu gerekçeyle** (BR-APR-28). ⚠️ Bu, BR-APR-22'nin ihlali **değildir**: karar geri alınmaz, rezervasyon düşer | D-070 otomatik reddi kaldırınca ikinci onayı engelleyen mesaj *"önce o rezervasyonu kaldırın"* diyordu, ama böyle bir yol yoktu — kullanıcıya **yapamayacağı** bir eylem öneriliyordu. Ayrıca bakım/acil durumda oda serbest bırakılamazsa, sahibi ulaşılamaz olduğunda oda süresiz kilitlenir. Yetkiyi **tek bir eyleme ve tek bir odaya** daraltmak, BR-APR-04'ün *"onaylayıcı ayrıcalıklı kullanıcı değildir"* ilkesini korur — **D-071** |
+| SR-APR-12 | Kaldırma gerekçesi neden zorunlu, red gerekçesi opsiyonelken? | **Kaldırma beklenmeyen bir müdahaledir** (BR-APR-28b) | Red, talep edenin **cevap beklediği** bir kararın sonucudur; sessiz kalınsa bile bağlam bellidir. Kaldırma ise sahibinin planına **girmiş** bir rezervasyonu geri alır: gerekçe olmadan yalnız *"odam gitti"* bilgisi kalır ve bu bir destek çağrısına dönüşür |
 | SR-APR-06 | Etkinlik zamanı değişirse talep? | **Yeniden değerlendirilir, iptal edilmez** (BR-APR-34) | Otomatik iptal kullanıcıyı sürprizle karşılar; onaylayıcının bilgilendirilmesi yeterli |
 | SR-APR-07 | Kendi talebini onaylama | ⚠️ **Engellenir** (BR-APR-17a); ayrıca **eligible approver yoksa talep hiç oluşturulmaz** (BR-APR-17b) | Onay bağımsız bir karar mekanizmasıdır. Talep oluşturulup karara bağlanamaması **çözümsüz Pending** üretirdi; engelleme talep aşamasına alındı. Self-approval politikası kapsam dışı (BR-APR-17c) |
