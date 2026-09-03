@@ -728,3 +728,58 @@ Tüm stil dosyalarına karşı bir denetim çalıştırıldı: `var(--x)` kullan
 tanım kümesiyle karşılaştırıldı. Bu dört isim dışında tanımsız kullanım yok.
 
 Test 73 → **78**.
+
+---
+
+## 19. Yönetim ekranları ortak kabuk — 3 Eylül 2026
+
+Ürün sahibi üç yönetim ekranı için Claude Design'a brief hazırlattı, tasarımı aldı ve
+uygulamaya geçildi. Handoff `design_handoff_yonetim_ekranlari/` içinde.
+
+### Brief öncesi tespit
+
+| | Odalar | İzinler | Talepler |
+|---|---|---|---|
+| Sol rail | Kendi rail'i | ⚠️ Takvim rail'i | ⚠️ Takvim rail'i |
+| Başlık | 3 ayrı kalıp | ← | ← |
+| Alt çubuk | Var | Var | ⚠️ Yok |
+| Gezinmede | ✓ | ✓ | ⚠️ **Yok** |
+
+Mobilde üç ekran da **hiç tasarlanmamıştı**: masaüstü yerleşimi 390px'e sıkışıyor, Odalar'ın
+başlığı beş satıra kırılıyor, seçiciler *"Tüm kullanıcılar" → "Tü"* diye kırpılıyor,
+**İzinler'e hiç ulaşılamıyordu**.
+
+### Uygulanan
+
+Ortak kabuk (`AdminShell.tsx`): 88px sabit başlık · koşullu 68px alt çubuk · sekme satırı.
+Dikey dört öğeli gezinme. Üç yeni rail: `PermissionsSidebar` (özne ekseni),
+`RequestsSidebar` (talep listesi), mevcut `RoomsSidebar`. Odalar sekmelendi,
+`RoomSchedule` nokta şeridinden **odanın kendi ay ızgarası + karar listesine** dönüştü.
+Mobil: `MobileNav` · `MobileRooms` · `MobilePermissions` · `MobileRequests`.
+
+### Yol boyunca çıkan üç şey
+
+**1. Özne süzgeci hiçbir şeyi süzmüyordu.** İzinler rail'inde her özne "4 oda" gösteriyordu:
+tüm odalarda `canView.allUsers` açık olduğu için herkes her odada "hak sahibi" çıkıyordu.
+Soru *"kim nerede yetkili"* değil, **"kimin nerede açık kaydı var"** olmalıydı; `allUsers`
+sayımdan çıkarıldı. Açık kaydı olmayan kullanıcılar da listelenmiyor — 28 satırın 24'ü boş
+olurdu.
+
+**2. Mobilde oda listesi hiç görünmüyordu.** `ui.selectedRoomId` başlangıçta
+`room_istanbul`; masaüstünde doğru (rail ve detay yan yana), mobilde liste ekranını
+atlatıyordu. Liste/detay kararı yerel duruma bağlandı, global anlam bozulmadı.
+
+**3. Demo akışı 25. adımda kırıldı** — ve sebebi ilginç: dikey gezinme rail'i uzatınca
+"Ürün" satırı 900px'de katlamanın altında kaldı, puppeteer'ın **gerçek fare tıklaması
+ıskaladı**. Test yardımcıları artık tıklamadan önce öğeyi görünür alana kaydırıyor.
+
+Test 78 · demo akışı 32 adım · tüm kapılar geçti.
+
+### Handoff'a göre bilerek sapılan noktalar
+
+| Handoff | Uygulanan | Neden |
+|---|---|---|
+| Mobil eşiği ~900px | **767px** | Takvimin canonical kırılma noktası; ikinci bir eşik iki farklı model demek olurdu |
+| Artboard 03/05/07'de 2×2 gezinme | **Dikey liste** | Handoff'un kendisi "üretimde dikey liste geçerlidir" diyor |
+| "Aynı kaydın iki hâli" bloğu | Uygulanmadı | Artboard içinde **dokümantasyon**; ürün öğesi değil. Maskeleme kuralı zaten kodda ve testte |
+| Talepler rozetinde "3" | **Karar verilebilen sayısı** | Mock veriydi; `BR-APR-25c` "karar bekleyen iş" diyor, kendi talebi karara bağlanamaz |

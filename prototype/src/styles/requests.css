@@ -56,3 +56,13 @@
 .reqdecision{margin-top:24px;padding:14px 16px;border-radius:10px;background:var(--bg-subtle);
   font:400 12.5px/1.6 var(--font);color:var(--text-secondary)}
 .reqempty{flex:1;display:flex;align-items:center;justify-content:center}
+
+/* ── 09 · karar formları · D-074 ────────────────────────────────────────────── */
+/* Üç form aynı kalıbı paylaşır; ayrışan şey zorunluluk ve aksiyon rengidir (R9). */
+.reqreason__label{display:flex;align-items:center;gap:8px;margin-bottom:7px;
+  font:400 12.5px/1.4 var(--font);color:var(--text-secondary)}
+.reqoutcome{margin-top:11px;font:400 12.5px/1.6 var(--font);color:var(--text-tertiary)}
+.reqacts{display:flex;align-items:center;gap:12px;margin-top:16px}
+/* Red nötrdür: yıkıcı değil, beklenen bir karardır — outline + error metin. */
+.btn--onerror{color:var(--error)}
+.btn--onerror:hover:not(:disabled){background:#FAEEEC}

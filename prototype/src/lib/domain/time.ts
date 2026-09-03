@@ -94,6 +94,12 @@ export function longDateLabel(s: IsoDate): string {
   return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+/** Dar rail satırları için: "27 Ağu" — ay adı üç harfe iner, yıl düşer. */
+export function shortDateLabel(s: IsoDate): string {
+  const d = fromIso(s);
+  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()].slice(0, 3)}`;
+}
+
 /** 570 → "09:30" */
 export function hhmm(m: Minutes): string {
   const h = Math.floor(m / 60);

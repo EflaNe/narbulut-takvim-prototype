@@ -119,6 +119,8 @@ Bu bir **foundation** spec'idir: değeri kendi ekranında değil, mümkün kıld
 | **BR-ROOM-12a** | Onay açıkken **son onaylayıcı kaldırılamaz**; işlem engellenir. Kullanıcı ya yeni onaylayıcı ekler ya onayı kapatır. |
 | **BR-ROOM-12b** | Onay kapatıldığında onaylayıcı zorunluluğu kalkar; mevcut onaylayıcı kayıtları korunabilir. |
 | **BR-ROOM-13** | Onaylayıcı, **yalnızca o odanın** onaylayıcısıdır. Sistem geneli approver rolü yoktur (D-042). |
+| **BR-ROOM-32** | ⭐ Oda ekranı iki sekmedir: **Ayarlar** (yapılandırma) ve **Takvim ve talepler** (işletme). İkisi aynı anda görünmez; alt çubuk yalnız Ayarlar'dadır (`14` BR-SHELL-55). İkinci sekmenin etiketinde o odanın bekleyen talep sayısı okunur. |
+| **BR-ROOM-33** | ⚠️ **«Aktif» odanın bir ayarıdır**, başlıkta yalnız **okunur** (nokta + etiket). Değiştirme formdadır ve Kaydet'e tabidir. Başlıkta değiştirilebilir durması, taslağa yazan bir kontrolü anında uygulanıyormuş gibi gösteriyordu. |
 | **BR-ROOM-14** | Onaylayıcı olmak, odayı düzenleme veya etkinlik düzenleme yetkisi **vermez** (D-039, D-042). ⚠️ Tek istisna: sorumlu olduğu odadaki rezervasyonu **gerekçeyle kaldırabilir** (`18` BR-APR-28, D-071) — bu odayı değil, odanın **doluluğunu** yönetmektir; oda ayarlarına ve etkinliğin içeriğine erişim vermez. |
 | **BR-ROOM-15** | Onay anahtarı kapatıldığında **bekleyen talepler otomatik onaylanmaz.** Onaylayıcının kararına bırakılır. *(SR-ROOM-05)* |
 

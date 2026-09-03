@@ -5,12 +5,9 @@ import type { IconName } from '../primitives/Icon';
 import type { Route } from '../../lib/state/types';
 
 /**
- * Ana gezinme — dikey liste, dört bölüm.
- *
- * ⚠️ D-074 — Talepler dördüncü ana bölümdür (ekranın kendi geri oku yoktur).
- * Yanındaki sayı **karar bekleyen iş** sayısıdır ve karar verilene kadar durur;
- * bildirim çanından bağımsız bir sinyaldir (`18` BR-APR-25c). Rozet zemini
- * bilinçli olarak yoktur — sakin ama kalıcı.
+ * Mobil alt gezinme — D-074. Masaüstündeki dört bölümün karşılığı.
+ * ⚠️ Önceki hâlde İzinler'e mobilden **ulaşılamıyordu**; alt çubukta yalnız
+ * "Yeni etkinlik" ve "Odalar" vardı.
  */
 const items: { route: Route; label: string; icon: IconName }[] = [
   { route: 'calendar', label: 'Takvim', icon: 'calendar' },
@@ -19,27 +16,27 @@ const items: { route: Route; label: string; icon: IconName }[] = [
   { route: 'requests', label: 'Talepler', icon: 'clock' },
 ];
 
-export function NavRail() {
+export function MobileNav() {
   const state = useAppState();
   const dispatch = useDispatch();
   const pending = decidableRequests(state).length;
 
   return (
-    <nav className="navrail" aria-label="Ana gezinme">
+    <nav className="mnav" aria-label="Ana gezinme">
       {items.map((it) => {
         const active = state.ui.route === it.route;
         return (
           <button key={it.route} className={active ? 'is-active' : undefined}
             aria-current={active ? 'page' : undefined}
             onClick={() => dispatch({ type: 'navigate', route: it.route })}>
-            <Icon name={it.icon} size={16}
-              color={active ? 'var(--brand)' : 'var(--text-tertiary)'} />
+            <span className="mnav__ico">
+              <Icon name={it.icon} size={21}
+                color={active ? 'var(--brand)' : 'var(--text-tertiary)'} />
+              {it.route === 'requests' && pending > 0 && (
+                <span className="mnav__count">{pending}</span>
+              )}
+            </span>
             {it.label}
-            {it.route === 'requests' && pending > 0 && (
-              <span className="navrail__count" aria-label={`${pending} karar bekliyor`}>
-                {pending}
-              </span>
-            )}
           </button>
         );
       })}

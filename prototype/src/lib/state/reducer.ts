@@ -53,6 +53,9 @@ export function createInitialState(): AppState {
       rejectingRequestId: null,
     cancellingReservationId: null,
     reinvitingRequestId: null,
+    permissionSubjectId: null,
+    roomTab: 'settings',
+    requestFilter: 'pending',
       selectedRoomId: 'room_istanbul',
       calendarForm: null,
       deletingCalendarId: null,
@@ -545,6 +548,15 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
     case 'startReject':
       return ui(state, { rejectingRequestId: action.requestId });
+
+    case 'selectPermissionSubject':
+      return ui(state, { permissionSubjectId: action.subjectId });
+
+    case 'setRoomTab':
+      return ui(state, { roomTab: action.tab });
+
+    case 'setRequestFilter':
+      return ui(state, { requestFilter: action.filter });
 
     case 'startReinvite':
       return ui(state, { reinvitingRequestId: action.requestId });

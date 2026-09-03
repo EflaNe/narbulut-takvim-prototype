@@ -82,3 +82,54 @@
   .roompicker{width:100% !important;right:0 !important}
   .toast{left:16px;right:16px;transform:none;max-width:none}
 }
+
+/* ── D-074 · yönetim ekranlarının mobil yerleşimi ───────────────────────────── */
+.mscreen{display:flex;flex-direction:column;height:100%;background:var(--bg-app)}
+.mhead{display:flex;align-items:center;gap:10px;flex:none;height:64px;padding:0 14px;
+  background:var(--bg-surface);border-bottom:1px solid var(--line-divider)}
+.mhead__title{font:500 18px/1.2 var(--font);color:var(--text-primary)}
+.mhead__meta{font:400 12.5px/1 var(--font);color:var(--text-tertiary)}
+.mhead__back,.mhead__act{display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;margin-left:-11px;border:none;border-radius:50%;background:none;
+  color:var(--text-secondary)}
+.mhead__act{margin:0 -11px 0 0}
+.mscreen__body{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 20px}
+.mscreen__body--flush{padding:0}
+
+.mcard{display:flex;align-items:center;gap:11px;width:100%;padding:13px;border-radius:var(--r-card);
+  border:1px solid var(--line-panel);background:var(--bg-surface);text-align:left}
+.mcard + .mcard{margin-top:9px}
+.mcard__main{flex:1;min-width:0}
+.mcard__top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mcard__name{font:500 15px/1.3 var(--font);color:var(--text-primary)}
+.mcard__sub{margin-top:3px;font:400 12.5px/1.45 var(--font);color:var(--text-secondary)}
+.mcard__who{margin-top:2px;font:400 12px/1.4 var(--font);color:var(--text-tertiary)}
+.mcard__pending{display:flex;align-items:center;gap:5px;margin-top:6px;
+  font:400 12px/1.3 var(--font);color:var(--warning)}
+.mlist__group{padding:14px 3px 7px}
+.mlist__empty{padding:2px 3px 8px;font:400 12.5px/1.5 var(--font);color:var(--text-tertiary)}
+
+/* İzinler mobil — iki hak AYNI kartta, sabit etiket kolonu (P4) */
+.mperm{padding:13px;border-radius:var(--r-card);border:1px solid var(--line-panel);
+  background:var(--bg-surface)}
+.mperm + .mperm{margin-top:9px}
+.mperm__head{padding-bottom:10px;border-bottom:1px solid var(--line-divider)}
+.mperm__name{font:500 15px/1.3 var(--font);color:var(--text-primary)}
+.mperm__loc{display:block;margin-top:2px;font:400 12px/1.4 var(--font);color:var(--text-tertiary)}
+.mperm__row{display:flex;align-items:flex-start;gap:10px;width:100%;min-height:44px;
+  padding:10px 0 0;border:none;background:none;text-align:left}
+.mperm__label{flex:none;width:104px;padding-top:4px;font:400 12.5px/1.4 var(--font);
+  color:var(--text-tertiary)}
+.mperm__vals{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+.mperm__note{margin-top:14px;padding:0 3px;font:400 12px/1.6 var(--font);color:var(--text-tertiary)}
+
+/* Alt gezinme — masaüstündeki dört bölümün karşılığı */
+.mnav{display:flex;flex:none;height:64px;background:var(--bg-surface);
+  border-top:1px solid var(--line-panel);padding-bottom:env(safe-area-inset-bottom)}
+.mnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:none;font:400 10.5px/1 var(--font);color:var(--text-tertiary)}
+.mnav button.is-active{color:var(--brand);font-weight:500}
+.mnav__ico{position:relative;display:flex}
+.mnav__count{position:absolute;top:-5px;left:12px;min-width:17px;height:17px;padding:0 5px;
+  border-radius:9px;background:#FBF3E2;color:var(--warning);
+  font:500 10.5px/17px var(--font);text-align:center;font-variant-numeric:tabular-nums}

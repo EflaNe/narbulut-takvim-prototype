@@ -162,40 +162,160 @@
 .rsched__cancel .textinput{width:100%;resize:vertical}
 .rsched__canrow{display:flex;gap:9px;margin-top:10px}
 
-/* ── D-073 · oda doluluk ay şeridi ──────────────────────────────────────────── */
-.rmonth{margin:2px 0 14px;padding:12px 13px;border:1px solid var(--line-panel);border-radius:11px;
-  background:var(--bg-surface);max-width:352px}
-.rmonth__head{display:flex;align-items:center;gap:4px;margin-bottom:9px}
-.rmonth__label{font:600 13px/1.2 var(--font);color:var(--text-primary);
-  min-width:104px;text-align:center}
-.rmonth__legend{display:flex;align-items:center;gap:3px;
-  font:400 10.5px/1.2 var(--font);color:var(--text-tertiary)}
-.rmonth__legend .rmonth__dot{margin:0 2px 0 7px}
-.rmonth__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
-.rmonth__dow span{text-align:center;font:500 10.5px/1.2 var(--font);color:var(--text-tertiary)}
-.rmonth__week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.rmonth__week + .rmonth__week{margin-top:3px}
-.rmonth__day{display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:5px 0 6px;border:1px solid transparent;border-radius:7px;background:none;
-  cursor:pointer;font:inherit;color:var(--text-primary)}
-.rmonth__day:hover{background:var(--bg-subtle)}
-.rmonth__day:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
-.rmonth__num{font:500 12px/1 var(--font);font-variant-numeric:tabular-nums}
-.rmonth__day.is-out .rmonth__num{color:var(--text-tertiary);opacity:.5}
-.rmonth__day.is-weekend .rmonth__num{color:var(--text-secondary)}
-.rmonth__day.is-today{border-color:var(--brand)}
-.rmonth__day.is-today .rmonth__num{color:var(--brand);font-weight:700}
-.rmonth__day.is-picked{background:var(--brand);border-color:var(--brand)}
-.rmonth__day.is-picked .rmonth__num{color:#fff;font-weight:700}
-.rmonth__day.is-picked .rmonth__dot--res{background:#fff}
-.rmonth__day.is-picked .rmonth__dot--pend{background:rgba(255,255,255,.7)}
-/* boş günlerde satır yüksekliği sabit kalsın diye nokta şeridi hep yer kaplar */
-.rmonth__dots{display:flex;gap:2px;height:4px;align-items:center}
-.rmonth__dot{display:inline-block;width:4px;height:4px;border-radius:50%}
-.rmonth__dot--res{background:var(--brand)}
-.rmonth__dot--pend{background:var(--warning)}
+/* ── D-074 · ortak yönetim kabuğu ───────────────────────────────────────────── */
+/* Başlık 88px ve SABİT — yuvalar boş kalsa da ekranlar arası zıplamaz. */
+.ahead{display:flex;align-items:center;gap:20px;height:88px;flex:none;padding:0 32px;
+  border-bottom:1px solid var(--line-divider)}
+.ahead__main{min-width:0}
+.ahead__title{margin:0;font:500 24px/1.2 var(--font);letter-spacing:-.015em;color:var(--text-primary)}
+.ahead__meta{margin-top:5px;font:400 12.5px/1.4 var(--font);color:var(--text-tertiary)}
+.ahead__meta1{color:var(--text-secondary)}
+.ahead__sep{margin:0 8px;color:var(--line-frame)}
+.ahead__status{display:inline-flex;align-items:center;gap:7px;flex:none;
+  font:400 13px/1 var(--font);color:var(--text-secondary)}
+.ahead__status i{width:6px;height:6px;border-radius:50%;background:var(--success)}
+.ahead__status--passive i{background:var(--text-faint)}
 
-.rsched__scope{display:flex;align-items:center;gap:10px;margin-bottom:9px;
-  font:500 12px/1.3 var(--font);color:var(--text-secondary)}
-.rsched__clear{border:0;background:none;padding:0;cursor:pointer;
-  font:500 12px/1.3 var(--font);color:var(--brand);text-decoration:underline}
+.atabs{display:flex;align-items:center;gap:26px;height:48px;flex:none;padding:0 32px;
+  border-bottom:1px solid var(--line-divider)}
+.atabs button{height:48px;border:none;background:none;padding:0;white-space:nowrap;
+  font:400 13.5px/1 var(--font);color:var(--text-secondary)}
+.atabs button.is-active{font-weight:500;color:var(--text-primary);box-shadow:inset 0 -2px 0 var(--brand)}
+.atabs__count{margin-left:9px;font:500 12px/1 var(--font);color:var(--warning);
+  font-variant-numeric:tabular-nums}
+
+.afoot{display:flex;align-items:center;gap:14px;height:68px;flex:none;padding:0 32px;
+  border-top:1px solid var(--line-divider);background:var(--bg-surface)}
+.afoot__info{font:400 12.5px/1.4 var(--font);color:var(--text-tertiary)}
+
+/* ── D-074 · İzinler rail'i (özne ekseni) ───────────────────────────────────── */
+.subjlist{display:flex;flex-direction:column;background:var(--bg-surface);
+  border:1px solid var(--line-panel);border-radius:var(--r-card);padding:10px 8px 8px}
+.subjlist__meta{font:400 11.5px/1 var(--font);color:var(--text-faint)}
+.subjlist__group{padding:12px 5px 5px}
+.subjrow{display:flex;align-items:center;gap:9px;width:100%;padding:8px 7px;border:none;
+  border-left:2px solid transparent;border-radius:var(--r-control);background:none;text-align:left}
+.subjrow:hover{background:var(--bg-subtle)}
+.subjrow.is-active{border-left-color:var(--brand);background:var(--bg-subtle)}
+.subjrow.is-active .subjrow__name{font-weight:500;color:var(--brand)}
+.subjrow__name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:400 13px/1.3 var(--font);color:var(--text-primary)}
+.subjrow__count{flex:none;font:400 11.5px/1 var(--font);color:var(--text-tertiary);
+  font-variant-numeric:tabular-nums}
+.subjrow--all{margin-bottom:2px}
+
+/* ── D-074 · Talepler rail'i ────────────────────────────────────────────────── */
+.reqfilter{display:flex;gap:8px}
+.reqfilter button{height:32px;padding:0 14px;border:1px solid var(--border-btn-secondary);
+  border-radius:var(--r-control);background:var(--bg-surface);
+  font:400 12.5px/1 var(--font);color:var(--text-secondary)}
+.reqfilter button:hover{background:var(--bg-subtle)}
+.reqfilter button.is-active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+
+.reqlist2{display:flex;flex-direction:column;background:var(--bg-surface);
+  border:1px solid var(--line-panel);border-radius:var(--r-card);overflow:hidden}
+.reqlist2__group{display:flex;align-items:center;padding:10px 13px 7px;
+  font:500 11px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.reqlist2__empty{padding:4px 13px 14px;font:400 12.5px/1.5 var(--font);color:var(--text-tertiary)}
+.reqrow{display:flex;flex-direction:column;gap:3px;width:100%;padding:11px 13px;border:none;
+  border-left:2px solid transparent;border-top:1px solid var(--line-divider);
+  background:none;text-align:left}
+.reqlist2__group + .reqrow{border-top:none}
+.reqrow:hover{background:var(--bg-subtle)}
+.reqrow.is-active{border-left-color:var(--brand);background:var(--bg-subtle)}
+.reqrow__top{display:flex;align-items:center;gap:8px}
+.reqrow__title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:500 13px/1.3 var(--font);color:var(--text-primary)}
+.reqrow__when{font:400 12px/1.35 var(--font);color:var(--text-secondary);
+  font-variant-numeric:tabular-nums}
+.reqrow__who{font:400 11.5px/1.3 var(--font);color:var(--text-tertiary)}
+
+/* ── D-074 · ortak ekran gövdesi ve boş durumlar ────────────────────────────── */
+.ascreen{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg-surface);
+  overflow:hidden}
+.ascreen__body{flex:1;min-height:0;overflow-y:auto;padding:26px 32px 32px}
+.ahead__pending{color:var(--warning);font-weight:500}
+
+.aempty{max-width:420px;margin:64px auto 0;display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:11px}
+.aempty__icon{display:flex;align-items:center;justify-content:center;width:52px;height:52px;
+  border-radius:50%;background:var(--bg-subtle)}
+.aempty__icon--ok{background:#E9F2ED}
+.aempty__title{font:500 15px/1.3 var(--font);color:var(--text-primary)}
+.aempty__body{font:400 13px/1.6 var(--font);color:var(--text-tertiary)}
+.aempty .btn{margin-top:5px}
+
+/* ── D-074 · oda takvimi (ay ızgarası + karar listesi) ──────────────────────── */
+.rsched{display:block}
+.rsched__cols{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:24px;
+  align-items:start}
+
+.rmonth{border:1px solid var(--line-panel);border-radius:var(--r-card);background:var(--bg-surface);
+  padding:13px 14px 14px;min-width:0}
+.rmonth__head{display:flex;align-items:center;gap:4px;margin-bottom:11px}
+.rmonth__label{min-width:112px;text-align:center;font:600 13.5px/1 var(--font);color:var(--text-primary)}
+.rmonth__legend{display:flex;align-items:center;gap:4px;font:400 11px/1 var(--font);color:var(--text-tertiary)}
+.rmonth__key{width:9px;height:9px;border-radius:3px;margin-left:9px}
+.rmonth__key--res{background:#DCE8F6;box-shadow:inset 2px 0 0 var(--brand)}
+.rmonth__key--pend{background:#FBF3E2;box-shadow:inset 2px 0 0 var(--warning)}
+.rmonth__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:3px}
+.rmonth__dow span{padding-left:5px;font:500 10.5px/1 var(--font);letter-spacing:.04em;
+  text-transform:uppercase;color:var(--text-muted)}
+.rmonth__week{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.rmonth__cell{display:flex;flex-direction:column;gap:2px;min-height:62px;padding:5px 4px;
+  border:1px solid var(--line-divider);border-radius:6px;background:var(--bg-surface);overflow:hidden}
+.rmonth__cell.is-weekend{background:var(--bg-weekend)}
+.rmonth__cell.is-out{background:var(--bg-offhours)}
+.rmonth__cell.is-out .rmonth__num{color:var(--text-faint)}
+.rmonth__cell.is-today{border-color:var(--brand)}
+.rmonth__cell.is-today .rmonth__num{width:19px;height:19px;border-radius:50%;background:var(--brand);
+  color:#fff;display:flex;align-items:center;justify-content:center}
+.rmonth__num{font:500 11.5px/19px var(--font);color:var(--text-secondary);
+  font-variant-numeric:tabular-nums;padding-left:2px}
+.rmonth__chip{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  padding:2px 4px;border-radius:4px;font:400 10.5px/1.35 var(--font)}
+.rmonth__chip b{font-weight:500;margin-right:4px;font-variant-numeric:tabular-nums}
+.rmonth__chip--reserved{background:#EAF1F9;color:var(--brand);box-shadow:inset 2px 0 0 var(--brand)}
+.rmonth__chip--pending{background:#FBF3E2;color:var(--warning);box-shadow:inset 2px 0 0 var(--warning)}
+.rmonth__more{padding-left:4px;font:400 10px/1.3 var(--font);color:var(--text-muted)}
+
+.rupc{border:1px solid var(--line-panel);border-radius:var(--r-card);background:var(--bg-surface);
+  padding:14px 15px 10px;min-width:0}
+.rupc__head{display:flex;align-items:center;gap:10px}
+.rupc__title{font:500 14px/1.2 var(--font);color:var(--text-primary)}
+.rupc__badge{font:500 12px/1 var(--font);color:var(--warning)}
+.rupc__sub{margin-top:4px;padding-bottom:11px;border-bottom:1px solid var(--line-divider);
+  font:400 12px/1.4 var(--font);color:var(--text-tertiary)}
+.rupc__empty{padding:16px 0;font:400 12.5px/1.6 var(--font);color:var(--text-tertiary)}
+.rupc__row{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-divider)}
+.rupc__date{flex:none;width:34px;display:flex;flex-direction:column;align-items:center;
+  font:400 10.5px/1.3 var(--font);color:var(--text-tertiary)}
+.rupc__date b{font:600 16px/1.15 var(--font);color:var(--text-primary);font-variant-numeric:tabular-nums}
+.rupc__main{flex:1;min-width:0}
+.rupc__line1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rupc__name{font:500 13px/1.35 var(--font);color:var(--text-primary)}
+.rupc__line2{margin-top:3px;font:400 12.5px/1.4 var(--font);color:var(--text-secondary);
+  font-variant-numeric:tabular-nums}
+.rupc__actions{display:flex;align-items:center;gap:9px;margin-top:9px}
+.rupc__hint{font:400 11.5px/1 var(--font);color:var(--text-muted)}
+.rupc__note{display:flex;align-items:flex-start;gap:6px;margin-top:8px;
+  font:400 11.5px/1.5 var(--font);color:var(--text-tertiary)}
+.rupc__note svg{flex:none;margin-top:2px}
+.rupc__cancel{margin-top:10px;padding-top:11px;border-top:1px solid var(--line-divider)}
+.rupc__cancelhead{font:400 12.5px/1.55 var(--font);color:var(--text-secondary);margin-bottom:9px}
+.rupc__canlabel{display:flex;align-items:center;gap:8px;font:500 11.5px/1.4 var(--font);
+  color:var(--text-tertiary);margin-bottom:5px}
+.rupc__cancel .textinput{width:100%;resize:vertical}
+.rupc__canrow{display:flex;gap:9px;margin-top:10px}
+.rupc__all{display:block;width:100%;padding:12px 0 6px;border:none;background:none;text-align:left;
+  font:500 13px/1 var(--font);color:var(--brand)}
+.rupc__all:hover{text-decoration:underline}
+
+/* 09 · gerekçe zorunluluk etiketi — asimetrik (R9) */
+.reqlabel{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:9px;
+  font:500 10.5px/1 var(--font)}
+.reqlabel--req{background:#F7EAE8;color:var(--error)}
+.reqlabel--opt{background:#F1F3F6;color:var(--text-tertiary)}
+.ahead__clear{border:0;background:none;padding:0;font:400 12.5px/1 var(--font);
+  color:var(--brand);text-decoration:underline}
+.subjlist__rest{padding:9px 7px 3px;font:400 11.5px/1.5 var(--font);color:var(--text-muted)}

@@ -6,12 +6,18 @@
   background:var(--bg-sidebar);display:flex;flex-direction:column;padding:14px 14px 12px;gap:14px;
   overflow-y:auto;scrollbar-gutter:stable}
 .sidebar > *{flex:none}
-.navrail{display:flex;align-items:center;gap:4px}
-.navrail button{display:flex;align-items:center;gap:7px;height:32px;padding:0 10px;border:none;
-  border-radius:var(--r-row);background:transparent;font:400 12.5px/1 var(--font);color:var(--text-secondary)}
+/* D-074 — dikey liste; dört bölüm 252px'e yatay sığmıyordu. */
+.navrail{display:flex;flex-direction:column;gap:2px}
+.navrail button{display:flex;align-items:center;gap:11px;height:36px;padding:0 11px;border:none;
+  border-radius:var(--r-control);background:transparent;font:400 13px/1 var(--font);
+  color:var(--text-secondary);text-align:left}
 .navrail button:hover{background:#EEF1F5}
-.navrail button.is-active{padding:0 12px;background:#fff;box-shadow:var(--sh-card);
-  font-weight:500;color:var(--brand)}
+.navrail button.is-active{background:#fff;box-shadow:var(--sh-card);font-weight:500;color:var(--brand)}
+/* ⚠️ Zemin yok: karar bekleyen iş kalıcı ama sakin bir sinyaldir (BR-APR-25c). */
+.navrail__count{margin-left:auto;font:500 12px/1 var(--font);color:var(--warning);
+  font-variant-numeric:tabular-nums}
+.navrail + *{margin-top:2px}
+.sidebar__hair{height:1px;background:var(--line-panel);margin:2px}
 
 /* ── Tarih kartı ────────────────────────────────────────── */
 .datehero{position:relative;border-radius:var(--r-panel);overflow:hidden;

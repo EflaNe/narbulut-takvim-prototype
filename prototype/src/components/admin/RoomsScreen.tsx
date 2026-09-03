@@ -6,6 +6,7 @@ import {
 import { userById } from '../../lib/domain/selectors';
 import { Button } from '../primitives/Button';
 import { RoomSchedule } from './RoomSchedule';
+import { AdminHeader, AdminTabs } from '../shell/AdminShell';
 import { Icon } from '../primitives/Icon';
 import type { BuildingId, Room, UserId } from '../../lib/domain/types';
 
@@ -49,6 +50,12 @@ function RoomDeleteAction({ room }: { room: Room }) {
         },
       })}>Sil</button>
   );
+}
+
+/** Kısa kod türetilmiş bir alandır, veride tutulmaz. */
+function shortCode(r: { name: string; floor: string }): string {
+  return `${r.name.slice(0, 3).toLocaleUpperCase('tr-TR')}-`
+    + `${(r.floor.replace(/\D/g, '') || '0').padStart(2, '0')}`;
 }
 
 function Block({ title, sub, children }: {
@@ -147,25 +154,55 @@ export function RoomsScreen() {
     return names.length ? names.join(', ') : 'Henüz özne eklenmedi';
   };
 
-  return (
-    <div className="admin">
-      <div className="roomedit">
-        <header className="roomedit__head">
-          <span className="roomedit__title">{form.name || (creating ? 'Yeni oda' : 'Oda')}</span>
-          <span className="roomedit__eyebrow">{creating ? 'Oluşturuluyor' : 'Oda ayarları'}</span>
-          <span className="spacer" />
-          {!creating && <RoomDeleteAction room={form} />}
-          <button className="switch" aria-pressed={form.active}
-            onClick={() => setForm({ ...form, active: !form.active })}>
-            <span className={`switch__track${form.active ? ' is-on' : ''}`}>
-              <span className="switch__knob" />
-            </span>
-            Aktif
-          </button>
-          <Button variant="outline" size="sm"
-            onClick={() => dispatch({ type: 'navigate', route: 'calendar' })}>Önizle</Button>
-        </header>
+  /**
+   * D-074 — sekme. ⚠️ Yeni oda taslağında "Takvim ve talepler" yoktur: henüz kaydı yok.
+   */
+  const tab = creating ? 'settings' : state.ui.roomTab;
+  const roomPending = creating ? 0 : state.reservations.filter(
+    (r) => r.roomId === source!.id && r.status === 'pending' && r.date >= state.today).length;
 
+  return (
+    <div className="ascreen">
+      {/*
+        ⚠️ "Aktif" başlıktan indi. Kodda zaten `form.active` idi — yani taslağa yazıyordu,
+        ama başlıkta durduğu için anında uygulanıyormuş gibi görünüyordu. Artık başlık
+        OKUR, form YAZAR (D-074 · §9).
+      */}
+      <AdminHeader
+        title={form.name || (creating ? 'Yeni oda' : 'Oda')}
+        meta={[
+          creating ? 'Oluşturuluyor'
+            : tab === 'schedule' ? 'Oda takvimi' : 'Oda ayarları',
+          shortCode(form),
+          `${form.capacity} kişilik`,
+          [state.buildings.find((b) => b.id === form.buildingId)?.name, form.floor]
+            .filter(Boolean).join(', ') || null,
+        ]}
+        status={creating ? undefined
+          : { label: form.active ? 'Aktif' : 'Pasif', tone: form.active ? 'active' : 'passive' }}
+        actions={
+          <>
+            {!creating && <RoomDeleteAction room={form} />}
+            <Button variant="outline" size="sm"
+              onClick={() => dispatch({ type: 'navigate', route: 'calendar' })}>Önizle</Button>
+          </>
+        } />
+
+      {!creating && (
+        <AdminTabs
+          value={tab}
+          onChange={(id) => dispatch({ type: 'setRoomTab', tab: id as 'settings' | 'schedule' })}
+          tabs={[
+            { id: 'settings', label: 'Ayarlar' },
+            { id: 'schedule', label: 'Takvim ve talepler', count: roomPending },
+          ]} />
+      )}
+
+      {tab === 'schedule' && !creating && (
+        <div className="ascreen__body"><RoomSchedule room={source!} /></div>
+      )}
+
+      {tab === 'settings' && (
         <div className="roomedit__body">
           <Block title="Genel" sub="Oda kimliği ve kısa kodu">
             <div className="formrow">
@@ -177,7 +214,7 @@ export function RoomsScreen() {
               <div className="formfield" style={{ width: 140 }}>
                 <label htmlFor="room-code">Kısa kod</label>
                 <input id="room-code" className="textinput" readOnly
-                  value={`${form.name.slice(0, 3).toLocaleUpperCase('tr-TR')}-${(form.floor.replace(/\D/g, '') || '0').padStart(2, '0')}`} />
+                  value={shortCode(form)} />
               </div>
             </div>
           </Block>
@@ -322,12 +359,26 @@ export function RoomsScreen() {
             </div>
           </Block>
 
-          {/* Odaya bakarken "kimin, ne zaman isteği var" sorusunun cevabı */}
-          {!creating && <RoomSchedule room={source!} />}
+          {/* D-074 — "Aktif" artık odanın bir ayarı; başlıkta yalnız okunur. */}
+          <Block title="Durum ve kullanım" sub="Odanın kullanıma açık olup olmadığı">
+            <button className="switch" aria-pressed={form.active}
+              onClick={() => setForm({ ...form, active: !form.active })}>
+              <span className={`switch__track${form.active ? ' is-on' : ''}`}>
+                <span className="switch__knob" />
+              </span>
+              Aktif
+            </button>
+            <div className="fieldhint" style={{ marginTop: 8 }}>
+              Pasife alınan oda yeni rezervasyona kapanır, mevcut kayıtlar yerinde durur.
+            </div>
+          </Block>
         </div>
+      )}
 
-        <div className="adminfoot">
-          <span className="adminfoot__info">
+      {/* ⚠️ Alt çubuk YALNIZ Ayarlar sekmesinde: karar ekranında kaydedilecek taslak yok (P3). */}
+      {tab === 'settings' && (
+        <div className="afoot">
+          <span className="afoot__info">
             {form.name || 'Oda'} &nbsp; {form.capacity} kişilik &nbsp; {form.active ? 'Aktif' : 'Pasif'}
             {form.requiresApproval ? '   Onay gerekli' : ''}
           </span>
@@ -353,7 +404,7 @@ export function RoomsScreen() {
               }
             }}>{creating ? 'Odayı oluştur' : 'Kaydet'}</Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

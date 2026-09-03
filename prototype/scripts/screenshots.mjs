@@ -66,11 +66,10 @@ await shot('04-odalar');
 await clickText('İzinler', { exact: true });
 await shot('05-izinler');
 
-/* 06 Talepler */
-await clickText('Odalar', { exact: true });
-await clickText('bekleyen talep');
+/* 06 Talepler — D-074: dördüncü ana bölüm, liste rail'de */
+await clickText('Talepler', { selector: '.navrail button' });
 await shot('06-talepler');
-await clickText('Ürün Demo', { selector: '.reqitem' });
+await clickText('Ürün Demo', { selector: '.reqrow' });
 await shot('06b-talepler-self-approval');
 
 /* 08 Paylaşım */

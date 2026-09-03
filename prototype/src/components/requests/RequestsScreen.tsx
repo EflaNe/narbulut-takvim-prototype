@@ -8,10 +8,11 @@ import {
   DAY_NAMES_LONG, longDateLabel, timeRangeLabel, weekdayIndex,
 } from '../../lib/domain/time';
 import { Button } from '../primitives/Button';
+import { AdminHeader } from '../shell/AdminShell';
+import { NotificationBell } from '../shell/NotificationBell';
 import { Icon } from '../primitives/Icon';
-import { IconButton } from '../primitives/IconButton';
 import { RoomTimeline } from './RoomTimeline';
-import type { ApprovalRequest, RequestId } from '../../lib/domain/types';
+import type { ApprovalRequest } from '../../lib/domain/types';
 
 const statusPill: Record<ApprovalRequest['status'], { cls: string; label: string }> = {
   pending: { cls: 'pill--pending', label: 'Onay bekliyor' },
@@ -22,7 +23,6 @@ const statusPill: Record<ApprovalRequest['status'], { cls: string; label: string
 
 export function RequestsScreen() {
   const state = useAppState();
-  const dispatch = useDispatch();
   const pending = pendingRequests(state);
   const decided = decidedRequests(state);
   const all = myRequests(state);
@@ -30,87 +30,62 @@ export function RequestsScreen() {
     ?? pending[0] ?? decided[0] ?? null;
 
   return (
-    <div className="reqscreen">
-      <header className="reqhead">
-        <IconButton icon="chevronLeft" label="Takvime dön"
-          onClick={() => dispatch({ type: 'navigate', route: 'calendar' })} />
-        <span className="reqhead__title">Talepler</span>
-        <span className="reqhead__sub">
-          {pending.length ? `${pending.length} bekleyen talep` : 'Bekleyen talep yok'}
-        </span>
-      </header>
+    <div className="ascreen">
+      {/* D-074 — Talepler dördüncü ana bölümdür: geri oku YOKTUR. */}
+      <AdminHeader
+        title="Talepler"
+        meta={[
+          <span className="ahead__pending" key="p">
+            {pending.length ? `${pending.length} bekleyen talep` : 'Bekleyen talep yok'}
+          </span>,
+          'karar verilene kadar burada durur',
+        ]}
+        actions={<NotificationBell />} />
 
-      <div className="reqbody">
-        <div className="reqlist">
-          <div className="reqlist__scroll">
-            <div className="reqlist__group">Bekleyenler</div>
-            {pending.length === 0 && (
-              <div className="reqitem" style={{ color: 'var(--text-tertiary)', cursor: 'default' }}>
-                Bekleyen talep yok. Karar verilmesi gereken bir şey bulunmuyor.
-              </div>
-            )}
-            {pending.map((r) => (
-              <RequestRow key={r.id} req={r} active={selected?.id === r.id} />
-            ))}
-
-            {decided.length > 0 && (
-              <>
-                <div className="reqlist__group">Karara bağlananlar</div>
-                {decided.map((r) => (
-                  <RequestRow key={r.id} req={r} active={selected?.id === r.id} />
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-
+      {/* ⚠️ Karar satır içinde ve anlıktır — alt çubuk yoktur (P3). */}
+      <div className="ascreen__body">
         {selected
           ? <RequestDetail req={selected} />
-          : (
-            <div className="reqempty">
-              <div className="emptystate">
-                <div className="emptystate__title">Talep kuyruğu boş</div>
-                <div className="emptystate__body">
-                  Onaylayıcısı olduğunuz odalara henüz talep gelmedi.
-                </div>
-              </div>
-            </div>
-          )}
+          : <RequestsEmpty hasHistory={decided.length > 0} />}
       </div>
     </div>
   );
 }
 
-function RequestRow({ req, active }: { req: ApprovalRequest; active: boolean }) {
-  const state = useAppState();
+/** 08 · boş durumlar — "bekleyen yok" ile "hiç talep yok" ayrı iki durumdur. */
+function RequestsEmpty({ hasHistory }: { hasHistory: boolean }) {
   const dispatch = useDispatch();
-  const event = state.events.find((e) => e.id === req.eventId);
-  const room = roomById(state, req.roomId);
-  const requester = userById(state, req.requesterId);
-  const own = req.requesterId === state.currentUserId;
-  const pill = statusPill[req.status];
-
+  if (hasHistory) {
+    return (
+      <div className="aempty">
+        <span className="aempty__icon aempty__icon--ok">
+          <Icon name="checkCircle" size={22} color="var(--success)" />
+        </span>
+        <div className="aempty__title">Karar bekleyen talep yok</div>
+        <div className="aempty__body">
+          Geçmiş kararlar rail'deki “Tümü” süzgecinde durur.
+        </div>
+      </div>
+    );
+  }
   return (
-    <button className={`reqitem${active ? ' is-active' : ''}`}
-      onClick={() => dispatch({ type: 'selectRequest', requestId: req.id as RequestId })}>
-      <div className="reqitem__top">
-        <span className="reqitem__title">{event?.title ?? 'Etkinlik'}</span>
-        <span className="spacer" />
-        <span className={`pill ${pill.cls}`}>{pill.label}</span>
+    <div className="aempty">
+      <span className="aempty__icon">
+        <Icon name="clock" size={22} color="var(--text-tertiary)" />
+      </span>
+      <div className="aempty__title">Henüz hiç talep yok</div>
+      <div className="aempty__body">
+        Onay gerektiren bir oda seçtiğinizde talebiniz burada görünür.
       </div>
-      <div className="reqitem__meta">
-        {room?.name} · {event ? `${longDateLabel(event.date)}, ${timeRangeLabel(event.start, event.end)}` : ''}
-        {event && event.recurrence.kind !== 'none' ? ` · ${event.recurrence.count} tekrar` : ''}
-      </div>
-      <div className="reqitem__who">
-        <Icon name="person" size={12} />
-        {own ? 'Sizin talebiniz' : requester?.name}
-      </div>
-    </button>
+      <Button variant="primary"
+        onClick={() => dispatch({ type: 'navigate', route: 'calendar' })}>
+        Takvimde oda seç
+      </Button>
+    </div>
   );
 }
 
-function RequestDetail({ req }: { req: ApprovalRequest }) {
+export function RequestDetail({ req }: { req: ApprovalRequest }) {
   const state = useAppState();
   const dispatch = useDispatch();
   const [reason, setReason] = useState('');
@@ -210,23 +185,27 @@ function RequestDetail({ req }: { req: ApprovalRequest }) {
       {req.status === 'pending' && decidable && rejecting && (
         <div className="reqactions" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
           <div className="reqreason">
-            <div className="reqreason__label">Gerekçe (isteğe bağlı) — girilirse talep edene iletilir.</div>
+            <div className="reqreason__label">
+              Gerekçe <span className="reqlabel reqlabel--opt">İsteğe bağlı</span>
+            </div>
             <textarea className="textinput" rows={3} value={reason} autoFocus
               aria-label="Red gerekçesi"
-              placeholder="Örn. aynı saatte yönetim toplantısı planlandı."
+              placeholder="Talep edene iletilecek not"
               onChange={(e) => setReason(e.target.value)} />
           </div>
-          <div style={{ marginTop: 14, display: 'flex', gap: 12 }}>
-            <Button variant="danger"
+          {/* 09 · ne olacağını söyleyen tek cümle */}
+          <div className="reqoutcome">
+            Talep «Reddedildi» olarak kapanır, slot boşta kalır. Aynı slottaki diğer
+            bekleyen talepler etkilenmez.
+          </div>
+          <div className="reqacts">
+            <span className="spacer" />
+            <Button variant="secondary"
+              onClick={() => dispatch({ type: 'startReject', requestId: null })}>Vazgeç</Button>
+            <Button variant="outline" className="btn--onerror"
               onClick={() => dispatch({ type: 'rejectRequest', requestId: req.id, reason })}>
               Reddet
             </Button>
-            <Button variant="secondary"
-              onClick={() => dispatch({ type: 'startReject', requestId: null })}>Vazgeç</Button>
-            <span className="spacer" />
-            <span className="shd__foot" style={{ alignSelf: 'center' }}>
-              Red sonrası oda tekrar müsait olur; etkinlik silinmez.
-            </span>
           </div>
         </div>
       )}
@@ -288,23 +267,30 @@ function RequestDetail({ req }: { req: ApprovalRequest }) {
         <div className="reqactions" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
           <div className="reqreason">
             <div className="reqreason__label">
-              Neden tekrar isteniyor? (zorunlu) — talep edene iletilir.
+              Davet mesajı <span className="reqlabel reqlabel--req">Zorunlu</span>
             </div>
             <textarea className="textinput" rows={2} value={reinvite} autoFocus
               aria-label="Davet gerekçesi"
               placeholder="Örn. çakışan rezervasyon kaldırıldı, oda boşaldı."
               onChange={(e) => setReinvite(e.target.value)} />
           </div>
-          <div style={{ marginTop: 14, display: 'flex', gap: 12 }}>
+          {/* ⚠️ 09 · "geri al" demiyoruz — red kaydı yerinde durur (BR-APR-29a). */}
+          <div className="reqoutcome">
+            Davet reddi kaldırmaz ve talebi yeniden açmaz.{' '}
+            {userById(state, req.requesterId)?.name} yeni bir talep oluşturur; karar
+            yeniden verilir.
+          </div>
+          <div className="reqacts">
+            <span className="spacer" />
+            <Button variant="secondary"
+              onClick={() => dispatch({ type: 'startReinvite', requestId: null })}>
+              Vazgeç
+            </Button>
             <Button variant="primary" disabled={!reinvite.trim()}
               onClick={() => dispatch({
                 type: 'sendReinvite', requestId: req.id, reason: reinvite,
               })}>
-              Gönder
-            </Button>
-            <Button variant="secondary"
-              onClick={() => dispatch({ type: 'startReinvite', requestId: null })}>
-              Vazgeç
+              Davet gönder
             </Button>
           </div>
         </div>

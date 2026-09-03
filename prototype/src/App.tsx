@@ -3,6 +3,8 @@ import { useAppState, useDispatch } from './lib/state/StoreContext';
 import { useMediaQuery } from './lib/useMediaQuery';
 import { Sidebar } from './components/shell/Sidebar';
 import { RoomsSidebar } from './components/admin/RoomsSidebar';
+import { PermissionsSidebar } from './components/admin/PermissionsSidebar';
+import { RequestsSidebar } from './components/requests/RequestsSidebar';
 import { CalendarScreen } from './components/calendar/CalendarScreen';
 import { PermissionsScreen } from './components/admin/PermissionsScreen';
 import { RoomsScreen } from './components/admin/RoomsScreen';
@@ -16,6 +18,9 @@ import { CalendarDeleteDialog, CalendarFormDialog } from './components/shell/Cal
 import { Toast } from './components/primitives/Toast';
 import { DemoPanel } from './components/shell/DemoPanel';
 import { MobileApp } from './components/mobile/MobileApp';
+import { MobileRooms } from './components/mobile/MobileRooms';
+import { MobilePermissions } from './components/mobile/MobilePermissions';
+import { MobileRequests } from './components/mobile/MobileRequests';
 import { LoginScreen } from './components/demo/LoginScreen';
 import { DemoBanner } from './components/demo/DemoBanner';
 import { PERSONAS } from './components/demo/personas';
@@ -42,13 +47,12 @@ export function App() {
     return (
       <div className="demoshell">
         <DemoBanner />
-        {state.ui.route === 'calendar' ? <MobileApp /> : (
-          <div className="app app--mobileroute">
-            {state.ui.route === 'permissions' && <PermissionsScreen />}
-            {state.ui.route === 'rooms' && <RoomsScreen />}
-            {state.ui.route === 'requests' && <RequestsScreen />}
-          </div>
-        )}
+        {/* D-074 — üç yönetim ekranının mobil yerleşimi artık kendi bileşenlerinde;
+            önceki hâlde masaüstü yerleşimi 390px'e sıkışıyordu. */}
+        {state.ui.route === 'calendar' && <MobileApp />}
+        {state.ui.route === 'permissions' && <MobilePermissions />}
+        {state.ui.route === 'rooms' && <MobileRooms />}
+        {state.ui.route === 'requests' && <MobileRequests />}
         {state.ui.draft && !state.ui.roomPickerOpen && state.ui.route !== 'calendar' && <EventDrawer />}
         <CalendarFormDialog />
         <CalendarDeleteDialog />
@@ -63,7 +67,11 @@ export function App() {
     <div className="demoshell">
       <DemoBanner />
       <div className="app">
-      {state.ui.route === 'rooms' ? <RoomsSidebar /> : <Sidebar />}
+      {/* D-074 — her yönetim ekranı kendi rail'ini kurar; sabit olan genişlik ve dil. */}
+      {state.ui.route === 'rooms' ? <RoomsSidebar />
+        : state.ui.route === 'permissions' ? <PermissionsSidebar />
+          : state.ui.route === 'requests' ? <RequestsSidebar />
+            : <Sidebar />}
       {state.ui.route === 'calendar' && <CalendarScreen />}
       {state.ui.route === 'permissions' && <PermissionsScreen />}
       {state.ui.route === 'rooms' && <RoomsScreen />}

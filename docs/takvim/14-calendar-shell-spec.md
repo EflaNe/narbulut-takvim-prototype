@@ -70,6 +70,12 @@ Audit'in 3 numaralı bulgusuna doğrudan cevaptır: bugün Bugün butonu yok, ar
 |---|---|
 | **BR-SHELL-01** | Ana alanın üst şeridinde **her zaman** şunlar bulunur: **Bugün** aksiyonu · **ileri/geri** kontrolleri · **görünen aralık etiketi** · görünüm seçici. |
 | **BR-SHELL-02** | **Bugün** aksiyonu, görünümü bugünü içeren aralığa taşır ve scroll'u mesai başlangıcına konumlar (BR-SHELL-08). |
+| **BR-SHELL-51** | ⭐ **Ana gezinme dört bölümdür** — Takvim · İzinler · Odalar · Talepler — ve sol rail'in en üstünde **dikey liste** olarak durur. Yatay şerit 252px'e sığmadığı için terk edildi (D-074). |
+| **BR-SHELL-52** | ⚠️ Talepler'in yanındaki sayı **karar verilebilecek** talep sayısıdır (`18` BR-APR-25c). Bildirim çanından ayrı bir sinyaldir: çan okununca boşalır, bu sayı karar verilene kadar durur. Kendi talebi sayıya **girmez** — kullanıcı onu karara bağlayamaz (BR-APR-17a). |
+| **BR-SHELL-53** | Her yönetim ekranı **kendi rail'ini** kurar; sabit olan genişlik (280px), zemin, ayraç ve dizilim sırasıdır: ana gezinme → bağlam bloğu → özet → kimlik. |
+| **BR-SHELL-54** | Başlık kalıbı **88px ve sabittir**; yuvalar (başlık · meta · arama · aksiyon) boş kalsa da yükseklik ekranlar arası değişmez. |
+| **BR-SHELL-55** | ⚠️ **Alt çubuk koşulludur: kaydedilecek bir taslak varsa vardır.** Karar ekranlarında (Talepler, Odalar·Takvim ve talepler) karar satır içinde ve anlıktır — alt çubuk render edilmez. |
+| **BR-SHELL-56** | Mobilde rail yoktur; karşılığı **liste ekranıdır** ve alt gezinme aynı dört bölümü taşır. Liste → detay geçişinde detayın geri oku **listeye** döner; ana bölümün geri oku yoktur. |
 | **BR-SHELL-03** | İleri/geri, **aktif görünüm moduna göre** hareket eder: Günlük → 1 gün, Haftalık → 1 hafta, Aylık → 1 ay, Odalara Göre → aktif zaman aralığı kadar. |
 | **BR-SHELL-04** | Görünen aralık etiketi her zaman **yılı da** içerir. |
 | **BR-SHELL-05** | Sol rail'deki mini takvim **ikincil navigasyondur**; ana navigasyonun yerini almaz. Mini takvimden bir gün seçmek ana görünümü o günü içeren aralığa taşır. |

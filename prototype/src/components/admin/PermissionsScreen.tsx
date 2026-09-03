@@ -3,6 +3,7 @@ import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { userById } from '../../lib/domain/selectors';
 import { completeViewFromReserve } from '../../lib/domain/rules';
 import { Button } from '../primitives/Button';
+import { AdminHeader } from '../shell/AdminShell';
 import { Icon } from '../primitives/Icon';
 import type { AccessRule, GroupId, Room, UserId } from '../../lib/domain/types';
 
@@ -22,10 +23,30 @@ export function PermissionsScreen() {
   );
   const [addQuery, setAddQuery] = useState('');
 
+  /**
+   * D-074 — tablo oda eksenlidir; rail'deki özne seçimi onu **süzer**.
+   * Süzgeç, öznenin o odada herhangi bir hakkı olup olmadığına bakar; "Tüm kullanıcılar"
+   * kaydı da sayılır çünkü izinler birleşimdir ve herkese açık oda özneyi de kapsar
+   * (`10` BR-PRM-05).
+   */
+  const subject = state.ui.permissionSubjectId;
   const rooms = useMemo(() => {
     const q = query.trim().toLocaleLowerCase('tr-TR');
-    if (!q) return state.rooms;
-    return state.rooms.filter((r) => {
+    const bySubject = !subject ? state.rooms : state.rooms.filter((r) => {
+      const gids = state.groups.filter((g) => g.memberIds.includes(subject as UserId))
+        .map((g) => g.id);
+      /**
+       * ⚠️ `allUsers` **bilerek sayılmaz.** Tüm odalar herkese açık olduğu için onu
+       * saysaydık süzgeç hiçbir şeyi süzmezdi. Buradaki soru *"bu özne bu odada
+       * **açıkça kayıtlı mı**"* — yani izin listesinde adı geçiyor mu.
+       */
+      const hit = (a: AccessRule) => a.userIds.includes(subject as UserId)
+        || a.groupIds.includes(subject as GroupId)
+        || a.groupIds.some((g) => gids.includes(g));
+      return hit(r.canView) || hit(r.canReserve);
+    });
+    if (!q) return bySubject;
+    return bySubject.filter((r) => {
       if (r.name.toLocaleLowerCase('tr-TR').includes(q)) return true;
       const subjects = [...r.canView.userIds, ...r.canReserve.userIds]
         .map((id) => userById(state, id)?.name ?? '')
@@ -33,7 +54,12 @@ export function PermissionsScreen() {
           .map((id) => state.groups.find((g) => g.id === id)?.name ?? ''));
       return subjects.some((s) => s.toLocaleLowerCase('tr-TR').includes(q));
     });
-  }, [query, state]);
+  }, [query, subject, state]);
+
+  const subjectName = subject
+    ? (state.groups.find((g) => g.id === subject)?.name
+      ?? state.users.find((u) => u.id === subject)?.name ?? null)
+    : null;
 
   const activeRoom = cell ? state.rooms.find((r) => r.id === cell.roomId) ?? null : null;
   const rule: AccessRule | null = activeRoom && cell ? activeRoom[cell.col] : null;
@@ -69,17 +95,22 @@ export function PermissionsScreen() {
   };
 
   return (
-    <div className="admin">
-      <div className="permwrap">
-        <header className="permhead">
-          <div className="permhead__text">
-            <div className="permhead__title">İzinler</div>
-            <div className="permhead__sub">
-              Hangi kullanıcı ve grup hangi odayı görebiliyor, hangisini rezerve edebiliyor.
-              Erişimler eklemeli çalışır.
-            </div>
-          </div>
-          <div className="permtools">
+    <div className="ascreen">
+      <AdminHeader
+        title="İzinler"
+        meta={[
+          subjectName
+            ? <><b>{subjectName}</b> için süzüldü — {rooms.length} oda</>
+            : 'Hangi kullanıcı ve grup hangi odayı görebiliyor, hangisini rezerve edebiliyor',
+          subjectName
+            ? <button className="ahead__clear"
+              onClick={() => dispatch({ type: 'selectPermissionSubject', subjectId: null })}>
+              süzgeci kaldır
+            </button>
+            : 'erişimler eklemeli çalışır',
+        ]}
+        actions={
+          <>
             <div className="searchfield" style={{ width: 300 }}>
               <Icon name="search" size={15} color="var(--text-muted)" />
               <input value={query} placeholder="Oda, kullanıcı veya grup ara" aria-label="Ara"
@@ -92,9 +123,10 @@ export function PermissionsScreen() {
               })}>
               <Icon name="plus" size={14} color="#fff" />Erişim ekle
             </Button>
-          </div>
-        </header>
+          </>
+        } />
 
+      <div className="ascreen__body">
         <div className="permtable">
           <div className="permtable__head">
             <span>Oda</span><span>Görebilir</span><span>Rezerve edebilir</span><span />
@@ -246,18 +278,18 @@ export function PermissionsScreen() {
           </p>
         </div>
         </div>
+      </div>
 
-        <div className="permfoot">
-          <span className="adminfoot__info">
-            {state.rooms.length} oda · {restrictedRooms} odada rezervasyon kısıtlı
-          </span>
-          <span className="spacer" />
-          <Button variant="secondary" onClick={() => dispatch({ type: 'resetDemo' })}>Vazgeç</Button>
-          <Button variant="primary"
-            onClick={() => dispatch({ type: 'toast', message: 'Erişim kuralları kaydedildi.', tone: 'success' })}>
-            Kaydet
-          </Button>
-        </div>
+      <div className="afoot">
+        <span className="afoot__info">
+          {state.rooms.length} oda · {restrictedRooms} odada rezervasyon kısıtlı
+        </span>
+        <span className="spacer" />
+        <Button variant="secondary" onClick={() => dispatch({ type: 'resetDemo' })}>Vazgeç</Button>
+        <Button variant="primary"
+          onClick={() => dispatch({ type: 'toast', message: 'Erişim kuralları kaydedildi.', tone: 'success' })}>
+          Kaydet
+        </Button>
       </div>
     </div>
   );

@@ -51,6 +51,9 @@ async function clickText(text, { selector = 'button,a,[role="button"]', exact = 
   }, selector, text, exact, nth);
   const el = handle.asElement();
   if (!el) throw new Error(`Tıklanabilir bulunamadı: "${text}"`);
+  // Rail kaydırılabilir; öğe katlamanın altındaysa gerçek fare tıklaması ıskalar.
+  await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await sleep(60);
   await el.click();
   await sleep(180);
 }
@@ -63,6 +66,8 @@ async function clickAria(label, nth = 0) {
   }, label, nth);
   const el = handle.asElement();
   if (!el) throw new Error(`aria-label bulunamadı: "${label}"`);
+  await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await sleep(60);
   await el.click();
   await sleep(180);
 }
@@ -184,16 +189,18 @@ try {
   else fail('Yeni etkinlik ızgarada bekleyen olarak görünmedi');
   await shot('08-izgarada-bekleyen');
 
-  /* 16–17 — Talepler ekranı */
-  await clickText('Odalar', { exact: true });
-  await sleep(200);
-  await clickText('bekleyen talep');
-  if (await has('Talepler')) ok('Talepler ekranına geçildi');
+  /* 16–17 — Talepler ekranı (D-074: dördüncü ana bölüm, rail'de liste) */
+  await clickText('Talepler', { selector: '.navrail button' });
+  await sleep(260);
+  if (await has('karar verilene kadar burada durur')) ok('Talepler ekranına geçildi');
   else fail('Talepler ekranı açılmadı');
+  const noBack = await page.evaluate(() => !document.querySelector('.reqhead'));
+  if (noBack) ok('Ana bölümün geri oku yok (D-074)');
+  else fail('Talepler ekranında hâlâ geri oku var');
   await shot('09-talepler');
 
   /* Kendi talebinde onay/red aksiyonu yok */
-  await clickText('Sunum Provası', { selector: '.reqitem' });
+  await clickText('Sunum Provası', { selector: '.reqrow' });
   const ownText = await bodyText();
   if (ownText.includes('Kendi rezervasyon talebinizi onaylayamazsınız')
       && ownText.includes('Talebi geri çek')) {
@@ -202,7 +209,7 @@ try {
   await shot('10-self-approval');
 
   /* 18 — Onaylanabilir talebi onayla */
-  await clickText('Ürün Roadmap', { selector: '.reqitem' });
+  await clickText('Ürün Roadmap', { selector: '.reqrow' });
   if (await has('Odanın o günkü durumu')) ok('Talep detayı ve oda zaman çizelgesi görünüyor');
   else fail('Talep detayı görünmedi');
   await shot('11-talep-detay');
@@ -212,7 +219,7 @@ try {
   else fail('Onaylama çalışmadı');
 
   /* 19–20 — Takvime dön, rezerve durumunu gör */
-  await clickAria('Takvime dön');
+  await clickText('Takvim', { selector: '.navrail button' });
   await sleep(200);
   const reserved = await page.evaluate(() => [...document.querySelectorAll('.event')]
     .some((e) => {

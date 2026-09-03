@@ -9,6 +9,7 @@ import {
 } from '../../lib/domain/time';
 import { Icon } from '../primitives/Icon';
 import { IconButton } from '../primitives/IconButton';
+import { MobileNav } from './MobileNav';
 import { MobileCalendarsSheet } from './MobileCalendarsSheet';
 import { MobileEventSheet } from './MobileEventSheet';
 
@@ -112,16 +113,19 @@ export function MobileApp() {
         </div>
       </div>
 
+      {/*
+        D-074 — "Odalar" düğmesi alt gezinmeye taşındı; yerini birincil eylem aldı.
+        Eskiden alt çubukta yalnız "Yeni etkinlik" ve "Odalar" vardı, İzinler'e
+        mobilden **hiç ulaşılamıyordu**.
+      */}
       <div className="mob__bottom">
         <button className="mob__bigbtn mob__bigbtn--primary"
           onClick={() => dispatch({ type: 'openEventCreate', date })}>
           <Icon name="plusBold" size={16} color="#fff" />Yeni etkinlik
         </button>
-        <button className="mob__bigbtn mob__bigbtn--secondary"
-          onClick={() => dispatch({ type: 'navigate', route: 'rooms' })}>
-          <Icon name="building" size={16} />Odalar
-        </button>
       </div>
+
+      <MobileNav />
 
       {state.ui.mobileSheet === 'calendars' && <MobileCalendarsSheet />}
       {(state.ui.draft || state.ui.readOnlyEventId) && <MobileEventSheet />}
