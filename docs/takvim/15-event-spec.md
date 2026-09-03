@@ -110,6 +110,7 @@ Her katılımcı **iki bağımsız nitelik** taşır (D-040):
 
 | ID | Kural |
 |---|---|
+| **BR-EVT-60** | ⚠️ **Tarih alanı tıklandığında takvim açılır.** Yerleşik tarih alanı bazı tarayıcılarda (macOS/Chrome) tıklamayla yalnız odaklanır — takvim ancak alanın kendi ikonuna basılınca açılır. Görsel dile uyması için o ikon gizlendiğinden takvim **programatik** açılmalıdır; klavyeyle (Enter/Space) de açılır. |
 | **BR-EVT-01** | Sistemde **tek bir etkinlik türü** vardır. Tip alanı, tip seçici ve tipe bağlı davranış yoktur (D-037). |
 | **BR-EVT-02** | Etkinlik **başlık, başlangıç ve bitiş** olmadan oluşturulamaz. |
 | **BR-EVT-03** | **Bitiş, başlangıçtan sonra olmalıdır.** Eşit veya önce olamaz. |
