@@ -8,7 +8,7 @@ import type {
 } from '../domain/types';
 import {
   canApproveNow, canCancelReservation, canCreatePendingRequest, canDecideRequest,
-  eligibleApprovers, roomAvailability,
+  canReinvite, eligibleApprovers, roomAvailability,
 } from '../domain/rules';
 import { hhmm, longDateLabel, shiftByView, timeRangeLabel } from '../domain/time';
 import type { AppAction, AppState, EventDraft } from './types';
@@ -52,6 +52,7 @@ export function createInitialState(): AppState {
       selectedRequestId: 'req_roadmap',
       rejectingRequestId: null,
     cancellingReservationId: null,
+    reinvitingRequestId: null,
       selectedRoomId: 'room_istanbul',
       calendarForm: null,
       deletingCalendarId: null,
@@ -544,6 +545,51 @@ export function reducer(state: AppState, action: AppAction): AppState {
 
     case 'startReject':
       return ui(state, { rejectingRequestId: action.requestId });
+
+    case 'startReinvite':
+      return ui(state, { reinvitingRequestId: action.requestId });
+
+    /**
+     * D-072 / BR-APR-29 — reddedilmiş talep için "tekrar talep edin" daveti.
+     *
+     * ⚠️ Talebin `status`'ü **rejected kalır** — bu kararı geri almak değildir
+     * (BR-APR-22, BR-APR-29a). Değişen tek şey: talep eden haberdar edilir.
+     */
+    case 'sendReinvite': {
+      const req = state.requests.find((r) => r.id === action.requestId);
+      if (!req) return state;
+      const room = state.rooms.find((r) => r.id === req.roomId);
+      if (!room || !canReinvite(req, room, state.currentUserId, state.groups)) {
+        return ui(state, {
+          toast: { message: 'Bu talep için davet gönderemezsiniz.', tone: 'error' },
+        });
+      }
+      const reason = action.reason.trim();
+      if (!reason) {
+        return ui(state, { toast: { message: 'Davet gerekçesi zorunludur.', tone: 'error' } });
+      }
+
+      const rez = state.reservations.find((r) => r.id === req.reservationId);
+      const ev = state.events.find((e) => e.id === req.eventId);
+      const by = userById2(state, state.currentUserId);
+
+      let next: AppState = {
+        ...state,
+        requests: state.requests.map((r) => (r.id === req.id
+          ? { ...r, reinviteReason: reason, reinvitedById: state.currentUserId }
+          : r)),
+      };
+      next = notify(
+        next, req.requesterId, 'N-RES-07',
+        `${room.name} için tekrar talep edebilirsiniz`,
+        `${rez ? `${longDateLabel(rez.date)} · ${timeRangeLabel(rez.start, rez.end)}` : ''}`
+        + `${ev ? ` · ${ev.title}` : ''} — ${by ?? 'oda sorumlusu'}: ${reason}`,
+      );
+      return ui(next, {
+        reinvitingRequestId: null,
+        toast: { message: 'Davet gönderildi.', tone: 'success' },
+      });
+    }
 
     case 'startCancelReservation':
       return ui(state, { cancellingReservationId: action.reservationId });

@@ -134,6 +134,7 @@ Bu spec tek bir soruyu cevaplar:
 | **N-RES-04** | **Rezervasyon iptal edildi** | Karşı taraf: talep eden geri çektiyse **onaylayıcı**, etkinlik silindiyse **onaylayıcı** | Oda · tarih/saat · iptal sebebi *(geri çekildi / etkinlik silindi)* | ❌ |
 | **N-RES-05** | **Bekleyen talebin etkinlik zamanı değişti** | Onaylayıcı | Oda · eski ve yeni tarih/saat (`18` BR-APR-34) | ❌ |
 | **N-RES-06** ⚠️ | **Rezervasyon oda sorumlusu tarafından kaldırıldı** | Rezervasyon sahibi | Oda · tarih/saat · etkinlik · kaldıran · **zorunlu gerekçe** (`18` BR-APR-28b) · *"etkinliğiniz duruyor, odasız kaldı"* | ❌ |
+| **N-RES-07** ⚠️ | **Tekrar talep daveti** *(reddedilmiş talep için)* | Reddedilen talebin sahibi | Oda · tarih/saat · etkinlik · daveti gönderen · **zorunlu gerekçe** (`18` BR-APR-29b). ⚠️ Metin, reddin **kalktığını ima etmemelidir** — yeni talebi kullanıcı gönderir (BR-APR-29a) | ❌ |
 
 | ID | Kural |
 |---|---|
@@ -185,6 +186,11 @@ Bu spec tek bir soruyu cevaplar:
 18-reservation-approval → onaylayıcı karar verir
    ├── Onayla → N-RES-02 (talep edene)
    └── Reddet → N-RES-03 (talep edene, varsa gerekçeyle)
+
+oda sorumlusu reddedilmiş talebe davet gönderdi (18 BR-APR-29)
+   └── N-RES-07 (talep edene, ZORUNLU gerekçeyle)
+       ⚠️ talep hâlâ Rejected — bildirim bunu ima etmemeli
+       ⚠️ bir talebe yalnız bir kez (BR-APR-29c)
 
 oda sorumlusu kesinleşmiş rezervasyonu kaldırdı (18 BR-APR-28)
    └── N-RES-06 (rezervasyon sahibine, ZORUNLU gerekçeyle)

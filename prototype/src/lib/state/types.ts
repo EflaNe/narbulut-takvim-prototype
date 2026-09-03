@@ -62,6 +62,8 @@ export interface UiState {
   rejectingRequestId: RequestId | null;
   /** D-071 — kaldırma gerekçesi istenen rezervasyon */
   cancellingReservationId: ReservationId | null;
+  /** D-072 — "tekrar talep edin" daveti yazılan reddedilmiş talep */
+  reinvitingRequestId: RequestId | null;
   selectedRoomId: RoomId | null;
   toast: { message: string; tone: 'info' | 'success' | 'error' } | null;
   /** Takvim oluşturma/düzenleme diyaloğu — null ise kapalı */
@@ -141,6 +143,8 @@ export type AppAction =
   | { type: 'startReject'; requestId: RequestId | null }
   | { type: 'rejectRequest'; requestId: RequestId; reason: string }
   | { type: 'withdrawRequest'; requestId: RequestId }
+  | { type: 'startReinvite'; requestId: RequestId | null }
+  | { type: 'sendReinvite'; requestId: RequestId; reason: string }
   | { type: 'startCancelReservation'; reservationId: ReservationId | null }
   | { type: 'cancelReservation'; reservationId: ReservationId; reason: string }
   | { type: 'openCalendarForm'; mode: 'create' | 'edit'; calendarId?: CalendarId; focus?: 'name' | 'color' }

@@ -155,9 +155,47 @@
 
 /* D-071 — rezervasyon kaldırma gerekçesi; satırın altında tam genişlik açılır. */
 .rsched__cancel{flex-basis:100%;margin-top:10px;padding-top:11px;
-  border-top:1px solid var(--border)}
+  border-top:1px solid var(--line-panel)}
 .rsched__cancelhead{font:400 12.5px/1.55 var(--font);color:var(--text-secondary);margin-bottom:9px}
 .rsched__canlabel{display:block;font:500 11.5px/1.4 var(--font);color:var(--text-tertiary);
   margin-bottom:5px}
 .rsched__cancel .textinput{width:100%;resize:vertical}
 .rsched__canrow{display:flex;gap:9px;margin-top:10px}
+
+/* ── D-073 · oda doluluk ay şeridi ──────────────────────────────────────────── */
+.rmonth{margin:2px 0 14px;padding:12px 13px;border:1px solid var(--line-panel);border-radius:11px;
+  background:var(--bg-surface);max-width:352px}
+.rmonth__head{display:flex;align-items:center;gap:4px;margin-bottom:9px}
+.rmonth__label{font:600 13px/1.2 var(--font);color:var(--text-primary);
+  min-width:104px;text-align:center}
+.rmonth__legend{display:flex;align-items:center;gap:3px;
+  font:400 10.5px/1.2 var(--font);color:var(--text-tertiary)}
+.rmonth__legend .rmonth__dot{margin:0 2px 0 7px}
+.rmonth__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.rmonth__dow span{text-align:center;font:500 10.5px/1.2 var(--font);color:var(--text-tertiary)}
+.rmonth__week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.rmonth__week + .rmonth__week{margin-top:3px}
+.rmonth__day{display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:5px 0 6px;border:1px solid transparent;border-radius:7px;background:none;
+  cursor:pointer;font:inherit;color:var(--text-primary)}
+.rmonth__day:hover{background:var(--bg-subtle)}
+.rmonth__day:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.rmonth__num{font:500 12px/1 var(--font);font-variant-numeric:tabular-nums}
+.rmonth__day.is-out .rmonth__num{color:var(--text-tertiary);opacity:.5}
+.rmonth__day.is-weekend .rmonth__num{color:var(--text-secondary)}
+.rmonth__day.is-today{border-color:var(--brand)}
+.rmonth__day.is-today .rmonth__num{color:var(--brand);font-weight:700}
+.rmonth__day.is-picked{background:var(--brand);border-color:var(--brand)}
+.rmonth__day.is-picked .rmonth__num{color:#fff;font-weight:700}
+.rmonth__day.is-picked .rmonth__dot--res{background:#fff}
+.rmonth__day.is-picked .rmonth__dot--pend{background:rgba(255,255,255,.7)}
+/* boş günlerde satır yüksekliği sabit kalsın diye nokta şeridi hep yer kaplar */
+.rmonth__dots{display:flex;gap:2px;height:4px;align-items:center}
+.rmonth__dot{display:inline-block;width:4px;height:4px;border-radius:50%}
+.rmonth__dot--res{background:var(--brand)}
+.rmonth__dot--pend{background:var(--warning)}
+
+.rsched__scope{display:flex;align-items:center;gap:10px;margin-bottom:9px;
+  font:500 12px/1.3 var(--font);color:var(--text-secondary)}
+.rsched__clear{border:0;background:none;padding:0;cursor:pointer;
+  font:500 12px/1.3 var(--font);color:var(--brand);text-decoration:underline}

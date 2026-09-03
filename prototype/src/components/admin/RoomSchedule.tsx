@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import { canDecide, readableCalendarIds, userById } from '../../lib/domain/selectors';
 import { canCancelReservation, competingPendingCount, isRoomApprover } from '../../lib/domain/rules';
-import { longDateLabel, timeRangeLabel } from '../../lib/domain/time';
+import {
+  DAY_NAMES_MINI, addMonths, dayOfMonth, isWeekend, longDateLabel, monthLabel, monthMatrix,
+  sameMonth, timeRangeLabel,
+} from '../../lib/domain/time';
+import { IconButton } from '../primitives/IconButton';
 import { Button } from '../primitives/Button';
 import { Icon } from '../primitives/Icon';
 import type { Room } from '../../lib/domain/types';
@@ -22,12 +26,32 @@ export function RoomSchedule({ room }: { room: Room }) {
   const [reason, setReason] = useState('');
   const isApprover = isRoomApprover(room, state.currentUserId, state.groups);
 
-  const rows = state.reservations
-    .filter((r) => r.roomId === room.id && r.date >= state.today
-      && (r.status === 'pending' || r.status === 'reserved'))
+  const [cursor, setCursor] = useState(state.today);
+  const [pickedDay, setPickedDay] = useState<string | null>(null);
+
+  /**
+   * ⚠️ Doluluk **rezervasyonlardan** okunur, etkinliklerden değil: oda sorumlusu
+   * okuyamadığı bir takvimdeki etkinliği görmez ama odanın dolu olduğunu görmelidir
+   * (`10` BR-PRM-06). Detay maskeleme aşağıda ayrıca yapılır (BR-APR-25b).
+   */
+  const allRes = state.reservations.filter((r) => r.roomId === room.id
+    && (r.status === 'pending' || r.status === 'reserved'));
+
+  const byDay = new Map<string, { reserved: number; pending: number }>();
+  for (const r of allRes) {
+    const d = byDay.get(r.date) ?? { reserved: 0, pending: 0 };
+    if (r.status === 'pending') d.pending += 1; else d.reserved += 1;
+    byDay.set(r.date, d);
+  }
+
+  const rows = allRes
+    .filter((r) => (pickedDay ? r.date === pickedDay : r.date >= state.today))
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.start - b.start));
 
-  const pendingCount = rows.filter((r) => r.status === 'pending').length;
+  // ⚠️ Rozet odanın tamamını temsil eder; gün filtresiyle değişmemelidir.
+  const pendingCount = allRes.filter(
+    (r) => r.status === 'pending' && r.date >= state.today).length;
+  const weeks = monthMatrix(cursor);
 
   return (
     <section className="rsched" aria-label="Bu odanın takvimi">
@@ -39,9 +63,72 @@ export function RoomSchedule({ room }: { room: Room }) {
           : <span className="rsched__none">bekleyen talep yok</span>}
       </div>
 
+      {/* D-073 — "bu oda hangi günler dolu" sorusunun tek bakışta cevabı. */}
+      <div className="rmonth">
+        <div className="rmonth__head">
+          <IconButton icon="chevronLeft" label="Önceki ay" tone="sm" size={15}
+            onClick={() => setCursor(addMonths(`${cursor.slice(0, 8)}01`, -1))} />
+          <span className="rmonth__label">{monthLabel(cursor)}</span>
+          <IconButton icon="chevronRight" label="Sonraki ay" tone="sm" size={15}
+            onClick={() => setCursor(addMonths(`${cursor.slice(0, 8)}01`, 1))} />
+          <span className="spacer" />
+          <span className="rmonth__legend">
+            <i className="rmonth__dot rmonth__dot--res" /> dolu
+            <i className="rmonth__dot rmonth__dot--pend" /> bekleyen
+          </span>
+        </div>
+        <div className="rmonth__dow" aria-hidden="true">
+          {DAY_NAMES_MINI.map((d) => <span key={d}>{d}</span>)}
+        </div>
+        {weeks.map((week) => (
+          <div className="rmonth__week" key={week[0]}>
+            {week.map((date) => {
+              const load = byDay.get(date);
+              const out = !sameMonth(date, cursor);
+              const cls = [
+                'rmonth__day',
+                out ? 'is-out' : isWeekend(date) ? 'is-weekend' : '',
+                date === state.today ? 'is-today' : '',
+                date === pickedDay ? 'is-picked' : '',
+                load ? 'is-busy' : '',
+              ].filter(Boolean).join(' ');
+              const total = (load?.reserved ?? 0) + (load?.pending ?? 0);
+              return (
+                <button key={date} type="button" className={cls}
+                  aria-pressed={date === pickedDay}
+                  aria-label={`${longDateLabel(date)} — ${total
+                    ? `${total} kayıt` : 'kayıt yok'}`}
+                  onClick={() => setPickedDay(date === pickedDay ? null : date)}>
+                  <span className="rmonth__num">{dayOfMonth(date)}</span>
+                  <span className="rmonth__dots">
+                    {Array.from({ length: Math.min(load?.reserved ?? 0, 3) }, (_, i) => (
+                      <i className="rmonth__dot rmonth__dot--res" key={`r${i}`} />
+                    ))}
+                    {Array.from({ length: Math.min(load?.pending ?? 0, 3) }, (_, i) => (
+                      <i className="rmonth__dot rmonth__dot--pend" key={`p${i}`} />
+                    ))}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <div className="rsched__scope">
+        {pickedDay
+          ? <>{longDateLabel(pickedDay)} · {rows.length} kayıt</>
+          : <>Bugünden itibaren · {rows.length} kayıt</>}
+        {pickedDay && (
+          <button type="button" className="rsched__clear" onClick={() => setPickedDay(null)}>
+            Tümünü göster
+          </button>
+        )}
+      </div>
+
       {rows.length === 0 ? (
         <div className="rsched__empty">
-          Bugünden itibaren bu oda için kayıt yok.
+          {pickedDay ? 'Bu gün için kayıt yok.' : 'Bugünden itibaren bu oda için kayıt yok.'}
         </div>
       ) : rows.map((r) => {
         const req = state.requests.find((q) => q.reservationId === r.id);

@@ -25,6 +25,7 @@ veya backend gerektiren konulardır.
 | L-08 | **Demo saati sabit:** 28 Ağustos 2026 Cuma 15:00 | Sunum her açılışta aynı ekranı gösterir |
 | L-09 | **Saat dilimi desteği yok** | Tarih `YYYY-MM-DD`, saat gün içi dakika |
 | L-10 | **Tekrarlayan seri açılmıyor** | `recurrence` alanı taşınır, rozet/ikon gösterilir; occurrence'lar ızgarada çoğaltılmaz. "Bu / bu ve sonrakiler / tüm seri" düzenleme kapsamı uygulanmadı |
+| L-11c | Doluluk şeridi **tek odayı** gösterir; "bu hafta hangi odada boşluk var" sorusu için "Odalara göre" görünümü kullanılır ve o da tek gündür (`D-073`) |
 | L-11b | Kaldırılan rezervasyonların **geçmiş listesi** bir yüzeyde gösterilmiyor; kaldıran ve gerekçe veride tutuluyor ama yalnız bildirimde okunuyor (`D-071`, BR-APR-28c) |
 | L-11a | Rakip talepler birikebilir ama **sıralama/öncelik** kavramı yoktur; onaylayıcı listeden kendi seçer (`D-070`) |
 | L-11 | **`BR-APR-42` uygulanmadı** | Başlangıcı geçmiş bekleyen talebin otomatik terminal duruma alınması zamanlanmış iş gerektirir |

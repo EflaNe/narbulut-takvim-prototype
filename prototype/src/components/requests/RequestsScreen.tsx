@@ -3,7 +3,7 @@ import { useAppState, useDispatch } from '../../lib/state/StoreContext';
 import {
   calendarById, canDecide, decidedRequests, myRequests, pendingRequests, roomById, userById,
 } from '../../lib/domain/selectors';
-import { eligibleApprovers } from '../../lib/domain/rules';
+import { canReinvite, eligibleApprovers } from '../../lib/domain/rules';
 import {
   DAY_NAMES_LONG, longDateLabel, timeRangeLabel, weekdayIndex,
 } from '../../lib/domain/time';
@@ -114,6 +114,7 @@ function RequestDetail({ req }: { req: ApprovalRequest }) {
   const state = useAppState();
   const dispatch = useDispatch();
   const [reason, setReason] = useState('');
+  const [reinvite, setReinvite] = useState('');
   const event = state.events.find((e) => e.id === req.eventId);
   const room = roomById(state, req.roomId);
   const requester = userById(state, req.requesterId);
@@ -121,6 +122,7 @@ function RequestDetail({ req }: { req: ApprovalRequest }) {
   const decidable = canDecide(state, req.id);
   const own = req.requesterId === state.currentUserId;
   const rejecting = state.ui.rejectingRequestId === req.id;
+  const reinviting = state.ui.reinvitingRequestId === req.id;
   const approvers = room
     ? eligibleApprovers(room, req.requesterId, state.groups)
       .map((id) => userById(state, id)?.name).filter(Boolean)
@@ -262,6 +264,59 @@ function RequestDetail({ req }: { req: ApprovalRequest }) {
           {req.status === 'rejected' && (
             <><br />Oda serbest bırakıldı; etkinlik odasız olarak takvimde kaldı.</>
           )}
+        </div>
+      )}
+
+      {/* D-072 — red geri alınmaz; talep eden yeniden başvurmaya çağrılır. */}
+      {canReinvite(req, room, state.currentUserId, state.groups) && !reinviting && (
+        <div className="reqactions">
+          <Button variant="outline"
+            onClick={() => {
+              setReinvite('');
+              dispatch({ type: 'startReinvite', requestId: req.id });
+            }}>
+            Tekrar talep edin
+          </Button>
+          <span className="spacer" />
+          <span className="shd__foot">
+            Red kaydı durur; talep edene yeniden başvurma daveti gider.
+          </span>
+        </div>
+      )}
+
+      {reinviting && (
+        <div className="reqactions" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+          <div className="reqreason">
+            <div className="reqreason__label">
+              Neden tekrar isteniyor? (zorunlu) — talep edene iletilir.
+            </div>
+            <textarea className="textinput" rows={2} value={reinvite} autoFocus
+              aria-label="Davet gerekçesi"
+              placeholder="Örn. çakışan rezervasyon kaldırıldı, oda boşaldı."
+              onChange={(e) => setReinvite(e.target.value)} />
+          </div>
+          <div style={{ marginTop: 14, display: 'flex', gap: 12 }}>
+            <Button variant="primary" disabled={!reinvite.trim()}
+              onClick={() => dispatch({
+                type: 'sendReinvite', requestId: req.id, reason: reinvite,
+              })}>
+              Gönder
+            </Button>
+            <Button variant="secondary"
+              onClick={() => dispatch({ type: 'startReinvite', requestId: null })}>
+              Vazgeç
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {req.reinvitedById && (
+        <div className="reqdecision">
+          <strong>Tekrar talep daveti gönderildi</strong>
+          {' · '}{userById(state, req.reinvitedById)?.name}
+          <br />Gerekçe: {req.reinviteReason}
+          <br />⚠️ Red kaydı değişmedi; yeni talep {userById(state, req.requesterId)?.name}
+          {' '}tarafından gönderilmelidir.
         </div>
       )}
     </div>

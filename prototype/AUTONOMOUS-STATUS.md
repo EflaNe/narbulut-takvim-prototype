@@ -677,3 +677,54 @@ yakalıyordu. İki test **yanlış rezervasyonu kaldırdığı hâlde geçiyordu
 daraltıldı (`rezOf`), dördüncü test o zaman gerçekten kırıldı ve düzeltildi.
 
 Test 69 → **73**.
+
+---
+
+## 18. Karar düzeltme ve oda doluluğu — 3 Eylül 2026
+
+Ürün sahibi iki soru sordu: *"Oda yöneticisi olarak şu an karar değişikliği yapabiliyor
+muyum?"* ve *"Bir odada takvimin hangi günlerinde doluluk var, bunu görmem lazım."*
+
+### Soru 1 — kısmen, ve asimetrikti
+
+| Durum | Önce | Şimdi |
+|---|---|---|
+| Bekleyen | ✓ karar verir | ✓ |
+| Onaylanmış | ✓ rezervasyonu kaldırır (`D-071`) | ✓ |
+| **Reddedilmiş** | ✗ **hiçbir şey yapamaz** | ✓ **tekrar talep daveti** (`D-072`) |
+
+⚠️ `D-071` bir gün önce onay yönünü açmış, red yönünü kapalı bırakmıştı. *"Yanlışlıkla
+reddettim"* en az *"onayladım ama bakım çıktı"* kadar sıktır; üstelik talep edenin tekrar
+denemesi gerektiğini bilmesinin **hiçbir yolu yoktu** — eline geçen tek şey red bildirimiydi.
+
+Reddi doğrudan geri almak yerine `D-071` ile aynı kalıp seçildi: **kararı değiştirmek yerine
+yeni bir eylem.** Red kaydı `Rejected` kalır, davet ayrı kayıt olarak durur, yeni talebi
+**talep eden** gönderir. Durum makinesi geriye akmıyor.
+
+### Soru 2 — hayır, ve üçüncü yüzey yanıltıcıydı
+
+| Yüzey | Sınırı |
+|---|---|
+| "Odalara göre" | ⚠️ Tek gün |
+| "Bu odanın takvimi" | ⚠️ Düz liste — tarih var, yoğunluk yok |
+| Hafta / Ay ızgarası | ⚠️ **Doluluk değil.** `visibleEvents` okunabilir takvimlerle sınırlı; sorumlu okuyamadığı bir etkinliği görmediği için oda **dolu olduğu hâlde boş görünüyordu** |
+
+`D-073` ile oda ekranına kompakt ay şeridi eklendi. ⚠️ Doluluk **rezervasyonlardan** okunuyor,
+etkinliklerden değil — bu yüzden izinden bağımsız doğru; detay ise `BR-APR-25b` ile maskeli
+kalıyor. Güne tıklayınca liste süzülüyor; başlıktaki bekleyen rozeti odanın tamamını temsil
+ediyor ve filtreyle değişmiyor (`BR-APR-25e`).
+
+### ⚠️ Sessiz CSS hatası — dünden beri duruyordu
+
+Şeridi yazarken seçili gün bomboş bir beyaz kutu olarak çıktı. Sebep: `var(--accent)`,
+`var(--surface)`, `var(--border)`, `var(--surface-hover)` **tanımlı token değil** — gerçek
+isimler `--brand`, `--bg-surface`, `--line-panel`, `--bg-subtle`.
+
+Aynı hata **bir gün önce** `D-071` kaldırma formunda da yapılmıştı: `border-top` için
+`var(--border)` yazılmıştı ve ayraç çizgisi hiç görünmüyordu. CSS bilinmeyen custom
+property'de sessizce düşer — ne derleyici ne test yakalar.
+
+Tüm stil dosyalarına karşı bir denetim çalıştırıldı: `var(--x)` kullanımlarının hepsi
+tanım kümesiyle karşılaştırıldı. Bu dört isim dışında tanımsız kullanım yok.
+
+Test 73 → **78**.

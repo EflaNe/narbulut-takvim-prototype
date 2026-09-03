@@ -224,6 +224,21 @@ export function canCancelReservation(
   return isRoomApprover(room, userId, groups);
 }
 
+/**
+ * D-072 / BR-APR-29 — reddedilmiş talep için "tekrar talep edin" daveti.
+ *
+ * ⚠️ Red **geri alınmaz** (BR-APR-22): davet, kararı değiştirmek yerine talep edeni
+ * yeniden başvurmaya çağıran **yeni bir eylemdir**. Bir talebe **bir kez** gönderilir.
+ */
+export function canReinvite(
+  request: ApprovalRequest, room: Room, userId: UserId, groups: Group[],
+): boolean {
+  if (request.status !== 'rejected') return false;
+  if (request.reinvitedById) return false;
+  if (request.requesterId === userId) return false;
+  return isRoomApprover(room, userId, groups);
+}
+
 /** BR-APR-02 — onay açıksa en az bir onaylayıcı tanımlı olmak zorundadır. */
 export function roomApprovalConfigValid(room: Room): boolean {
   if (!room.requiresApproval) return true;

@@ -482,6 +482,54 @@ describe('rakip talepler — D-070', () => {
       .toBe('approved');
   });
 
+  it('D-072: red daveti gönderilir — RED KAYDI DEĞİŞMEZ, sahibine bildirim gider', () => {
+    // req_eski_red: Topkapı, talep eden Kaan, reddeden Deniz. Deniz odanın sorumlusu.
+    const s = reducer(base,
+      { type: 'sendReinvite', requestId: 'req_eski_red', reason: 'Oda boşaldı' });
+    const req = s.requests.find((r) => r.id === 'req_eski_red')!;
+
+    // ⚠️ BR-APR-22 — karar geri alınmaz
+    expect(req.status).toBe('rejected');
+    expect(req.decidedById).toBe('usr_deniz');
+    // davet ayrı bir kayıt olarak durur
+    expect(req.reinviteReason).toBe('Oda boşaldı');
+    expect(req.reinvitedById).toBe('usr_deniz');
+
+    const n = s.notifications.find((x) => x.kind === 'N-RES-07')!;
+    expect(n.recipientId).toBe('usr_kaan');
+    expect(n.body).toContain('Oda boşaldı');
+  });
+
+  it('D-072: gerekçesiz davet reddedilir', () => {
+    const s = reducer(base, { type: 'sendReinvite', requestId: 'req_eski_red', reason: ' ' });
+    expect(s.requests.find((r) => r.id === 'req_eski_red')!.reinvitedById).toBeUndefined();
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
+  it('D-072: davet bir kez gönderilir', () => {
+    const s = run(base,
+      { type: 'sendReinvite', requestId: 'req_eski_red', reason: 'Birinci' },
+      { type: 'sendReinvite', requestId: 'req_eski_red', reason: 'İkinci' });
+    expect(s.requests.find((r) => r.id === 'req_eski_red')!.reinviteReason).toBe('Birinci');
+    expect(s.notifications.filter((x) => x.kind === 'N-RES-07')).toHaveLength(1);
+  });
+
+  it('D-072: oda sorumlusu olmayan davet gönderemez', () => {
+    const s = run(base,
+      { type: 'setPersona', userId: 'usr_zeynep' },
+      { type: 'sendReinvite', requestId: 'req_eski_red', reason: 'Olmaz' });
+    expect(s.requests.find((r) => r.id === 'req_eski_red')!.reinvitedById).toBeUndefined();
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
+  it('D-072: bekleyen talebe davet gönderilemez — yalnız reddedilmişe', () => {
+    const pend = base.requests.find((r) => r.status === 'pending'
+      && r.roomId === 'room_topkapi' && r.requesterId !== 'usr_deniz')!;
+    const s = reducer(base, { type: 'sendReinvite', requestId: pend.id, reason: 'Olmaz' });
+    expect(s.requests.find((r) => r.id === pend.id)!.reinvitedById).toBeUndefined();
+    expect(s.ui.toast?.tone).toBe('error');
+  });
+
   it('RED, etkinliği silmez — yalnız odasız bırakır', () => {
     const s3 = run(first,
       { type: 'setPersona', userId: 'usr_zeynep' },

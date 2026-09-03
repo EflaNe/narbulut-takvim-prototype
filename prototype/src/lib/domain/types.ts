@@ -163,6 +163,13 @@ export interface ApprovalRequest {
   decidedAt: string | null;
   /** BR-APR-20 — gerekçe opsiyoneldir */
   reason: string | null;
+  /**
+   * D-072 — reddedilmiş talep için "tekrar talep edin" daveti.
+   * ⚠️ Talebin `status`'ü **değişmez** (BR-APR-22): davet ayrı bir eylemdir,
+   * red kaydı olduğu gibi durur (`18` BR-APR-29a).
+   */
+  reinviteReason?: string | null;
+  reinvitedById?: UserId | null;
 }
 
 /**
@@ -174,7 +181,8 @@ export type NotificationKind =
   | 'N-EVT-01' | 'N-EVT-02' | 'N-EVT-03' | 'N-EVT-04' | 'N-EVT-05' | 'N-EVT-06'
   | 'N-SER-01' | 'N-SER-02' | 'N-SER-03'
   | 'N-CAL-01' | 'N-CAL-02'
-  | 'N-RES-01' | 'N-RES-02' | 'N-RES-03' | 'N-RES-04' | 'N-RES-05' | 'N-RES-06';
+  | 'N-RES-01' | 'N-RES-02' | 'N-RES-03' | 'N-RES-04' | 'N-RES-05' | 'N-RES-06'
+  | 'N-RES-07';
 
 export interface AppNotification {
   id: NotificationId;
