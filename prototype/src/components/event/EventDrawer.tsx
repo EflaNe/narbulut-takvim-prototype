@@ -115,6 +115,12 @@ export function EventDrawer({ dimmed }: { dimmed?: boolean }) {
     none: 'Tekrar ekle', daily: 'Her gün', weekly: 'Her hafta', monthly: 'Her ay',
   };
 
+  /** Takvimi programatik aç; desteklenmeyen tarayıcıda alan yine yazılabilir kalır. */
+  const openPicker = (e: { currentTarget: HTMLInputElement }) => {
+    const el = e.currentTarget as HTMLInputElement & { showPicker?: () => void };
+    try { el.showPicker?.(); } catch { /* kullanıcı etkileşimi yoksa sessiz geç */ }
+  };
+
   return (
     <Drawer width={680} dimmed={dimmed} eyebrow={isNew ? 'Yeni etkinlik' : 'Etkinliği düzenle'}
       onClose={() => dispatch({ type: 'closeEventDrawer' })}
@@ -201,7 +207,15 @@ export function EventDrawer({ dimmed }: { dimmed?: boolean }) {
               <Icon name="calendar" size={15} color="var(--text-tertiary)" />
               {DAY_NAMES_LONG[weekdayIndex(draft.date)]}, {longDateLabel(draft.date)}
             </span>
+            {/*
+              ⚠️ macOS/Chrome'da `type="date"` alanına tıklamak takvimi **açmaz** —
+              yalnız odaklar; takvim ancak alanın kendi (burada görünmez) ikonuna
+              basılınca açılırdı. Tıklama ve klavye ile `showPicker()` çağırıyoruz.
+            */}
             <input className="evd__datenative" type="date" value={draft.date} aria-label="Tarih"
+              onClick={openPicker} onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPicker(e); }
+              }}
               onChange={(e) => e.target.value
                 && dispatch({ type: 'updateDraft', patch: { date: e.target.value } })} />
           </span>
