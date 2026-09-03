@@ -15,3 +15,13 @@
 # Bağımlılıklar ve üretilen çıktılar
 # (prototype/.gitignore alt ağaç için ayrıca node_modules, dist, emails/dist kapsar)
 node_modules/
+
+# ── Public repo kapsamı dışı (yerelde durur, repoda taşınmaz) ───────────────
+# Başka bir ürünün test/hata kayıtları — bu projeyle ilgisi yok
+akm/
+# Canlı Narbulut ürününün ekran görüntüleri
+NarbulutTakvimSS/
+# Yayındaki ürünün kusur envanteri ve rakip analizi — iç belgeler
+docs/takvim/00-current-state-audit.md
+docs/takvim/01-competitor-capability-map.md
+docs/takvim/.01-competitor-capability-map.v1.bak

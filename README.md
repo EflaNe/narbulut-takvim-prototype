@@ -141,13 +141,11 @@ Aşağıdaki görseller `node scripts/screenshots.mjs` ile prototipin kendisinde
 
 ### Başlangıç noktası — mevcut ürün
 
-Karşılaştırma için, yeniden tasarımın girdisi olan **mevcut Narbulut Takvim** (v2.13.8)
-ekran görüntüleri `NarbulutTakvimSS/` altındadır. `docs/takvim/00-current-state-audit.md`
-bulgularının `[O] OBSERVED` kanıt kaynağı bu görsellerdir.
-
-| Mevcut ürün — ana görünüş | Mevcut ürün — etkinlik ekleme |
-|---|---|
-| <img src="NarbulutTakvimSS/Ana%20G%C3%B6r%C3%BCn%C3%BC%C5%9F.png" alt="Mevcut ürün ana görünüş"> | <img src="NarbulutTakvimSS/TakvimEkleme.png" alt="Mevcut ürün etkinlik ekleme"> |
+Yeniden tasarımın girdisi, yayındaki **Narbulut Takvim** (v2.13.8) üzerinde yapılan bir
+current-state audit'ti. ⚠️ O audit ve dayandığı ekran görüntüleri **bu depoda yer almaz** —
+gerekçesi [`docs/takvim/00-KAPSAM-NOTU.md`](docs/takvim/00-KAPSAM-NOTU.md) içinde.
+`02-problem-clusters.md`'den itibaren tüm belgeler o çalışmanın **sonucunu** taşır ve
+kendi başlarına okunabilir.
 
 ---
 
@@ -174,8 +172,7 @@ bulgularının `[O] OBSERVED` kanıt kaynağı bu görsellerdir.
 │   ├── assets/narbulut-logo.png            Tek gerçek marka varlığı
 │   └── SUPERSEDED-*.html                   Eski denemeler — geçersiz, yalnız arşiv
 │
-├── akm/                  Yerleşim haritası ve test notları
-└── NarbulutTakvimSS/     📷 Mevcut ürünün ekran görüntüleri (audit kanıtı)
+└── .github/workflows/    CI — typecheck · test · build
 ```
 
 ---
@@ -184,8 +181,8 @@ bulgularının `[O] OBSERVED` kanıt kaynağı bu görsellerdir.
 
 | Faz | Durum | Çıktı |
 |---|---|---|
-| 1 · Current State Audit | ✅ | `docs/takvim/00-current-state-audit.md` (rev.3 FINAL) |
-| 2 · Competitor Benchmark | ✅ | `01-competitor-capability-map.md` |
+| 1 · Current State Audit | ✅ | *(depoda değil — `00-KAPSAM-NOTU.md`)* |
+| 2 · Competitor Benchmark | ✅ | *(depoda değil — `00-KAPSAM-NOTU.md`)* |
 | 3 · Problem kümeleri ve çözüm seçenekleri | ✅ | `02`, `03`, `03b` |
 | 4 · Kapsam kapanışı | ✅ | `04-scope-closure.md` |
 | 5 · Ürün spec'leri | ✅ | `10`–`19` (izinler, takvimler, odalar, kabuk, etkinlik, rezervasyon, planlama, onay, bildirim) |
@@ -207,8 +204,7 @@ Otonom yürütmenin denetim izi ve kapatılan belirsizlikler (K-01…K-12):
 | Doküman | İçerik |
 |---|---|
 | [`DECISIONS.md`](docs/takvim/DECISIONS.md) | **Karar kaydı — en yüksek öncelikli kaynak.** Çelişki halinde bu geçerlidir. |
-| [`00-current-state-audit.md`](docs/takvim/00-current-state-audit.md) | Mevcut ürün denetimi; `[O]`/`[I]`/`[U]` kanıt seviyeleriyle |
-| [`01-competitor-capability-map.md`](docs/takvim/01-competitor-capability-map.md) | Google/Outlook — yalnız kullanılabilirlik referansı |
+| [`00-KAPSAM-NOTU.md`](docs/takvim/00-KAPSAM-NOTU.md) | FAZ 1–2A çıktılarının neden yayımlanmadığı |
 | [`02-problem-clusters.md`](docs/takvim/02-problem-clusters.md) | 6 kanıtlanmış problem kümesi |
 | [`03-solution-options.md`](docs/takvim/03-solution-options.md) · [`03b`](docs/takvim/03b-phase3-decision-summary.md) | Çözüm seçenekleri ve seçim gerekçesi |
 | [`04-scope-closure.md`](docs/takvim/04-scope-closure.md) | Kapsam içi / kapsam dışı kesin ayrımı |
